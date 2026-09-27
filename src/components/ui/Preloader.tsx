@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 export default function Preloader() {
   const [loaded, setLoaded] = useState(false);
   const preloaderRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLSpanElement>(null);
+  const counterRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
