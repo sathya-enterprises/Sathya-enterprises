@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SchemaOrg from "@/components/seo/SchemaOrg";
 import ChatWidget from "@/components/chat/ChatWidget";
+import Preloader from "@/components/ui/Preloader";
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -77,6 +78,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
+        <Preloader />
         <SchemaOrg />
         <a href="#main" className="skip-link">
           Skip to content

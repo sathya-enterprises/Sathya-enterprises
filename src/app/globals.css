@@ -106,11 +106,12 @@ h1, h2, h3, h4, h5, h6 {
 .accent { color: var(--color-gold); }
 
 /* ─── Layout Container ───────────────────────────────────────── */
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin-inline: auto;
-  padding-inline: clamp(1.25rem, 5vw, 3rem);
+.container,
+.max-w-7xl {
+  width: 95% !important;
+  max-width: 95% !important;
+  margin-inline: auto !important;
+  padding-inline: clamp(0.75rem, 2vw, 2rem);
 }
 
 /* ─── Section Base ───────────────────────────────────────────── */
@@ -1167,3 +1168,39 @@ a.contact-info-item__value:hover { color: var(--color-gold); }
   border-radius: 2px;
 }
 
+.eco-glow {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 220px;
+          height: 220px;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+          background: radial-gradient(
+            circle,
+            color-mix(in srgb, var(--color-gold) 35%, transparent) 0%,
+            transparent 70%
+          );
+          filter: blur(6px);
+          pointer-events: none;
+        }
+
+        .eco-node {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+        }
+
+        .eco-node__dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: var(--color-gold);
+          flex-shrink: 0;
+        }
+
+        @media (max-width: 900px) {
+          .hero .container {
+            flex-direction: column;
+          }
+        }
