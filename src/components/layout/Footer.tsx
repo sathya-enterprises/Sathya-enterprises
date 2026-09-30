@@ -65,21 +65,24 @@ const SOCIAL = [
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="footer" role="contentinfo">
+    <footer
+      className="footer"
+      role="contentinfo"
+      style={{ borderTop: "1px solid rgba(200,168,75,0.2)" }}
+    >
       <div className="container">
         <div className="footer__top">
           {/* Brand block with Logo */}
           <div>
             <div className="flex items-center gap-3.5 mb-5">
-              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-amber-500/50 bg-zinc-950 flex items-center justify-center flex-shrink-0 shadow-md">
-                <Image
-                  src="/images/logo.png"
-                  alt="Sathya Enterprises Logo"
-                  width={48}
-                  height={48}
-                  className="object-contain"
-                />
-              </div>
+              <Image
+                src="/images/logo.png"
+                alt="Sathya Enterprises Logo"
+                width={32}
+                height={32}
+                className="object-contain"
+                style={{ filter: "drop-shadow(0 0 6px rgba(200,168,75,0.45))" }}
+              />
               <div>
                 <h3 className="text-xl font-extrabold text-white tracking-tight font-display m-0 leading-none">
                   Sathya <span className="text-amber-500">Enterprises</span>
@@ -117,6 +120,7 @@ export default function Footer() {
                   aria-label={label}
                   target="_blank"
                   rel="noopener noreferrer"
+                  style={{ borderRadius: "50%" }}
                 >
                   <Icon />
                 </a>
@@ -142,10 +146,25 @@ export default function Footer() {
         </div>
 
         {/* Large wordmark */}
-        <p className="footer__wordmark" aria-hidden="true">
+        <p
+          className="footer__wordmark"
+          aria-hidden="true"
+          style={{ fontSize: "clamp(3rem, 10vw, 8rem)" }}
+        >
           Sathya <span>Enterprises</span>
         </p>
         <p className="footer__tagline">BUILD. MARKET. AUTOMATE. GROW.</p>
+
+        {/* Gold gradient divider */}
+        <div
+          aria-hidden="true"
+          style={{
+            height: "1px",
+            background:
+              "linear-gradient(90deg, transparent, rgba(200,168,75,0.3), transparent)",
+            marginBottom: "0",
+          }}
+        />
 
         {/* Bottom bar */}
         <div className="footer__bottom">

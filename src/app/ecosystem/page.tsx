@@ -126,17 +126,22 @@ export default function EcosystemPage() {
       }
 
       if (ctaRef.current) {
-        gsap.from(ctaRef.current, {
-          opacity: 0,
-          scale: 0.94,
-          duration: 0.8,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: ctaRef.current,
-            start: "top 82%",
-            toggleActions: "play none none none",
-          },
-        });
+        gsap.fromTo(
+          ctaRef.current,
+          { opacity: 0, scale: 0.94 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: ctaRef.current,
+              start: "top 85%",
+              end: "bottom top",
+              toggleActions: "play reset play reset",
+            },
+          }
+        );
       }
     });
 

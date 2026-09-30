@@ -7,7 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Fade + slide up animation on scroll for a container's direct children
+ * Fade + slide up animation on scroll for a container's direct children.
+ * Configured with continuous multi-directional scroll triggers so animations replay every time sections enter viewport.
  */
 export function useRevealOnScroll<T extends HTMLElement>(
   stagger = 0.1,
@@ -19,18 +20,23 @@ export function useRevealOnScroll<T extends HTMLElement>(
     if (!ref.current) return;
 
     const ctx = gsap.context(() => {
-      gsap.from(ref.current!.children, {
-        opacity: 0,
-        y: 32,
-        duration: 0.75,
-        stagger,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ref.current,
-          start: "top 82%",
-          toggleActions: "play none none none",
-        },
-      });
+      gsap.fromTo(
+        ref.current!.children,
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.75,
+          stagger,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top 88%",
+            end: "bottom top",
+            toggleActions: "play reset play reset",
+          },
+        }
+      );
     }, ref);
 
     return () => ctx.revert();
@@ -41,7 +47,8 @@ export function useRevealOnScroll<T extends HTMLElement>(
 }
 
 /**
- * Split reveal for two-column layouts (left slides from left, right from right)
+ * Split reveal for two-column layouts (left slides from left, right from right).
+ * Re-triggers on repeated scrolling.
  */
 export function useSplitReveal<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -54,13 +61,22 @@ export function useSplitReveal<T extends HTMLElement>() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: ref.current,
-          start: "top 80%",
-          toggleActions: "play none none none",
+          start: "top 85%",
+          end: "bottom top",
+          toggleActions: "play reset play reset",
         },
       });
 
-      tl.from(left, { opacity: 0, x: -36, duration: 0.8, ease: "power3.out" })
-        .from(right, { opacity: 0, x: 36, duration: 0.8, ease: "power3.out" }, "<0.15");
+      tl.fromTo(
+        left,
+        { opacity: 0, x: -36 },
+        { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }
+      ).fromTo(
+        right,
+        { opacity: 0, x: 36 },
+        { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" },
+        "<0.15"
+      );
     }, ref);
 
     return () => ctx.revert();
@@ -70,7 +86,8 @@ export function useSplitReveal<T extends HTMLElement>() {
 }
 
 /**
- * Scale-in reveal for stat cards
+ * Scale-in reveal for stat cards.
+ * Re-triggers on repeated scrolling.
  */
 export function useScaleReveal<T extends HTMLElement>(stagger = 0.08) {
   const ref = useRef<T>(null);
@@ -79,18 +96,23 @@ export function useScaleReveal<T extends HTMLElement>(stagger = 0.08) {
     if (!ref.current) return;
 
     const ctx = gsap.context(() => {
-      gsap.from(ref.current!.children, {
-        opacity: 0,
-        scale: 0.92,
-        duration: 0.65,
-        stagger,
-        ease: "back.out(1.5)",
-        scrollTrigger: {
-          trigger: ref.current,
-          start: "top 82%",
-          toggleActions: "play none none none",
-        },
-      });
+      gsap.fromTo(
+        ref.current!.children,
+        { opacity: 0, scale: 0.92 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.65,
+          stagger,
+          ease: "back.out(1.5)",
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top 88%",
+            end: "bottom top",
+            toggleActions: "play reset play reset",
+          },
+        }
+      );
     }, ref);
 
     return () => ctx.revert();

@@ -69,9 +69,13 @@ export default function MoneySystemSection() {
           scrollTrigger: {
             trigger: wrap,
             start: "top 80%",
-            toggleActions: "play none none none",
+            end: "bottom top",
+            toggleActions: "play reset play reset",
             onEnter: () => {
               // Highlight active stage after entrance
+              gsap.to(stages[activeIdx], { opacity: 1, duration: 0.3 });
+            },
+            onEnterBack: () => {
               gsap.to(stages[activeIdx], { opacity: 1, duration: 0.3 });
             },
           },
@@ -122,68 +126,100 @@ export default function MoneySystemSection() {
   }, [activeIdx]);
 
   return (
-    <section className="section--gold" aria-labelledby="system-heading">
+    <section
+      aria-labelledby="system-heading"
+      style={{
+        borderTop: "1px solid var(--color-line)",
+        borderBottom: "1px solid var(--color-line)",
+        paddingBlock: "clamp(4rem, 8vw, 7rem)",
+      }}
+    >
       <div className="container">
-        <div className="section-head section-head--center">
-          <div className="section-head__main" style={{ margin: "0 auto" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
+            gap: "clamp(2rem, 5vw, 5rem)",
+            alignItems: "start",
+          }}
+        >
+          {/* LEFT: sticky section head */}
+          <div style={{ position: "sticky", top: "6rem" }}>
             <span className="eyebrow">The System</span>
-            <h2 id="system-heading" className="t-h2">
+            <h2
+              id="system-heading"
+              className="t-h2"
+              style={{ marginBottom: "1rem" }}
+            >
               THE SATHYA MONEY-MAKING SYSTEM
             </h2>
-            <p className="t-lead" style={{ margin: "0.75rem auto 0", textAlign: "center" }}>
-              From attention to leads. From leads to customers. From customers to growth.
+            <p className="t-lead">
+              From attention to leads. From leads to customers. From customers to
+              growth.
             </p>
-          </div>
-        </div>
-
-        <div className="money-system-wrap" ref={wrapRef}>
-          {/* Vertical progress line */}
-          <div className="money-timeline" aria-hidden="true">
-            <svg
-              width="28"
-              viewBox="0 0 28 600"
-              preserveAspectRatio="none"
-              style={{ width: "2px", height: "100%", overflow: "visible" }}
-            >
-              <line x1="1" y1="0" x2="1" y2="600" stroke="var(--color-line)" strokeWidth="2" />
-              <line
-                ref={lineRef}
-                x1="1" y1="0" x2="1" y2="600"
-                stroke="var(--color-red)"
-                strokeWidth="2"
-                pathLength="1"
-                strokeDasharray="0 1"
-              />
-            </svg>
+            <div style={{ marginTop: "2rem" }}>
+              <Link className="btn btn--secondary" href="/ecosystem">
+                <span className="btn__label">See the Full System</span>
+                <ArrowRightIcon />
+              </Link>
+            </div>
           </div>
 
-          <div className="money-stages">
-            {STAGES.map((stage, i) => (
-              <div
-                key={stage.num}
-                className={`money-stage${i === activeIdx ? " is-active" : ""}`}
-                style={{ opacity: 1 }} /* CSS fallback — GSAP takes over */
+          {/* RIGHT: money stages */}
+          <div className="money-system-wrap" ref={wrapRef}>
+            {/* Vertical progress line */}
+            <div className="money-timeline" aria-hidden="true">
+              <svg
+                width="28"
+                viewBox="0 0 28 600"
+                preserveAspectRatio="none"
+                style={{ width: "2px", height: "100%", overflow: "visible" }}
               >
-                <div className="money-stage__dot" aria-hidden="true" />
-                <span className="money-stage__num">{stage.num}</span>
-                <div className="money-stage__body">
-                  <h3 className="money-stage__title">{stage.title}</h3>
-                  <div className="money-stage__items">
-                    {stage.chips.map((chip) => (
-                      <span key={chip} className="chip">{chip}</span>
-                    ))}
+                <line
+                  x1="1"
+                  y1="0"
+                  x2="1"
+                  y2="600"
+                  stroke="var(--color-line)"
+                  strokeWidth="2"
+                />
+                <line
+                  ref={lineRef}
+                  x1="1"
+                  y1="0"
+                  x2="1"
+                  y2="600"
+                  stroke="var(--color-gold)"
+                  strokeWidth="2"
+                  pathLength="1"
+                  strokeDasharray="0 1"
+                />
+              </svg>
+            </div>
+
+            <div className="money-stages">
+              {STAGES.map((stage, i) => (
+                <div
+                  key={stage.num}
+                  className={`money-stage${i === activeIdx ? " is-active" : ""}`}
+                  style={{ opacity: 1 }} /* CSS fallback — GSAP takes over */
+                >
+                  <div className="money-stage__dot" aria-hidden="true" />
+                  <span className="money-stage__num">{stage.num}</span>
+                  <div className="money-stage__body">
+                    <h3 className="money-stage__title">{stage.title}</h3>
+                    <div className="money-stage__items">
+                      {stage.chips.map((chip) => (
+                        <span key={chip} className="chip">
+                          {chip}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-
-        <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
-          <Link className="btn btn--secondary" href="/ecosystem">
-            <span className="btn__label">See the Full System</span>
-            <ArrowRightIcon />
-          </Link>
         </div>
       </div>
     </section>
