@@ -38,7 +38,7 @@ export default function TrustRibbon() {
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        items,
+        ".trust-item",
         { opacity: 0, y: 18 },
         {
           opacity: 1,
