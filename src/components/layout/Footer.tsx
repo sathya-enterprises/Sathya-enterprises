@@ -1,142 +1,64 @@
-import Image from "next/image";
 import Link from "next/link";
-import {
-  PhoneIcon,
-  MailIcon,
-  MapPinIcon,
-  InstagramIcon,
-  LinkedinIcon,
-  FacebookIcon,
-  MessageCircleIcon,
-} from "@/components/ui/Icons";
+import { CoreMark } from "@/components/brand/CoreMark";
+import { brand, businessesIn, contact, divisions } from "@/content/site";
 
-const FOOTER_COLS = [
-  {
-    heading: "Company",
-    links: [
-      { href: "/about", label: "About" },
-      { href: "/ecosystem", label: "Our Ecosystem" },
-      { href: "/contact", label: "Contact" },
-    ],
-  },
-  {
-    heading: "Digital",
-    links: [
-      { href: "/digital-marketing", label: "Digital Marketing" },
-      { href: "/logo-design", label: "Logo Design" },
-      { href: "/web-development", label: "Web Development" },
-      { href: "/seo", label: "SEO" },
-      { href: "/sem", label: "SEM" },
-      { href: "/social-media-management", label: "Social Media" },
-      { href: "/instagram-marketing", label: "Instagram" },
-      { href: "/lead-generation", label: "Lead Generation" },
-    ],
-  },
-  {
-    heading: "Technology",
-    links: [
-      { href: "/saas-products", label: "SaaS" },
-      { href: "/ai-automation", label: "AI Automation" },
-      { href: "/whatsapp-business-solutions", label: "WhatsApp" },
-      { href: "/data-solutions", label: "Data" },
-    ],
-  },
-  {
-    heading: "Services",
-    links: [
-      { href: "/water-pumps", label: "Water Pumps" },
-      { href: "/borewell-services", label: "Borewell" },
-      { href: "/cctv-security", label: "CCTV" },
-      { href: "/travels", label: "Travels" },
-      { href: "/interiors-architecture", label: "Interiors" },
-      { href: "/interiors-architecture", label: "Architecture" },
-      { href: "/startup-consulting", label: "Startup Consulting" },
-    ],
-  },
-];
-
-const SOCIAL = [
-  { href: "https://instagram.com/", label: "Instagram", icon: InstagramIcon },
-  { href: "https://linkedin.com/", label: "LinkedIn", icon: LinkedinIcon },
-  { href: "https://facebook.com/", label: "Facebook", icon: FacebookIcon },
-  { href: "https://wa.me/910000000000", label: "WhatsApp", icon: MessageCircleIcon },
-];
-
-export default function Footer() {
-  const year = new Date().getFullYear();
+export function Footer() {
   return (
-    <footer
-      className="footer"
-      role="contentinfo"
-      style={{ borderTop: "1px solid rgba(200,168,75,0.2)" }}
-    >
-      <div className="container">
-        <div className="footer__top">
-          {/* Brand block with Logo */}
+    <footer data-tone="technology" className="tone relative overflow-hidden">
+      <div className="container-x pt-16 pb-8 sm:pt-24 sm:pb-10">
+        <div className="grid gap-12 lg:grid-cols-[1.3fr_3fr]">
           <div>
-            <div className="flex items-center gap-3.5 mb-5">
-              <Image
-                src="/images/logo.png"
-                alt="Sathya Enterprises Logo"
-                width={32}
-                height={32}
-                className="object-contain"
-                style={{ filter: "drop-shadow(0 0 6px rgba(200,168,75,0.45))" }}
-              />
-              <div>
-                <h3 className="text-xl font-extrabold text-white tracking-tight font-display m-0 leading-none">
-                  Sathya <span className="text-amber-500">Enterprises</span>
-                </h3>
-                <p className="text-[10px] font-mono tracking-widest text-amber-500/80 uppercase mt-1 m-0">
-                  Digital · Tech · Services
-                </p>
-              </div>
-            </div>
-
-            <p className="footer__desc">
-              Sathya Enterprises operates across digital growth, technology, data,
-              products, infrastructure and business services — one connected
-              ecosystem built to grow.
-            </p>
-
-            <address className="footer__contact" style={{ fontStyle: "normal" }}>
-              <a href="tel:+910000000000" aria-label="Call us">
-                <PhoneIcon /> +91 00000 00000
-              </a>
-              <a href="mailto:hello@sathyaenterprises.com" aria-label="Email us">
-                <MailIcon /> hello@sathyaenterprises.com
-              </a>
-              <span>
-                <MapPinIcon /> Bengaluru, Karnataka, India
-              </span>
-            </address>
-
-            <div className="footer__social">
-              {SOCIAL.map(({ href, label, icon: Icon }) => (
-                <a
-                  key={label}
-                  className="icon-badge"
-                  href={href}
-                  aria-label={label}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ borderRadius: "50%" }}
-                >
-                  <Icon />
+            <CoreMark size={40} />
+            <p className="mt-6 max-w-[34ch] text-[0.95rem] text-(--tone-soft)">{brand.summary}</p>
+            <ul className="mt-8 space-y-2 text-[0.95rem]">
+              <li>
+                <a className="link-draw" href={`mailto:${contact.email.value}`}>
+                  {contact.email.value}
                 </a>
-              ))}
-            </div>
+              </li>
+              <li className="text-(--tone-soft)">
+                {contact.phone.value}
+                {contact.phone.placeholder && (
+                  <span className="ml-2 rounded-full border border-(--tone-line) px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.14em]">
+                    Placeholder
+                  </span>
+                )}
+              </li>
+              <li className="text-(--tone-soft)">{contact.location}</li>
+            </ul>
           </div>
 
-          {/* Nav columns */}
-          <nav className="footer__cols" aria-label="Footer navigation">
-            {FOOTER_COLS.map((col) => (
-              <div key={col.heading} className="footer__col">
-                <h5>{col.heading}</h5>
-                <ul>
-                  {col.links.map((link) => (
-                    <li key={link.href + link.label}>
-                      <Link href={link.href}>{link.label}</Link>
+          <nav aria-label="Footer" className="grid gap-y-8 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-5">
+            <div>
+              <h2 className="t-eyebrow text-gold">Company</h2>
+              <ul className="mt-3 flex flex-wrap gap-2 text-[0.88rem] text-(--tone-soft) sm:mt-4 sm:block sm:space-y-2 sm:text-[0.92rem]">
+                {[
+                  ["/about", "About"],
+                  ["/ecosystem", "Our Ecosystem"],
+                  ["/money-making-system", "Money-Making System"],
+                  ["/contact", "Contact"],
+                ].map(([href, label]) => (
+                  <li key={href}>
+                    <Link className="inline-flex rounded-full border border-[color:var(--tone-line)] px-3 py-2 hover:text-ivory sm:rounded-none sm:border-0 sm:p-0" href={href}>
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {divisions.map((d) => (
+              <div key={d.id}>
+                <h2 className="t-eyebrow text-gold">
+                  <Link href={d.href} className="hover:text-ivory">
+                    {d.name}
+                  </Link>
+                </h2>
+                <ul className="mt-3 flex flex-wrap gap-2 text-[0.88rem] text-(--tone-soft) sm:mt-4 sm:block sm:space-y-2 sm:text-[0.92rem]">
+                  {businessesIn(d.id, { includeAlso: false }).map((b) => (
+                    <li key={b.slug}>
+                      <Link className="inline-flex rounded-full border border-[color:var(--tone-line)] px-3 py-2 hover:text-ivory sm:rounded-none sm:border-0 sm:p-0" href={`/${b.slug}`}>
+                        {b.short}
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -145,34 +67,22 @@ export default function Footer() {
           </nav>
         </div>
 
-        {/* Large wordmark */}
-        <p
-          className="footer__wordmark"
-          aria-hidden="true"
-          style={{ fontSize: "clamp(3rem, 10vw, 8rem)" }}
-        >
-          Sathya <span>Enterprises</span>
+        <p aria-hidden className="mt-14 select-none font-display font-extrabold text-ivory sm:mt-20">
+          <span className="block leading-[0.82] tracking-tighter font-stretch-125% text-[clamp(3.4rem,14.6vw,14.5rem)]">SATHYA</span>
+          <span className="block pl-[0.04em] leading-none tracking-[-0.02em] text-gold font-stretch-112% text-[clamp(1.75rem,6.5vw,6.45rem)]">ENTERPRISES</span>
         </p>
-        <p className="footer__tagline">BUILD. MARKET. AUTOMATE. GROW.</p>
 
-        {/* Gold gradient divider */}
-        <div
-          aria-hidden="true"
-          style={{
-            height: "1px",
-            background:
-              "linear-gradient(90deg, transparent, rgba(200,168,75,0.3), transparent)",
-            marginBottom: "0",
-          }}
-        />
-
-        {/* Bottom bar */}
-        <div className="footer__bottom">
-          <span>© {year} Sathya Enterprises. All rights reserved.</span>
-          <nav className="footer__legal" aria-label="Legal links">
-            <Link href="/privacy-policy">Privacy Policy</Link>
-            <Link href="/terms">Terms</Link>
-          </nav>
+        <div className="mt-10 flex flex-col gap-4 border-t border-(--tone-line) pt-6 text-[0.85rem] text-(--tone-soft) sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Sathya Enterprises. All rights reserved.</p>
+          <p className="font-mono text-[0.7rem] font-bold tracking-[0.16em] text-gold">{brand.tagline}</p>
+          <p className="flex gap-5">
+            <Link className="link-draw hover:text-ivory" href="/privacy-policy">
+              Privacy Policy
+            </Link>
+            <Link className="link-draw hover:text-ivory" href="/terms">
+              Terms
+            </Link>
+          </p>
         </div>
       </div>
     </footer>

@@ -1,92 +1,85 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Archivo, Manrope, Space_Mono } from "next/font/google";
+import { MotionProvider } from "@/components/motion/MotionProvider";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { Loader } from "@/components/layout/Loader";
+import { LoaderController } from "@/components/layout/LoaderController";
+import { InlineScript } from "@/components/layout/InlineScript";
+import { brand } from "@/content/site";
+import { organizationLd, siteUrl } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import SchemaOrg from "@/components/seo/SchemaOrg";
-import ChatWidget from "@/components/chat/ChatWidget";
-import Preloader from "@/components/ui/Preloader";
 
 const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
-  weight: ["600", "700", "800", "900"],
-  variable: "--font-display",
+  axes: ["wdth"],
   display: "swap",
 });
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-body",
-  display: "swap",
-});
-
+const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"], display: "swap" });
 const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
   subsets: ["latin"],
   weight: ["400", "700"],
-  variable: "--font-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Sathya Enterprises — Build. Market. Automate. Grow.",
-  description:
-    "Sathya Enterprises is a connected business ecosystem across digital marketing, technology, SaaS, data, products and services.",
-  keywords:
-    "Sathya Enterprises, digital marketing, AI automation, SaaS products, business ecosystem, startup consulting",
-  robots: { index: true, follow: true },
-  alternates: { canonical: "https://www.sathyaenterprises.com" },
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Sathya Enterprises — Build. Market. Automate. Grow.",
+    template: "%s — Sathya Enterprises",
+  },
+  description: brand.summary,
+  applicationName: "Sathya Enterprises",
+  authors: [{ name: "Sathya Enterprises" }],
+  creator: "Sathya Enterprises",
+  category: "business",
+  formatDetection: { telephone: false },
   openGraph: {
     type: "website",
-    locale: "en_IN",
-    url: "https://www.sathyaenterprises.com",
     siteName: "Sathya Enterprises",
+    locale: "en_IN",
     title: "Sathya Enterprises — Build. Market. Automate. Grow.",
-    description:
-      "Sathya Enterprises is a connected business ecosystem across digital marketing, technology, SaaS, data, products and services.",
-    images: [
-      {
-        url: "https://www.sathyaenterprises.com/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Sathya Enterprises",
-      },
-    ],
+    description: brand.positioning,
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Sathya Enterprises — Build. Market. Automate. Grow.",
-    description:
-      "Sathya Enterprises is a connected business ecosystem across digital marketing, technology, SaaS, data, products and services.",
-    images: ["https://www.sathyaenterprises.com/og-image.png"],
-  },
+  twitter: { card: "summary_large_image" },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export const viewport: Viewport = {
+  themeColor: "#fffdf8",
+};
+
+/** Mark the intro as seen for this session so it plays once, before first paint. */
+const seenScript = `(function(){try{var d=document.documentElement;if(sessionStorage.getItem('se-seen')){d.classList.add('se-seen')}else{sessionStorage.setItem('se-seen','1')}}catch(e){document.documentElement.classList.add('se-seen')}})()`;
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      data-scroll-behavior="smooth"
+      suppressHydrationWarning
       className={`${archivo.variable} ${manrope.variable} ${spaceMono.variable}`}
     >
       <head>
-        <meta name="theme-color" content="#fffdf8" />
-        <link rel="icon" href="/favicon.ico" />
+        <InlineScript html={seenScript} />
+        <JsonLd data={organizationLd()} />
       </head>
       <body>
-        <Preloader />
-        <SchemaOrg />
-        <a href="#main" className="skip-link">
+        <a
+          href="#main"
+          className="fixed left-4 top-4 z-[200] -translate-y-24 rounded-full bg-red px-5 py-3 font-bold text-white focus:translate-y-0"
+        >
           Skip to content
         </a>
-        <Header />
-        <main id="main">{children}</main>
-        <Footer />
-        <ChatWidget />
+        <Loader />
+        <LoaderController />
+        <MotionProvider>
+          <Header />
+          <main id="main">{children}</main>
+          <Footer />
+        </MotionProvider>
       </body>
     </html>
   );

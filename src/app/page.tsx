@@ -1,42 +1,33 @@
 import type { Metadata } from "next";
-import HeroSection from "@/components/home/HeroSection";
-import TrustRibbon from "@/components/home/TrustRibbon";
-import AboutSection from "@/components/home/AboutSection";
-import EcosystemSection from "@/components/home/EcosystemSection";
-import MoneySystemSection from "@/components/home/MoneySystemSection";
-import ProcessSection from "@/components/home/ProcessSection";
-import DigitalSection from "@/components/home/DigitalSection";
-import TechnologySection from "@/components/home/TechnologySection";
-import ServicesSection from "@/components/home/ServicesSection";
-import TestimonialsSection from "@/components/home/TestimonialsSection";
-import StatsSection from "@/components/home/StatsSection";
-import WhatsNextSection from "@/components/home/WhatsNextSection";
-import FaqSection from "@/components/home/FaqSection";
-import CtaSection from "@/components/home/CtaSection";
+import { pageMeta } from "@/lib/seo";
+import { brand } from "@/content/site";
+import { Hero } from "@/components/home/Hero";
+import { BusinessMarquee } from "@/components/home/BusinessMarquee";
+import { Statement } from "@/components/home/Statement";
+import { EcosystemExplorer } from "@/components/home/EcosystemExplorer";
+import { SystemJourney } from "@/components/system/SystemJourney";
+import { BusinessIndex } from "@/components/home/BusinessIndex";
+import { Outlook } from "@/components/home/Outlook";
+import { FinalCta } from "@/components/home/FinalCta";
 
-export const metadata: Metadata = {
-  title: "Sathya Enterprises — Build. Market. Automate. Grow.",
-  description:
-    "Sathya Enterprises is a connected business ecosystem across digital marketing, technology, SaaS, data, products and services — Bengaluru, India.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "Sathya Enterprises — Digital, Technology, Products & Services | Bengaluru",
+  description: `${brand.positioning} ${brand.summary}`,
+  path: "/",
+  absoluteTitle: true,
+});
 
-export default function HomePage() {
+export default function Home() {
   return (
     <>
-      <HeroSection />
-      <TrustRibbon />
-      <AboutSection />
-      <EcosystemSection />
-      <MoneySystemSection />
-      <ProcessSection />
-      <DigitalSection />
-      <TechnologySection />
-      <ServicesSection />
-      <TestimonialsSection />
-      <StatsSection />
-      <WhatsNextSection />
-      <FaqSection />
-      <CtaSection />
+      <Hero />
+      <BusinessMarquee />
+      <Statement />
+      <EcosystemExplorer />
+      <SystemJourney />
+      <BusinessIndex />
+      <Outlook />
+      <FinalCta />
     </>
   );
 }

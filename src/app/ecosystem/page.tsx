@@ -1,201 +1,73 @@
-"use client";
-
-import { useEffect, useRef } from "react";
+import type { Metadata } from "next";
+import { breadcrumbLd, pageMeta } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
 import Link from "next/link";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ArrowRightIcon } from "@/components/ui/Icons";
-import { useRevealOnScroll, useSplitReveal } from "@/hooks/useGsapReveal";
+import { ArrowUpRight } from "lucide-react";
+import { businessesIn, divisions, ecosystemPage, signalChain } from "@/content/site";
+import { PageHero } from "@/components/ui/PageHero";
+import { EcosystemNetwork } from "@/components/ecosystem/EcosystemNetwork";
+import { Reveal } from "@/components/motion/Reveal";
+import { TiltCard } from "@/components/motion/Interactive";
+import { FinalCta } from "@/components/home/FinalCta";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const CATEGORIES = [
-  {
-    id: "digital",
-    num: "01",
-    title: "DIGITAL",
-    description: "We grow businesses online — from first impression to loyal customer. Our digital arm covers the full funnel: awareness, engagement, lead capture, and conversion.",
-    services: [
-      { href: "/digital-marketing", label: "Digital Marketing" },
-      { href: "/logo-design", label: "Logo Design" },
-      { href: "/web-development", label: "Web Development" },
-      { href: "/seo", label: "SEO" },
-      { href: "/sem", label: "SEM" },
-      { href: "/social-media-management", label: "Social Media Management" },
-      { href: "/instagram-marketing", label: "Instagram Marketing" },
-      { href: "/lead-generation", label: "Lead Generation" },
-    ],
-  },
-  {
-    id: "technology",
-    num: "02",
-    title: "TECHNOLOGY",
-    description: "Technology is the backbone of the entire Sathya Enterprises ecosystem. We build SaaS products, automate with AI, and use data to drive better decisions.",
-    services: [
-      { href: "/money-making-system", label: "Money-Making System" },
-      { href: "/saas-products", label: "SaaS Products" },
-      { href: "/ai-automation", label: "AI Automation" },
-      { href: "/whatsapp-business-solutions", label: "WhatsApp Business Solutions" },
-      { href: "/data-solutions", label: "Data Solutions" },
-    ],
-  },
-  {
-    id: "products",
-    num: "03",
-    title: "PRODUCTS",
-    description: "Our product line bridges the digital and physical worlds — from data assets you can buy and use immediately, to a marketplace for business deals.",
-    services: [
-      { href: "/digital-data-products", label: "Digital Data Products" },
-      { href: "/business-marketplace", label: "Business Marketplace" },
-    ],
-  },
-  {
-    id: "services",
-    num: "04",
-    title: "SERVICES",
-    description: "Physical services that complete the ecosystem — grounded in real-world needs across infrastructure, lifestyle, and business support.",
-    services: [
-      { href: "/water-pumps", label: "Water Pumps" },
-      { href: "/borewell-services", label: "Borewell Services" },
-      { href: "/cctv-security", label: "CCTV & Security" },
-      { href: "/travels", label: "Travels" },
-      { href: "/interiors-architecture", label: "Interiors & Architecture" },
-      { href: "/startup-consulting", label: "Startup Management Consulting" },
-    ],
-  },
-];
-
-function CategorySection({
-  cat,
-  isGold,
-}: {
-  cat: (typeof CATEGORIES)[number];
-  isGold: boolean;
-}) {
-  const splitRef = useSplitReveal<HTMLDivElement>();
-  const listRef = useRevealOnScroll<HTMLDivElement>(0.06);
-
-  return (
-    <section
-      id={cat.id}
-      className={`eco-category${isGold ? " section--gold" : ""}`}
-      aria-labelledby={`cat-heading-${cat.id}`}
-    >
-      <div className="container">
-        <div ref={splitRef} className="split" style={{ marginBottom: "3rem" }}>
-          <div>
-            <span className="eyebrow">{cat.num}</span>
-            <h2 id={`cat-heading-${cat.id}`} className="t-h2">{cat.title}</h2>
-          </div>
-          <p className="t-lead">{cat.description}</p>
-        </div>
-
-        <div ref={listRef} className="service-list">
-          {cat.services.map((s) => (
-            <Link key={s.href} className="service-item" href={s.href}>
-              {s.label}
-              <ArrowRightIcon size={14} />
-            </Link>
-          ))}
-        </div>
-
-        <div style={{ marginTop: "2rem", display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-          <Link className="btn btn--secondary" href="/contact">
-            Get a Quote <ArrowRightIcon />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
+export const metadata: Metadata = pageMeta({
+  title: "Our Business Ecosystem",
+  description: `${ecosystemPage.intro} Digital, technology, products and services — one connected Sathya Enterprises ecosystem.`,
+  path: "/ecosystem",
+});
 
 export default function EcosystemPage() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      if (heroRef.current) {
-        gsap.from(heroRef.current.children, {
-          opacity: 0,
-          y: 28,
-          duration: 0.75,
-          stagger: 0.1,
-          ease: "power3.out",
-        });
-      }
-
-      if (ctaRef.current) {
-        gsap.fromTo(
-          ctaRef.current,
-          { opacity: 0, scale: 0.94 },
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: ctaRef.current,
-              start: "top 85%",
-              end: "bottom top",
-              toggleActions: "play reset play reset",
-            },
-          }
-        );
-      }
-    });
-
-    return () => ctx.revert();
-  }, []);
-
   return (
     <>
-      {/* Page hero */}
-      <section className="page-hero" aria-labelledby="ecosystem-heading">
-        <div className="container" ref={heroRef}>
-          <span className="eyebrow">Our Ecosystem</span>
-          <h1 id="ecosystem-heading" className="t-h2" style={{ maxWidth: "28ch", marginBottom: "1.5rem" }}>
-            ONE ENTERPRISE.<br />MANY BUSINESSES.
-          </h1>
-          <p className="t-lead" style={{ marginBottom: "2.5rem" }}>
-            10+ business verticals — all connected, all feeding each other.
-            This is what we mean by a business ecosystem.
-          </p>
+      <JsonLd data={[breadcrumbLd([{ name: "Ecosystem", path: "/ecosystem" }])]} />
+      <PageHero
+        crumb="Ecosystem"
+        index={ecosystemPage.index}
+        title={["ONE ENTERPRISE.", <span key="r" className="text-red">MANY POSSIBILITIES.</span>]}
+        intro={ecosystemPage.intro}
+      >
+        <ol aria-label="The connected chain" className="enter mt-10 flex flex-wrap items-center gap-x-3 gap-y-2" style={{ ["--i" as string]: 3 }}>
+          {signalChain.map((s, i) => (
+            <li key={s} className="flex items-center gap-3 font-mono text-[0.72rem] font-bold tracking-[0.16em]">
+              <span className={i === signalChain.length - 1 ? "text-red" : "text-charcoal"}>{s}</span>
+              {i < signalChain.length - 1 && <span aria-hidden className="text-gold">→</span>}
+            </li>
+          ))}
+        </ol>
+      </PageHero>
 
-          {/* Category jump links */}
-          <nav aria-label="Jump to category" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            {CATEGORIES.map((cat) => (
-              <a
-                key={cat.id}
-                href={`#${cat.id}`}
-                className="btn btn--sm btn--secondary"
+      <section className="pb-[var(--section-y)]">
+        <div className="container-wide">
+          <EcosystemNetwork />
+        </div>
+      </section>
+
+      <section className="border-t border-line">
+        <ul className="grid sm:grid-cols-2 lg:grid-cols-4">
+          {divisions.map((d, i) => (
+            <Reveal as="li" key={d.id} delay={i * 0.06} y={12}>
+              <TiltCard className="h-full" max={3}>
+              <Link
+                href={d.href}
+                data-tone={d.id}
+                className="tone group flex min-h-[320px] flex-col justify-between p-8 transition-[filter] duration-300 hover:brightness-[1.03]"
               >
-                {cat.num} {cat.title}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </section>
-
-      {/* Category sections with GSAP animations */}
-      {CATEGORIES.map((cat, i) => (
-        <CategorySection key={cat.id} cat={cat} isGold={i % 2 === 1} />
-      ))}
-
-      {/* CTA */}
-      <section>
-        <div className="container">
-          <div ref={ctaRef} className="cta-band">
-            <h2 className="t-h2">LET&apos;S BUILD WHAT&apos;S NEXT.</h2>
-            <p className="t-lead">Ready to connect your business to the ecosystem?</p>
-            <div className="btn-row" style={{ justifyContent: "center" }}>
-              <Link className="btn btn--lg" href="/contact">
-                Start a Conversation <ArrowRightIcon />
+                <span className="flex items-center justify-between font-mono text-[0.68rem] font-bold tracking-[0.16em] text-[color:var(--tone-accent)]">
+                  {d.index} · {businessesIn(d.id).length} BUSINESSES
+                  <ArrowUpRight aria-hidden className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </span>
+                <span>
+                  <span className="block font-display text-[2.2rem] font-extrabold tracking-[-0.035em]">{d.name}</span>
+                  <span className="mt-2 block text-[0.95rem] text-[color:var(--tone-soft)]">{d.summary}</span>
+                </span>
               </Link>
-            </div>
-          </div>
-        </div>
+              </TiltCard>
+            </Reveal>
+          ))}
+        </ul>
       </section>
+
+      <FinalCta secondary={{ href: "/money-making-system", label: "See the Money-Making System" }} />
     </>
   );
 }
