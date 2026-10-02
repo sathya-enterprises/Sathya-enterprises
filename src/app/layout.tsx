@@ -3,12 +3,10 @@ import { Archivo, Manrope, Space_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Loader } from "@/components/layout/Loader";
-import { LoaderController } from "@/components/layout/LoaderController";
-import { InlineScript } from "@/components/layout/InlineScript";
 import { brand } from "@/content/site";
 import { organizationLd, siteUrl } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { OceanBackdrop } from "@/components/ocean/OceanBackdrop";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -49,11 +47,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fffdf8",
+  themeColor: "#2a86a3",
 };
 
-/** Mark the intro as seen for this session so it plays once, before first paint. */
-const seenScript = `(function(){try{var d=document.documentElement;if(sessionStorage.getItem('se-seen')){d.classList.add('se-seen')}else{sessionStorage.setItem('se-seen','1')}}catch(e){document.documentElement.classList.add('se-seen')}})()`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -63,7 +59,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${archivo.variable} ${manrope.variable} ${spaceMono.variable}`}
     >
       <head>
-        <InlineScript html={seenScript} />
         <JsonLd data={organizationLd()} />
       </head>
       <body>
@@ -73,12 +68,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        <Loader />
-        <LoaderController />
         <MotionProvider>
+          <OceanBackdrop />
           <Header />
-          <main id="main">{children}</main>
-          <Footer />
+          <div className="relative z-10">
+            <main id="main">{children}</main>
+            <Footer />
+          </div>
         </MotionProvider>
       </body>
     </html>

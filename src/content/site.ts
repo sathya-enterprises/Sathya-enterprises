@@ -605,130 +605,6 @@ export function businessesIn(id: DivisionId, { includeAlso = true } = {}) {
   return businesses.filter((b) => b.division === id || (includeAlso && b.also?.includes(id)));
 }
 
-/** The Sathya Money-Making System — stages and tools from the live site. */
-export const system = {
-  index: "12",
-  title: "THE SATHYA MONEY-MAKING SYSTEM",
-  intro: "From attention to leads. From leads to customers. From customers to growth.",
-  stages: [
-    {
-      id: "attract",
-      name: "ATTRACT",
-      yields: "Attention",
-      tools: [
-        { label: "Digital Marketing", slug: "digital-marketing" },
-        { label: "Instagram Marketing", slug: "instagram-marketing" },
-        { label: "SEO", slug: "seo" },
-        { label: "SEM", slug: "sem" },
-      ],
-    },
-    {
-      id: "capture",
-      name: "CAPTURE",
-      yields: "Leads",
-      tools: [
-        { label: "Website", slug: "web-development" },
-        { label: "Landing Pages", slug: "web-development" },
-        { label: "Lead Generation", slug: "lead-generation" },
-      ],
-    },
-    {
-      id: "convert",
-      name: "CONVERT",
-      yields: "Customers",
-      tools: [
-        { label: "CRM", slug: "saas-products" },
-        { label: "WhatsApp", slug: "whatsapp-business-solutions" },
-        { label: "Follow-up", slug: "ai-automation" },
-      ],
-    },
-    {
-      id: "automate",
-      name: "AUTOMATE",
-      yields: "Automation",
-      tools: [
-        { label: "SaaS", slug: "saas-products" },
-        { label: "AI", slug: "ai-automation" },
-        { label: "Automation", slug: "ai-automation" },
-      ],
-    },
-    {
-      id: "understand",
-      name: "UNDERSTAND",
-      yields: "Data",
-      tools: [
-        { label: "Data", slug: "data-solutions" },
-        { label: "Analytics", slug: "data-solutions" },
-      ],
-    },
-    {
-      id: "grow",
-      name: "GROW",
-      yields: "Growth",
-      tools: [{ label: "Customers" }, { label: "Revenue" }, { label: "Scale" }],
-    },
-  ] as { id: string; name: string; yields: string; tools: { label: string; slug?: string }[] }[],
-};
-
-export const about = {
-  index: "02",
-  title: "MORE THAN A BUSINESS. A VISION.",
-  intro: "The story behind one enterprise, multiple businesses, and one connected ecosystem.",
-  chapters: [
-    {
-      label: "Who We Are",
-      body: "A connected business ecosystem spanning digital, technology, products and services — built as one enterprise, not a loose collection of ventures.",
-    },
-    {
-      label: "Our Vision",
-      body: "To be the connected engine behind ambitious, modern Indian businesses — one platform for growth across every channel that matters.",
-    },
-    {
-      label: "Our Mission",
-      body: "Build the systems, tools and services that let businesses attract attention, capture leads, convert customers, and grow with less manual effort.",
-    },
-    {
-      label: "Our Values",
-      body: "Reliability, transparency and craftsmanship — every division is held to the same standard, whether it is a website or a borewell installation.",
-    },
-    {
-      label: "Our Approach",
-      body: "Start with the connected story — digital creates attention, technology creates systems, data creates intelligence, and services deliver real-world value.",
-    },
-    {
-      label: "Our Future",
-      body: "New businesses, new products, new technology and new partnerships — all connected back to the same ecosystem.",
-    },
-  ],
-};
-
-/** "Built to Grow" — qualitative markers exactly as published. No invented numbers. */
-export const builtToGrow = [
-  { value: "10+", label: "Business Verticals" },
-  { value: "Growing", label: "Client Base" },
-  { value: "Multiple", label: "Active Projects" },
-  { value: "Open", label: "Partner Network" },
-];
-
-export const whatsNext = [
-  { title: "NEW BUSINESS", body: "Every new vertical we take on connects back to the same ecosystem." },
-  { title: "NEW PRODUCT", body: "From SaaS modules to data products, the product line keeps expanding." },
-  { title: "NEW TECHNOLOGY", body: "AI, automation and data tooling get adopted as soon as they add value." },
-  {
-    title: "NEW PARTNERSHIP",
-    body: "Service providers and partners extend what Sathya Enterprises can deliver.",
-  },
-];
-
-export const ecosystemPage = {
-  index: "03",
-  title: "ONE ENTERPRISE. MANY POSSIBILITIES.",
-  intro: "Every division connects back to the same ecosystem — explore Digital, Technology, Products and Services.",
-};
-
-/** The connected flow every division feeds. */
-export const signalChain = ["ATTENTION", "LEADS", "CUSTOMERS", "AUTOMATION", "DATA", "GROWTH"] as const;
-
 /** Contact form requirement option for each business (options as published on the live contact form). */
 export const requirementFor: Record<string, string> = {
   "digital-marketing": "Digital Marketing",
@@ -753,7 +629,32 @@ export const requirementFor: Record<string, string> = {
   "startup-consulting": "Startup Consulting",
 };
 
-/** System stages whose tools point at a business. */
-export function stagesFor(slug: string) {
-  return system.stages.filter((s) => s.tools.some((t) => t.slug === slug)).map((s) => s.id);
+/** Businesses no longer have their own pages — each one lives as an anchor on its division page. */
+export function businessHref(b: Business) {
+  return `${divisionById[b.division].href}#${b.slug}`;
 }
+
+/** BUILD. MARKET. AUTOMATE. GROW. — each verb mapped to the businesses that deliver it (lines from published headlines). */
+export const growthSteps = [
+  { verb: "BUILD.", line: "Websites, brands and software built for business.", slugs: ["web-development", "logo-design", "saas-products"] },
+  {
+    verb: "MARKET.",
+    line: "Get found. Get traffic. Get business.",
+    slugs: ["digital-marketing", "seo", "sem", "social-media-management", "instagram-marketing"],
+  },
+  { verb: "AUTOMATE.", line: "Less manual work. More business.", slugs: ["ai-automation", "whatsapp-business-solutions", "lead-generation"] },
+  { verb: "GROW.", line: "Turn data into decisions — from idea to scale.", slugs: ["data-solutions", "startup-consulting", "business-marketplace"] },
+];
+
+/**
+ * Social profiles. Paste a full profile URL to show its icon in the footer; empty entries are
+ * hidden, so the site never links anywhere that doesn't exist yet.
+ */
+export const socials: { id: "instagram" | "facebook" | "linkedin" | "youtube" | "x" | "whatsapp"; label: string; url: string }[] = [
+  { id: "instagram", label: "Instagram", url: "" },
+  { id: "facebook", label: "Facebook", url: "" },
+  { id: "linkedin", label: "LinkedIn", url: "" },
+  { id: "youtube", label: "YouTube", url: "" },
+  { id: "x", label: "X (Twitter)", url: "" },
+  { id: "whatsapp", label: "WhatsApp", url: "" },
+];

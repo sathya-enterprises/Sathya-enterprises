@@ -1,65 +1,76 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { ArrowUpRight, Rocket } from "lucide-react";
+import { ArrowUpRight, Circle } from "lucide-react";
 import { serviceIcons } from "./serviceIcons";
-import { requirementFor, type Business } from "@/content/site";
+import { divisionById, requirementFor, type Business, type DivisionId } from "@/content/site";
 import { FlowLine } from "@/components/ui/FlowLine";
 import { ease } from "@/lib/motion";
 
 /**
- * List → detail. Pointer users preview by hovering the list; everyone can select by tap or keyboard.
- * Under lg the detail opens inline beneath the chosen row.
+ * Every business in a division, on one page. List → detail: pointer users preview by hovering the list;
+ * everyone can select by tap or keyboard. Under lg the detail opens inline beneath the chosen row.
+ * Links elsewhere point at `/<division>#<slug>`, so the hash picks the open business.
  */
-export function ServiceExplorer({ items }: { items: Business[] }) {
+export function BusinessExplorer({ items, division }: { items: Business[]; division: DivisionId }) {
   const [active, setActive] = useState(items[0].slug);
   const current = items.find((b) => b.slug === active)!;
 
+  useEffect(() => {
+    const pick = () => {
+      const slug = decodeURIComponent(window.location.hash.slice(1));
+      if (!items.some((b) => b.slug === slug)) return;
+      setActive(slug);
+      document.getElementById(slug)?.scrollIntoView({ block: "start" });
+    };
+    pick();
+    window.addEventListener("hashchange", pick);
+    return () => window.removeEventListener("hashchange", pick);
+  }, [items]);
+
   const detail = (b: Business) => (
     <div>
-      <p className="font-mono text-[0.68rem] font-bold tracking-[0.16em] text-gold">SERVICES — {b.index}</p>
+      <p className="font-mono text-[0.68rem] font-bold tracking-[0.16em] text-(--tone-accent)">
+        {divisionById[division].name} — {b.name.toUpperCase()}
+      </p>
       <p className="mt-3 font-display text-[clamp(2rem,3.8vw,3.4rem)] font-extrabold leading-[0.96] tracking-[-0.035em]">{b.headline}</p>
-      <p className="t-lead mt-5 max-w-[48ch] text-[color:var(--tone-soft)]">{b.intro}</p>
+      <p className="t-lead mt-5 max-w-[48ch] text-(--tone-soft)">{b.intro}</p>
       {b.flow && <FlowLine steps={b.flow.steps} className="mt-10" />}
       {b.groups.map((g) => (
         <div key={g.title} className="mt-8">
-          {b.groups.length > 1 && <p className="t-eyebrow mb-3 text-gold">{g.title}</p>}
+          {b.groups.length > 1 && <p className="t-eyebrow mb-3 text-(--tone-accent)">{g.title}</p>}
           <ul className="flex flex-wrap gap-2">
             {g.items.map((it) => (
-              <li key={it.label + g.title} className="rounded-full border border-[color:var(--tone-line)] px-3.5 py-1.5 text-[0.85rem] font-semibold">
+              <li key={it.label + g.title} className="rounded-full border border-(--tone-line) px-3.5 py-1.5 text-[0.85rem] font-semibold">
                 {it.label}
-                {it.detail && <span className="text-[color:var(--tone-soft)]"> — {it.detail}</span>}
+                {it.detail && <span className="text-(--tone-soft)"> — {it.detail}</span>}
               </li>
             ))}
           </ul>
         </div>
       ))}
-      <div className="mt-10 flex flex-wrap gap-3">
-        <Link
-          href={`/contact?need=${encodeURIComponent(requirementFor[b.slug] ?? "Other")}`}
-          className="inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-3 text-[0.92rem] font-bold text-red-deep transition-[background-color,color] duration-200 hover:bg-gold hover:text-charcoal"
-        >
-          {b.cta}
-          <ArrowUpRight aria-hidden className="h-4 w-4" />
-        </Link>
-        <Link href={`/${b.slug}`} className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-[color:var(--tone-line)] px-5 py-3 text-[0.92rem] font-bold hover:border-ivory">
-          Full details
-        </Link>
-      </div>
+      {b.note && <p className="mt-8 max-w-[56ch] text-[0.92rem] text-(--tone-soft)">{b.note.body}</p>}
+      <Link
+        href={`/contact?need=${encodeURIComponent(requirementFor[b.slug] ?? "Other")}`}
+        className="mt-10 inline-flex items-center gap-2 rounded-full bg-red px-5 py-3 text-[0.92rem] font-bold text-white transition-colors duration-200 hover:bg-red-deep"
+      >
+        {b.cta}
+        <ArrowUpRight aria-hidden className="h-4 w-4" />
+      </Link>
     </div>
   );
 
   return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-      <ul className="border-t border-[color:var(--tone-line)]">
+      <ul className="reveal-stagger border-t border-(--tone-line)">
         {items.map((b) => {
           const on = b.slug === active;
-          const Icon = serviceIcons[b.slug] ?? Rocket;
+          const Icon = serviceIcons[b.slug] ?? Circle;
           return (
-            <li key={b.slug} className="border-b border-[color:var(--tone-line)]">
+            <li key={b.slug} id={b.slug} className="scroll-mt-[calc(var(--header-h)+1.5rem)] border-b border-(--tone-line)">
               <button
                 type="button"
                 aria-expanded={on}
@@ -69,7 +80,7 @@ export function ServiceExplorer({ items }: { items: Business[] }) {
               >
                 <span
                   className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border transition-[background-color,color,border-color] duration-300 ${
-                    on ? "border-gold bg-gold text-charcoal" : "border-[color:var(--tone-line)] text-gold"
+                    on ? "border-gold bg-gold text-charcoal" : "border-(--tone-line) text-(--tone-accent)"
                   }`}
                 >
                   <Icon aria-hidden className="h-5 w-5" />
@@ -100,8 +111,8 @@ export function ServiceExplorer({ items }: { items: Business[] }) {
         })}
       </ul>
 
-      <div className="relative hidden lg:block" aria-live="polite">
-        <div className="sticky top-[calc(var(--header-h)+2rem)] rounded-lg border border-[color:var(--tone-line)] p-10">
+      <div className="reveal-right relative hidden lg:block" aria-live="polite">
+        <div className="sticky top-[calc(var(--header-h)+2rem)] border-l-2 border-gold py-2 pl-10">
           <AnimatePresence mode="wait" initial={false}>
             <m.div
               key={current.slug}

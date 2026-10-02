@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { breadcrumbLd, pageMeta } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { Suspense } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { brand, contact } from "@/content/site";
+import { contact } from "@/content/site";
 import { PageHero } from "@/components/ui/PageHero";
 import { EnquiryForm } from "@/components/contact/EnquiryForm";
-import { CoreMark } from "@/components/brand/CoreMark";
 
 export const metadata: Metadata = pageMeta({
   title: "Contact",
@@ -18,58 +16,42 @@ export default function ContactPage() {
   return (
     <>
       <JsonLd data={[breadcrumbLd([{ name: "Contact", path: "/contact" }])]} />
-      <PageHero
-        crumb="Contact"
-        index="25"
-        title={["LET'S BUILD", <span key="n" className="text-red">{"WHAT'S NEXT."}</span>]}
-        intro={contact.intro}
-      />
+      <PageHero crumb="Contact" title={["Let's build", <span key="n" className="text-gold">{"what's next."}</span>]} intro={contact.intro} />
 
-      <section className="pb-[var(--section-y)]">
-        <div className="container-x grid gap-14 lg:grid-cols-[minmax(0,8fr)_minmax(0,4fr)]">
-          <Suspense fallback={<div className="min-h-[640px]" />}>
-            <EnquiryForm />
-          </Suspense>
-
-          <aside className="lg:pt-1">
-            <div className="sticky top-[calc(var(--header-h)+2rem)] space-y-6">
-              <div data-tone="technology" className="tone rounded-lg p-8">
-                <p className="t-eyebrow text-gold">Reach Us</p>
-                <p className="mt-2 font-display text-[1.5rem] font-extrabold tracking-[-0.02em]">Direct Contact</p>
-                <ul className="mt-8 space-y-5 text-[0.95rem]">
-                  <li className="flex gap-3">
-                    <Phone aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                    <span>
-                      {contact.phone.value}
-                      {contact.phone.placeholder && (
-                        <span className="ml-2 rounded-full border border-[color:var(--tone-line)] px-2 py-0.5 font-mono text-[0.58rem] uppercase tracking-[0.14em] text-[color:var(--tone-soft)]">
-                          Placeholder
-                        </span>
-                      )}
-                    </span>
-                  </li>
-                  <li className="flex gap-3">
-                    <Mail aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                    <a className="link-draw" href={`mailto:${contact.email.value}`}>
-                      {contact.email.value}
-                    </a>
-                  </li>
-                  <li className="flex gap-3">
-                    <MapPin aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                    {contact.location}
-                  </li>
-                </ul>
-              </div>
-              <div className="flex items-center gap-4 rounded-lg bg-gold-light p-6">
-                <CoreMark size={40} />
-                <p className="font-mono text-[0.7rem] font-bold leading-relaxed tracking-[0.14em] text-red-deep">
-                  {brand.verbs.slice(0, 2).join(" ")}
-                  <br />
-                  {brand.verbs.slice(2).join(" ")}
+      <section aria-label="Get in touch" className="on-water container-x pb-24 sm:pb-32">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] lg:gap-16">
+          {/* Direct details first on phones (one tap away), beside the form on desktop. */}
+          <ul className="reveal-stagger space-y-6 border-t border-white/20 pt-6 lg:order-2 lg:self-start">
+            <li>
+              <p className="flex items-center gap-2 font-mono text-[0.7rem] font-bold uppercase tracking-[0.14em] text-gold">
+                <Mail aria-hidden className="h-4 w-4" /> Email
+              </p>
+              <a href={`mailto:${contact.email.value}`} className="mt-1 block break-all font-display text-[1.25rem] font-extrabold hover:text-gold">
+                {contact.email.value}
+              </a>
+            </li>
+            {!contact.phone.placeholder && (
+              <li>
+                <p className="flex items-center gap-2 font-mono text-[0.7rem] font-bold uppercase tracking-[0.14em] text-gold">
+                  <Phone aria-hidden className="h-4 w-4" /> Phone
                 </p>
-              </div>
-            </div>
-          </aside>
+                <a href={`tel:${contact.phone.value.replace(/\s/g, "")}`} className="mt-1 block font-display text-[1.25rem] font-extrabold hover:text-gold">
+                  {contact.phone.value}
+                </a>
+              </li>
+            )}
+            <li>
+              <p className="flex items-center gap-2 font-mono text-[0.7rem] font-bold uppercase tracking-[0.14em] text-gold">
+                <MapPin aria-hidden className="h-4 w-4" /> Location
+              </p>
+              <p className="mt-1 font-display text-[1.25rem] font-extrabold">{contact.location}</p>
+            </li>
+          </ul>
+
+          <div className="reveal border-t border-white/20 pt-6 lg:order-1">
+            <h2 className="mb-6 font-display text-[1.6rem] font-extrabold tracking-[-0.02em]">Send an enquiry</h2>
+            <EnquiryForm />
+          </div>
         </div>
       </section>
     </>

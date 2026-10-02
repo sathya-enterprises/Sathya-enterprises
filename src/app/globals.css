@@ -18,6 +18,14 @@
   --color-line-strong: rgb(26 26 26 / 0.18);
   --color-line-inverse: rgb(255 253 248 / 0.14);
 
+  /* Ocean — the background only. Red and gold stay the UI colours on top of it. */
+  --color-sea-shallow: #2a86a3;
+  --color-sea: #1a6683;
+  --color-sea-deep: #0d3c58;
+  --color-sea-abyss: #061b2b;
+  --color-whale: #24435c;
+  --color-whale-belly: #a3c9da;
+
   --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
   --font-sans: var(--font-manrope), "Helvetica Neue", Arial, sans-serif;
   --font-mono: var(--font-space-mono), "Courier New", monospace;
@@ -36,7 +44,6 @@
 
 :root {
   --container: 1280px;
-  --container-wide: 1520px;
   --gutter: clamp(1rem, 4vw, 2.5rem);
   --section-y: clamp(5rem, 11vw, 9.5rem);
   --header-h: 72px;
@@ -46,12 +53,12 @@
   --dur-reveal: 640ms;
   --dur-hero: 1000ms;
 
-  /* Division tone (overridden by [data-tone]) */
-  --tone-bg: var(--color-ivory);
-  --tone-ink: var(--color-charcoal);
-  --tone-soft: var(--color-charcoal-soft);
-  --tone-accent: var(--color-red);
-  --tone-line: var(--color-line);
+  /* Everything sits on the water: ivory text, gold accents, hairline dividers. */
+  --tone-bg: transparent;
+  --tone-ink: var(--color-ivory);
+  --tone-soft: rgb(255 253 248 / 0.8);
+  --tone-accent: var(--color-gold);
+  --tone-line: rgb(255 253 248 / 0.18);
 }
 
 [data-tone="digital"] {
@@ -90,8 +97,8 @@ html {
 }
 
 body {
-  background: var(--color-ivory);
-  color: var(--color-charcoal);
+  background: var(--color-sea-abyss);
+  color: var(--color-ivory);
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.65;
@@ -173,18 +180,17 @@ body {
     margin-inline: auto;
     padding-inline: var(--gutter);
   }
-  .container-wide {
-    width: 100%;
-    max-width: calc(var(--container-wide) + 2 * var(--gutter));
-    margin-inline: auto;
-    padding-inline: var(--gutter);
-  }
   .section-y {
     padding-block: var(--section-y);
   }
   .tone {
     background: var(--tone-bg);
     color: var(--tone-ink);
+  }
+
+  /* Text set straight on the water gets a soft shadow so it holds up over light rays and creatures. */
+  .on-water {
+    text-shadow: 0 1px 14px rgb(3 18 30 / 0.45);
   }
 
   /* Line-draw link underline (subtle tier) */
@@ -199,132 +205,6 @@ body {
   .link-draw:focus-visible {
     background-size: 100% 1.5px;
   }
-}
-
-/* ── Loader (CSS-driven so it runs before hydration) ────────────────
- * --out is when the exit wave starts. Full sequence on the first load of a session,
- * a short mark-only version on later full loads (html.se-seen, set by the inline script). */
-.loader {
-  --out: 1300ms;
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  pointer-events: none;
-  animation: loader-done 0s linear calc(var(--out) + 1000ms) forwards;
-}
-html.se-seen .loader {
-  --out: 560ms;
-}
-html.se-ready .loader {
-  display: none;
-}
-.loader__col {
-  position: relative;
-  flex: 1;
-  background: var(--color-ivory);
-  animation: loader-col 760ms var(--ease-in-out) calc(var(--out) + var(--c) * 70ms) forwards;
-}
-/* Each column carries its division's colour on its leading edge as it lifts. */
-.loader__col::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 6px;
-  background: var(--tone-bg);
-}
-.loader__col[data-tone="digital"]::after {
-  background: var(--color-red);
-}
-.loader__col[data-tone="products"]::after {
-  background: var(--color-gold);
-}
-.loader__content {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-inline: 1.5rem;
-  animation: loader-content-out 320ms var(--ease-in-out) calc(var(--out) - 60ms) forwards;
-}
-html.se-seen .loader__name,
-html.se-seen .loader__verbs,
-html.se-seen .loader__track {
-  display: none;
-}
-.loader__core {
-  transform: scale(0);
-  animation: loader-pop 520ms var(--ease-out) 40ms forwards;
-}
-.loader__sat {
-  opacity: 0;
-  animation: loader-sat 600ms var(--ease-out) forwards;
-}
-.loader__orbit {
-  animation: loader-orbit 1200ms var(--ease-in-out) 200ms both;
-}
-.loader__word {
-  display: block;
-  overflow: hidden;
-}
-.loader__word > span {
-  display: block;
-  transform: translateY(105%);
-  animation: loader-rise 700ms var(--ease-out) forwards;
-}
-.loader__verb {
-  opacity: 0;
-  animation: loader-fade 320ms var(--ease-out) forwards;
-}
-.loader__bar {
-  transform: scaleX(0);
-  transform-origin: left;
-  animation: loader-bar 1150ms var(--ease-in-out) 100ms forwards;
-}
-@keyframes loader-pop {
-  to { transform: scale(1); }
-}
-@keyframes loader-sat {
-  from { opacity: 0; transform: translate(var(--fx), var(--fy)) scale(0.4); }
-  to { opacity: 1; transform: translate(0, 0) scale(1); }
-}
-@keyframes loader-orbit {
-  from { transform: rotate(-90deg); }
-  to { transform: rotate(0deg); }
-}
-@keyframes loader-rise {
-  to { transform: translateY(0); }
-}
-@keyframes loader-fade {
-  to { opacity: 1; }
-}
-@keyframes loader-bar {
-  to { transform: scaleX(1); }
-}
-@keyframes loader-content-out {
-  to { opacity: 0; transform: translateY(-16px); }
-}
-@keyframes loader-col {
-  to { transform: translateY(-101%); }
-}
-@keyframes loader-done {
-  to { visibility: hidden; }
-}
-
-/* The page settles as the wave passes over it (transform only — never hides content). */
-main {
-  animation: page-settle 1100ms var(--ease-out) calc(var(--out-page, 1300ms) + 80ms) both;
-}
-html.se-seen main {
-  --out-page: 560ms;
-}
-html.se-ready main {
-  animation: none;
-}
-@keyframes page-settle {
-  from { transform: translateY(28px) scale(0.985); }
 }
 
 /* ── Subtle ambient float (Labs principle, brand geometry only) ── */
@@ -357,7 +237,7 @@ html.se-ready main {
 ::view-transition-new(site-header) {
   animation: none;
 }
-/* Old page recedes; new page wipes up from below like the loader's columns. */
+/* Old page recedes; new page wipes up from below. */
 ::view-transition-old(.page) {
   animation: page-out 380ms var(--ease-in-out) both;
 }
@@ -379,28 +259,6 @@ html.se-ready main {
  * Many Windows/macOS users have this on by default ("Animation effects" off), so the site
  * still breathes — but nothing slides, spins, parallaxes or loops. */
 @media (prefers-reduced-motion: reduce) {
-  .loader {
-    --out: 700ms;
-  }
-  html.se-seen .loader {
-    --out: 300ms;
-  }
-  .loader__col {
-    animation-name: loader-col-fade;
-    animation-duration: 400ms;
-  }
-  .loader__sat,
-  .loader__core,
-  .loader__orbit,
-  .loader__word > span,
-  .loader__bar {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-  main {
-    animation: none;
-  }
   ::view-transition-old(.page),
   ::view-transition-new(.page) {
     animation-name: vt-fade;
@@ -413,27 +271,16 @@ html.se-ready main {
     scroll-behavior: auto !important;
   }
 }
-@keyframes loader-col-fade {
-  to { opacity: 0; }
-}
 @keyframes vt-fade {
   from { opacity: 0; }
 }
 
-/* ── Entrances (CSS so they never wait on hydration) ──────
- * Start as the loader lifts; after that (html.se-ready) they start immediately,
- * so client-side navigations never wait. */
+/* ── Entrances (CSS so they never wait on hydration) ────── */
 :root {
-  --enter-base: 1.4s;
-}
-html.se-seen {
-  --enter-base: 0.7s;
-}
-html.se-ready {
   --enter-base: 0.12s;
 }
 /* Travel only — content is painted from the first frame (crawlers and LCP see it immediately);
- * the loader wave and route crossfade provide the fade. */
+ * the route crossfade provides the fade. */
 .enter {
   transform: translateY(28px);
   animation: enter-rise var(--dur-hero) var(--ease-out) forwards;
@@ -528,29 +375,16 @@ html.se-ready {
 }
 
 /* ── Marquee ──────────────────────────────────────────── */
-.marquee__track {
-  animation: marquee 60s linear infinite;
+/* Auto-moving card row (home › How we help). Edges fade into the water; pauses for hover and keyboard. */
+.step-marquee {
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
 }
-.marquee:hover .marquee__track,
-.marquee:focus-within .marquee__track {
+.step-marquee__track {
+  animation: marquee var(--marquee-dur, 38s) linear infinite;
+}
+.step-marquee:hover .step-marquee__track,
+.step-marquee:focus-within .step-marquee__track {
   animation-play-state: paused;
-}
-.marquee::before,
-.marquee::after {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  z-index: 1;
-  width: clamp(2rem, 8vw, 8rem);
-  pointer-events: none;
-}
-.marquee::before {
-  left: 0;
-  background: linear-gradient(to right, var(--marquee-fade, var(--color-ivory)), transparent);
-}
-.marquee::after {
-  right: 0;
-  background: linear-gradient(to left, var(--marquee-fade, var(--color-ivory)), transparent);
 }
 @keyframes marquee {
   to {
@@ -558,13 +392,189 @@ html.se-ready {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .marquee {
+  .step-marquee {
     overflow-x: auto;
+    mask-image: none;
   }
-  .marquee__track {
+  .step-marquee__track {
     animation: none;
   }
-  .marquee__track > ul[aria-hidden] {
+  .step-marquee__track > ul[aria-hidden] {
     display: none;
+  }
+}
+
+/* ── Ocean dive (home) ─────────────────────────────────────────── */
+.whale-swim {
+  animation: whale-bob 5s var(--ease-in-out) infinite alternate;
+}
+@keyframes whale-bob {
+  to {
+    transform: translateY(6%);
+  }
+}
+.whale-tail {
+  transform-box: view-box;
+  transform-origin: 74px 83px;
+  animation: whale-tail 2.4s var(--ease-in-out) infinite alternate;
+}
+@keyframes whale-tail {
+  from {
+    transform: rotate(-9deg);
+  }
+  to {
+    transform: rotate(9deg);
+  }
+}
+.bubble {
+  animation: bubble-rise var(--b-dur, 9s) linear var(--b-delay, 0s) infinite;
+}
+@keyframes bubble-rise {
+  from {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(-110svh);
+    opacity: 0;
+  }
+}
+.kelp {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: kelp-sway var(--k-dur, 6s) var(--ease-in-out) infinite alternate;
+}
+@keyframes kelp-sway {
+  from {
+    transform: rotate(-4deg);
+  }
+  to {
+    transform: rotate(4deg);
+  }
+}
+.fish-wiggle {
+  transform-box: fill-box;
+  transform-origin: 70% 50%;
+  animation: fish-wiggle 0.9s var(--ease-in-out) var(--f-delay, 0s) infinite alternate;
+}
+@keyframes fish-wiggle {
+  from {
+    transform: rotate(-5deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+.jelly {
+  animation: jelly-pulse 3.2s var(--ease-in-out) var(--j-delay, 0s) infinite;
+}
+@keyframes jelly-pulse {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  40% {
+    transform: translateY(-8%) scale(0.92, 1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fish-wiggle,
+  .jelly,
+  .whale-swim,
+  .whale-tail,
+  .bubble,
+  .kelp {
+    animation: none;
+  }
+  .bubble {
+    opacity: 0.5;
+  }
+}
+
+/* Browser autofill: keep fields dark and readable on the water instead of the default bright fill. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-ivory);
+  caret-color: var(--color-ivory);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-sea-deep) inset;
+  transition: background-color 9999s ease-out;
+}
+select option,
+select optgroup {
+  background: var(--color-sea-deep);
+  color: var(--color-ivory);
+}
+
+/* ── Scroll reveals ───────────────────────────────────────────────────────
+ * Native scroll-driven animations: each element animates as it travels into view, tied to the
+ * scroll position (runs off the main thread, no JS). Content is always in the HTML; browsers
+ * without support, and reduced-motion users, simply see it in place.
+ *   .reveal          rise + fade
+ *   .reveal-left     slide in from the left
+ *   .reveal-right    slide in from the right
+ *   .reveal-zoom     grow + fade
+ *   .reveal-stagger  children rise one after another
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-zoom,
+    .reveal-stagger > * {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+    .reveal-left {
+      animation-name: reveal-left;
+    }
+    .reveal-right {
+      animation-name: reveal-right;
+    }
+    .reveal-zoom {
+      animation-name: reveal-zoom;
+    }
+    /* Last thing on the page: finish as soon as it is fully on screen (the page can't scroll further). */
+    .reveal-end {
+      animation-range: entry 0% entry 100%;
+    }
+    .reveal-stagger > :nth-child(2) {
+      animation-range: entry 8% cover 34%;
+    }
+    .reveal-stagger > :nth-child(3) {
+      animation-range: entry 16% cover 38%;
+    }
+    .reveal-stagger > :nth-child(n + 4) {
+      animation-range: entry 24% cover 42%;
+    }
+  }
+}
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(56px);
+  }
+}
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-72px);
+  }
+}
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    transform: translateX(72px);
+  }
+}
+@keyframes reveal-zoom {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
   }
 }

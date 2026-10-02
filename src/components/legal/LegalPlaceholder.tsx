@@ -7,7 +7,7 @@ export function LegalPlaceholder({ crumb, title, body }: { crumb: string; title:
       <PageHero crumb={crumb} index="Legal" title={[title]} intro={body} />
       <section className="pb-[var(--section-y)]">
         <div className="container-x">
-          <p className="inline-flex rounded-full border border-dashed border-line-strong px-4 py-2 font-mono text-[0.7rem] font-bold uppercase tracking-[0.14em] text-charcoal-soft">
+          <p className="inline-flex rounded-full border border-dashed border-white/40 bg-sea-abyss/60 px-4 py-2 font-mono text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ivory">
             Placeholder — draft content to be added before launch
           </p>
         </div>

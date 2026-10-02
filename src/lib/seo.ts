@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { brand, contact, type Business } from "@/content/site";
+import { brand, contact, socials } from "@/content/site";
 
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://sathyaenterprises-nine.vercel.app").replace(/\/$/, "");
 export const siteName = "Sathya Enterprises";
@@ -39,16 +39,6 @@ export function pageMeta({
   };
 }
 
-/** "Digital Growth. Built Around Results." — published headlines are all caps; metadata reads better in title case. */
-export function titleCase(s: string) {
-  return s.toLowerCase().replace(/(^|[\s.—-])([a-z])/g, (_, p, c) => p + c.toUpperCase());
-}
-
-export function businessDescription(b: Business) {
-  const offers = b.groups.flatMap((g) => g.items.map((i) => i.label)).slice(0, 5);
-  return `${b.intro}${offers.length ? ` ${offers.join(", ")}.` : ""} Sathya Enterprises, ${contact.location}.`.slice(0, 300);
-}
-
 /* ── JSON-LD ──────────────────────────────────────────────────────────── */
 
 const orgId = `${siteUrl}/#organization`;
@@ -62,10 +52,11 @@ export function organizationLd() {
         "@id": orgId,
         name: siteName,
         url: siteUrl,
-        logo: `${siteUrl}/icon.svg`,
+        logo: `${siteUrl}/logo-512.png`,
         slogan: brand.tagline,
         description: brand.summary,
         email: contact.email.value,
+        ...(socials.some((s) => s.url) ? { sameAs: socials.filter((s) => s.url).map((s) => s.url) } : {}),
         address: {
           "@type": "PostalAddress",
           addressLocality: "Bengaluru",
@@ -96,28 +87,6 @@ export function breadcrumbLd(trail: { name: string; path: string }[]) {
       name: t.name,
       item: `${siteUrl}${t.path === "/" ? "" : t.path}`,
     })),
-  };
-}
-
-export function serviceLd(b: Business, category: string) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    name: b.name,
-    serviceType: b.name,
-    category,
-    description: b.intro,
-    url: `${siteUrl}/${b.slug}`,
-    provider: { "@id": orgId, "@type": "Organization", name: siteName },
-    hasOfferCatalog: b.groups.length
-      ? {
-          "@type": "OfferCatalog",
-          name: b.name,
-          itemListElement: b.groups.flatMap((g) =>
-            g.items.map((i) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: i.label } })),
-          ),
-        }
-      : undefined,
   };
 }
 
