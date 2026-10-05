@@ -1,32 +1,26 @@
-/** Side-on whale facing right. The tail flukes beat and the body bobs via CSS; scroll moves the whole thing. */
-export function Whale({ className }: { className?: string }) {
+import Image from "next/image";
+import humpback from "@/assets/photos/whale-underwater.webp";
+
+/**
+ * The site's whale: a real humpback just under the surface, photographed by Chinh Le Duc on Unsplash
+ * (8t9uyncwnHc, Unsplash License). Colour-graded from royal blue to the site's sea teal so its water is
+ * the same water as the backdrop, then faded into it at the edges (globals.css › Whale):
+ *   lg:      the right ~72% of the screen, head pointing at the hero text, body running off the right
+ *            edge (the photo crops the tail there, so the crop reads as the edge of the screen).
+ *   smaller: the full screen behind the centred hero, dimmed so the text stays readable.
+ */
+export function Whale() {
   return (
-    <svg viewBox="0 0 400 160" className={className} aria-hidden focusable="false">
-      <g className="whale-swim">
-        <path
-          className="whale-tail"
-          fill="var(--color-whale)"
-          d="M76 79C52 77 36 69 22 49C16 41 6 39 0 43C10 56 18 70 30 81C18 91 10 104 0 116C6 120 16 118 22 110C36 92 52 87 76 87Z"
-        />
-        <path
-          fill="var(--color-whale)"
-          d="M70 76C120 60 170 32 240 30C300 28 360 38 390 66C398 74 396 84 386 90C350 112 280 122 220 118C160 114 110 98 70 90Z"
-        />
-        <path fill="var(--color-whale-belly)" d="M386 90C350 112 280 122 220 118C250 107 330 99 382 86Z" />
-        <path
-          fill="none"
-          stroke="var(--color-whale)"
-          strokeOpacity="0.35"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          d="M370 94C340 104 300 110 262 112M356 98C330 106 300 110 274 112"
-        />
-        <path fill="var(--color-whale)" d="M168 41C176 31 186 26 198 25C189 31 185 36 183 43Z" />
-        <path fill="#1a3449" d="M272 102C264 124 242 144 214 150C232 133 246 116 252 104Z" />
-        <path fill="none" stroke="#1a3449" strokeWidth="2" strokeLinecap="round" d="M394 80C372 88 346 91 318 88" />
-        <circle cx="340" cy="72" r="3.4" fill="var(--color-sea-abyss)" />
-        <path fill="none" stroke="#fff" strokeOpacity="0.18" strokeWidth="3" strokeLinecap="round" d="M200 40C250 34 310 38 352 52" />
-      </g>
-    </svg>
+    <div className="whale-photo absolute inset-0 opacity-45 lg:left-auto lg:w-[72vw] lg:opacity-100">
+      <Image
+        src={humpback}
+        alt=""
+        fill
+        placeholder="blur"
+        loading="eager"
+        sizes="(min-width: 1024px) 72vw, 100vw"
+        className="object-cover object-[18%_center] lg:object-left"
+      />
+    </div>
   );
 }

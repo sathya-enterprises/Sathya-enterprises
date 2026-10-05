@@ -1,22 +1,28 @@
 import Link from "next/link";
+import type { Photo } from "@/content/photos";
 import { SplitHeading } from "./SplitHeading";
+import { SectionPhoto } from "./SectionPhoto";
 
-/** Plain page opening set straight on the water: breadcrumb, one h1 and an intro. No hero visuals. */
+/** Page opening set straight on the water: breadcrumb, one h1, an intro and an optional photo beside them. */
 export function PageHero({
   crumb,
   index,
   title,
   intro,
+  photo,
   children,
 }: {
   crumb: string;
   index?: string;
   title: React.ReactNode[];
   intro?: string;
+  photo?: Photo;
   children?: React.ReactNode;
 }) {
   return (
-    <section className="on-water container-x pt-[calc(var(--header-h)+2.5rem)] pb-8 sm:pt-[calc(var(--header-h)+4rem)]">
+    <section
+      className={`on-water container-x pt-[calc(var(--header-h)+2.5rem)] pb-8 sm:pt-[calc(var(--header-h)+4rem)] ${photo ? "grid items-center gap-10 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]" : ""}`}
+    >
       <div className="max-w-3xl">
         <nav aria-label="Breadcrumb" className="enter t-eyebrow flex flex-wrap items-center gap-2 text-gold" style={{ ["--i" as string]: 0 }}>
           <Link href="/" className="opacity-80 hover:opacity-100">
@@ -36,6 +42,11 @@ export function PageHero({
         )}
         {children}
       </div>
+      {photo && (
+        <div className="enter" style={{ ["--i" as string]: 3 }}>
+          <SectionPhoto photo={photo} eager sizes="(min-width: 768px) 40vw, 100vw" className="aspect-[4/3] md:aspect-square" />
+        </div>
+      )}
     </section>
   );
 }

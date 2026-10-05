@@ -3,9 +3,11 @@ import { breadcrumbLd, itemListLd, pageMeta } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { businessHref, businessesIn, divisionById } from "@/content/site";
 import { PageHero } from "@/components/ui/PageHero";
+import { divisionPhotos } from "@/content/photos";
 import { BusinessExplorer } from "@/components/division/BusinessExplorer";
 import { LineReveal } from "@/components/motion/Reveal";
 import { FinalCta } from "@/components/home/FinalCta";
+import { Ticker } from "@/components/ui/Ticker";
 
 const division = divisionById.services;
 
@@ -26,7 +28,9 @@ export default function ServicesPage() {
         index={division.index}
         title={["SERVICES", <span key="r" className="text-gold">DELIVER REAL-WORLD VALUE.</span>]}
         intro={division.summary}
+        photo={divisionPhotos.services}
       />
+      <Ticker label="Services businesses" items={items.map((b) => ({ label: b.name, href: businessHref(b) }))} />
 
       <section className="on-water container-x py-12 sm:py-20">
         <div>

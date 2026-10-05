@@ -3,7 +3,7 @@ import { Logo } from "@/components/brand/Logo";
 
 export default function NotFound() {
   return (
-    <section className="on-water container-x flex min-h-[80svh] items-center pt-[var(--header-h)]">
+    <section className="on-water container-x flex min-h-[80svh] items-center pt-(--header-h)">
       <div className="max-w-xl">
         <Logo size={64} />
         <p className="t-eyebrow mt-6 text-gold">404</p>

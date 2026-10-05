@@ -19,10 +19,10 @@
   --color-line-inverse: rgb(255 253 248 / 0.14);
 
   /* Ocean — the background only. Red and gold stay the UI colours on top of it. */
-  --color-sea-shallow: #2a86a3;
-  --color-sea: #1a6683;
-  --color-sea-deep: #0d3c58;
-  --color-sea-abyss: #061b2b;
+  --color-sea-shallow: #237592;
+  --color-sea: #165a76;
+  --color-sea-deep: #0c3c55;
+  --color-sea-abyss: #06202f;
   --color-whale: #24435c;
   --color-whale-belly: #a3c9da;
 
@@ -207,27 +207,6 @@ body {
   }
 }
 
-/* ── Subtle ambient float (Labs principle, brand geometry only) ── */
-@keyframes float-y {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(0, var(--float-amp, -10px), 0);
-  }
-}
-@keyframes orbit-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes dash-flow {
-  to {
-    stroke-dashoffset: -24;
-  }
-}
-
 /* ── Page transitions (React <ViewTransition>) ────────── */
 ::view-transition-group(site-header) {
   animation: none;
@@ -362,135 +341,55 @@ body {
   }
 }
 
-@keyframes draw-line {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  [style*="draw-line"] {
-    animation: none !important;
-    stroke-dashoffset: 0;
-  }
-}
-
-/* ── Marquee ──────────────────────────────────────────── */
-/* Auto-moving card row (home › How we help). Edges fade into the water; pauses for hover and keyboard. */
-.step-marquee {
-  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-}
-.step-marquee__track {
-  animation: marquee var(--marquee-dur, 38s) linear infinite;
-}
-.step-marquee:hover .step-marquee__track,
-.step-marquee:focus-within .step-marquee__track {
-  animation-play-state: paused;
-}
+/* ── Marquee (business tickers) ───────────────────────── */
 @keyframes marquee {
   to {
     transform: translateX(-50%);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .step-marquee {
-    overflow-x: auto;
-    mask-image: none;
-  }
-  .step-marquee__track {
-    animation: none;
-  }
-  .step-marquee__track > ul[aria-hidden] {
-    display: none;
-  }
-}
 
-/* ── Ocean dive (home) ─────────────────────────────────────────── */
-.whale-swim {
-  animation: whale-bob 5s var(--ease-in-out) infinite alternate;
-}
-@keyframes whale-bob {
-  to {
-    transform: translateY(6%);
+/* ── Timeline (home › How we help) ────────────────────────
+ * The rail fills as the middle of the screen travels down the list; each step's node and text light
+ * up as they cross the middle. Only `from` states are animated, so without scroll-driven animation
+ * support (or with reduced motion) everything simply shows lit. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .timeline {
+      view-timeline-name: --timeline;
+    }
+    .timeline-fill {
+      animation: timeline-fill linear both;
+      animation-timeline: --timeline;
+      animation-range: cover 25% cover 75%;
+    }
+    .timeline-node,
+    .timeline-body {
+      animation: timeline-node linear both;
+      animation-timeline: view();
+      animation-range: cover 30% cover 45%;
+    }
+    .timeline-body {
+      animation-name: timeline-body;
+    }
   }
 }
-.whale-tail {
-  transform-box: view-box;
-  transform-origin: 74px 83px;
-  animation: whale-tail 2.4s var(--ease-in-out) infinite alternate;
-}
-@keyframes whale-tail {
+@keyframes timeline-fill {
   from {
-    transform: rotate(-9deg);
-  }
-  to {
-    transform: rotate(9deg);
+    transform: scaleY(0);
   }
 }
-.bubble {
-  animation: bubble-rise var(--b-dur, 9s) linear var(--b-delay, 0s) infinite;
-}
-@keyframes bubble-rise {
+@keyframes timeline-node {
   from {
-    transform: translateY(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.8;
-  }
-  to {
-    transform: translateY(-110svh);
-    opacity: 0;
+    background-color: var(--color-sea-abyss);
+    border-color: rgb(255 253 248 / 0.3);
+    color: rgb(255 253 248 / 0.6);
+    transform: scale(0.8);
   }
 }
-.kelp {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: kelp-sway var(--k-dur, 6s) var(--ease-in-out) infinite alternate;
-}
-@keyframes kelp-sway {
+@keyframes timeline-body {
   from {
-    transform: rotate(-4deg);
-  }
-  to {
-    transform: rotate(4deg);
-  }
-}
-.fish-wiggle {
-  transform-box: fill-box;
-  transform-origin: 70% 50%;
-  animation: fish-wiggle 0.9s var(--ease-in-out) var(--f-delay, 0s) infinite alternate;
-}
-@keyframes fish-wiggle {
-  from {
-    transform: rotate(-5deg);
-  }
-  to {
-    transform: rotate(5deg);
-  }
-}
-.jelly {
-  animation: jelly-pulse 3.2s var(--ease-in-out) var(--j-delay, 0s) infinite;
-}
-@keyframes jelly-pulse {
-  0%,
-  100% {
-    transform: translateY(0) scale(1, 1);
-  }
-  40% {
-    transform: translateY(-8%) scale(0.92, 1.06);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fish-wiggle,
-  .jelly,
-  .whale-swim,
-  .whale-tail,
-  .bubble,
-  .kelp {
-    animation: none;
-  }
-  .bubble {
-    opacity: 0.5;
+    opacity: 0.3;
+    transform: translateX(16px);
   }
 }
 
@@ -576,5 +475,247 @@ select optgroup {
   from {
     opacity: 0;
     transform: translateY(40px) scale(0.9);
+  }
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────────
+ * Business tickers, panel edges, and photos that open and settle as they scroll in.
+ */
+
+/* Business ticker: names stream across, edges fade into the water. */
+.ticker {
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.ticker__track {
+  animation: marquee var(--ticker-dur, 50s) linear infinite;
+}
+.ticker__track--reverse {
+  animation-direction: reverse;
+}
+.ticker:hover .ticker__track {
+  animation-play-state: paused;
+}
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(255 253 248 / 0.55);
+}
+
+/* A red → gold edge around a panel. Static on purpose: animating the gradient angle repaints the
+ * whole panel border every frame, which measurably cost scroll smoothness. */
+.edge-glow {
+  position: relative;
+  isolation: isolate;
+}
+.edge-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from 200deg, transparent 0 40%, var(--color-gold) 62%, var(--color-red) 80%, transparent 100%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: var(--edge-opacity, 0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker {
+    overflow-x: auto;
+  }
+  .ticker__track {
+    animation: none;
+  }
+}
+
+/* Photos open from a clipped strip and settle from a slight zoom as they scroll in. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .photo-reveal {
+      animation: photo-open linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+    .photo-parallax {
+      animation: photo-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+@keyframes photo-open {
+  from {
+    clip-path: inset(18% 12% 18% 12% round 28px);
+    opacity: 0.3;
+  }
+}
+@keyframes photo-settle {
+  from {
+    transform: scale(1.22) translateY(-4%);
+  }
+  to {
+    transform: scale(1.06) translateY(4%);
+  }
+}
+
+/* ── Who we are ───────────────────────────────────────────────────────────
+ * .photo-expand  an immersive photo section that starts inset to the page gutter with rounded corners
+ *                and opens out to the screen edges as it scrolls in. Without scroll-driven animation
+ *                support, or with reduced motion, it simply sits full width. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .photo-expand {
+      animation: photo-expand linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 50%;
+    }
+  }
+}
+@keyframes photo-expand {
+  from {
+    clip-path: inset(0 var(--gutter) round 28px);
+  }
+  to {
+    clip-path: inset(0 0 round 0);
+  }
+}
+
+/* ── Preloader ────────────────────────────────────────────────────────────
+ * Covers every full page load, then lifts away (see Preloader.tsx). [data-preloaded] is set once it
+ * has gone, so pages opened afterwards enter straight away. If scripts never run, the fallback
+ * animation fades it out on its own. While it is up, the hero entrances wait for it to lift. */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+  text-align: center;
+  color: var(--color-ivory);
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 0%, rgb(170 220 238 / 0.18), transparent 70%),
+    linear-gradient(to bottom, var(--color-sea-shallow), var(--color-sea) 45%, var(--color-sea-deep));
+  transition:
+    transform 700ms var(--ease-in-out),
+    opacity 700ms var(--ease-in-out);
+  animation: preloader-fallback 400ms linear 6s forwards;
+}
+[data-preloaded] .preloader {
+  display: none;
+}
+:root:not([data-preloaded]) {
+  --enter-base: 1.7s;
+}
+.preloader--out {
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+.preloader__mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: preloader-rise 800ms var(--ease-out) both;
+}
+.preloader__logo {
+  border-radius: 9999px;
+  animation: preloader-bob 2.4s ease-in-out infinite;
+}
+.preloader__bar {
+  display: block;
+  margin-top: 1.75rem;
+  width: min(14rem, 60vw);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--color-gold), var(--color-red));
+  transform-origin: left;
+  animation: preloader-bar 1.4s var(--ease-in-out) 150ms both;
+}
+@keyframes preloader-rise {
+  from { opacity: 0; transform: translateY(16px); }
+}
+@keyframes preloader-bob {
+  50% { transform: translateY(-6px); }
+}
+@keyframes preloader-bar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes preloader-fallback {
+  to { opacity: 0; visibility: hidden; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .preloader--out {
+    transform: none;
+    opacity: 0;
+  }
+  .preloader__mark,
+  .preloader__logo,
+  .preloader__bar {
+    animation: none;
+  }
+}
+
+/* Testimonials: time until autoplay moves on (Testimonials.tsx). */
+@keyframes voices-timer {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* FAQ: answers slide open where <details> content can be animated; elsewhere they just open. */
+@supports (interpolate-size: allow-keywords) {
+  @media (prefers-reduced-motion: no-preference) {
+    .faq {
+      interpolate-size: allow-keywords;
+    }
+    .faq::details-content {
+      block-size: 0;
+      opacity: 0;
+      overflow-y: clip;
+      transition:
+        block-size 420ms var(--ease-out),
+        opacity 320ms var(--ease-out),
+        content-visibility 420ms allow-discrete;
+    }
+    .faq[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+    }
+  }
+}
+
+/* Whale (ocean/Whale.tsx): the photo melts into the sea at its edges — the left edge where the head
+ * faces the hero text, and the bottom into the deep. Phones: top and bottom, as it fills the screen. */
+.whale-photo {
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0, #000 18%, #000 58%, transparent 92%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 18%, #000 58%, transparent 92%);
+}
+@media (min-width: 1024px) {
+  .whale-photo {
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 28%),
+      linear-gradient(to bottom, #000 0, #000 62%, transparent 96%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 28%),
+      linear-gradient(to bottom, #000 0, #000 62%, transparent 96%);
+    mask-composite: intersect;
+  }
+}
+/* A very slow float between scrolls. */
+.whale-float {
+  animation: whale-float 11s ease-in-out infinite alternate;
+}
+@keyframes whale-float {
+  from { transform: translateY(-1%); }
+  to { transform: translateY(1.2%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .whale-float {
+    animation: none;
   }
 }

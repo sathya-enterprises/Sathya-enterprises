@@ -7,6 +7,7 @@ import { brand } from "@/content/site";
 import { organizationLd, siteUrl } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { OceanBackdrop } from "@/components/ocean/OceanBackdrop";
+import { Preloader } from "@/components/layout/Preloader";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#2a86a3",
+  themeColor: "#237592",
 };
 
 
@@ -68,10 +69,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
+        <Preloader />
         <MotionProvider>
           <OceanBackdrop />
           <Header />
-          <div className="relative z-10">
+          <div className="relative z-10 overflow-x-clip">
             <main id="main">{children}</main>
             <Footer />
           </div>

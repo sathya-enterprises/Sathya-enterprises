@@ -27,8 +27,8 @@ export function Header() {
     const prev = scrollY.getPrevious() ?? 0;
     setScrolled(y > 24);
     if (mobileOpen) return;
-    setHidden(y > 480 && y > prev + 4);
-    if (y < prev - 4) setHidden(false);
+    if (y > 480 && y > prev + 4) setHidden(true);
+    else if (y < prev - 4 || y <= 480) setHidden(false);
   });
 
   // Close the menu on route change.
@@ -44,8 +44,8 @@ export function Header() {
         style={{ viewTransitionName: "site-header" }}
         animate={{ y: hidden ? "-100%" : "0%" }}
         transition={{ duration: dur.ui * 1.6, ease: ease.out }}
-        className={`on-water fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter] duration-300 ${
-          scrolled ? "bg-sea-abyss/75 backdrop-blur-md" : "bg-transparent"
+        className={`on-water fixed inset-x-0 top-0 z-50 transition-[background-color] duration-300 ${
+          scrolled ? "bg-sea-abyss/90" : "bg-transparent"
         }`}
       >
         <div className="container-x flex h-[var(--header-h)] items-center justify-between gap-4 text-ivory">

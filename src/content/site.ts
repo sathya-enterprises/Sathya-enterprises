@@ -1,3 +1,5 @@
+import type { StaticImageData } from "next/image";
+
 /**
  * Single source of truth for all site copy.
  * Every string here is taken from the existing Sathya Enterprises website
@@ -657,4 +659,140 @@ export const socials: { id: "instagram" | "facebook" | "linkedin" | "youtube" | 
   { id: "youtube", label: "YouTube", url: "" },
   { id: "x", label: "X (Twitter)", url: "" },
   { id: "whatsapp", label: "WhatsApp", url: "" },
+];
+
+/**
+ * The Sathya Money-Making System — the six stages from the live home page ("The System"), each with the
+ * offerings listed under it there, linked to the businesses that deliver them.
+ */
+export const moneySystem: { stage: string; items: string; slugs: string[] }[] = [
+  { stage: "ATTRACT", items: "Digital Marketing, Instagram Marketing, SEO, SEM", slugs: ["digital-marketing", "instagram-marketing", "seo", "sem"] },
+  { stage: "CAPTURE", items: "Website, Landing Pages, Lead Generation", slugs: ["web-development", "lead-generation"] },
+  { stage: "CONVERT", items: "CRM, WhatsApp, Follow-up", slugs: ["saas-products", "whatsapp-business-solutions"] },
+  { stage: "AUTOMATE", items: "SaaS, AI, Automation", slugs: ["saas-products", "ai-automation"] },
+  { stage: "UNDERSTAND", items: "Data, Analytics", slugs: ["data-solutions", "digital-data-products"] },
+  { stage: "GROW", items: "Customers, Revenue, Scale", slugs: ["startup-consulting", "business-marketplace"] },
+];
+
+/** "Built to Grow" — the four highlights from the live home page. */
+export const builtToGrow: { title: string; body: string; figure?: { value: number; suffix: string } }[] = [
+  {
+    title: "Business Verticals",
+    figure: { value: 10, suffix: "+" },
+    body: "Digital, technology, products and on-the-ground services under one roof.",
+  },
+  { title: "Growing Client Base", body: "Businesses that start with one service and add the next as they grow." },
+  { title: "Multiple Active Projects", body: "Campaigns, software builds and site work running side by side." },
+  { title: "Open Partner Network", body: "Service providers who extend what the ecosystem can deliver." },
+];
+
+/** "Looking Ahead / What's Next?" — the four growth areas from the live home page. */
+export const lookingAhead = [
+  { title: "New Business", body: "Vertical expansion within the ecosystem." },
+  { title: "New Product", body: "SaaS modules and data products." },
+  { title: "New Technology", body: "AI, automation and data tooling." },
+  { title: "New Partnership", body: "Service providers extending our capabilities." },
+];
+
+export type Testimonial = {
+  quote: string;
+  /** Role and type of business — no personal names until the client has agreed to be named. */
+  role: string;
+  place: string;
+  division: DivisionId;
+  /** Avatar monogram: two letters standing for the business, shown until a client photo is added. */
+  initials: string;
+  /** The client's own photo (with their permission). Replaces the monogram. */
+  photo?: StaticImageData;
+  placeholder: boolean;
+};
+
+/**
+ * PLACEHOLDERS — the live site has no testimonials yet. These show the layout with representative
+ * copy only; replace each with a real client quote (and the client's permission) before launch, then set
+ * `placeholder: false`.
+ */
+export const testimonials: Testimonial[] = [
+  {
+    quote:
+      "We came in for a new website and left with a working lead pipeline. The site, the Google Ads and the WhatsApp follow-ups finally talk to each other.",
+    role: "Founder, interior design studio",
+    initials: "ID",
+    place: "Bengaluru",
+    division: "digital",
+    placeholder: true,
+  },
+  {
+    quote:
+      "Our sales team used to chase enquiries on spreadsheets. With the CRM and automated follow-ups, every lead has an owner and nothing slips through.",
+    role: "Sales head, real-estate developer",
+    initials: "RE",
+    place: "Bengaluru",
+    division: "technology",
+    placeholder: true,
+  },
+  {
+    quote:
+      "One call covered the borewell, the pump and the CCTV for our new site. One team to coordinate with instead of three different vendors.",
+    role: "Owner, farm property",
+    initials: "FP",
+    place: "Bengaluru Rural",
+    division: "services",
+    placeholder: true,
+  },
+  {
+    quote:
+      "They handled our private limited incorporation and compliance, then helped us get our pitch ready for investors. We could stay focused on the product.",
+    role: "Co-founder, early-stage startup",
+    initials: "ES",
+    place: "Bengaluru",
+    division: "services",
+    placeholder: true,
+  },
+  {
+    quote:
+      "Our Instagram finally has a plan. Reels go out on schedule, the feed looks like one brand, and enquiries now arrive through DMs every week.",
+    role: "Owner, café and bakery",
+    initials: "CB",
+    place: "Bengaluru",
+    division: "digital",
+    placeholder: true,
+  },
+  {
+    quote:
+      "Sales, marketing and stock numbers used to live in five different files. Now there is one dashboard the whole team actually opens.",
+    role: "Director, distribution business",
+    initials: "DB",
+    place: "Karnataka",
+    division: "technology",
+    placeholder: true,
+  },
+];
+
+/** Home FAQ — every answer restates what the site already says; no new claims. */
+export const faqs: { q: string; a: string }[] = [
+  {
+    q: "What does Sathya Enterprises do?",
+    a: `Sathya Enterprises operates across digital growth, technology, data, products, infrastructure and business services — ${divisions.length} divisions and ${businesses.length} businesses, built as one connected ecosystem rather than a collection of unrelated ventures.`,
+  },
+  {
+    q: "Do I need to use every division?",
+    a: "No. Start with the one thing you need — a website, a CRM, a CCTV installation, company registration — and add more only when it helps. Because everything sits in one ecosystem, each next step connects to what is already in place.",
+  },
+  {
+    q: "How do the divisions work together?",
+    a: "Digital creates attention, technology turns that attention into systems, data creates intelligence, and services and products deliver the real-world value customers came for. In practice: attract, capture, convert, automate, understand, grow.",
+  },
+  {
+    q: "Can your software grow with my business?",
+    a: "Yes. Our SaaS is modular — CRM, lead management, sales management, dashboards, automation and analytics. Start with one module and add more as the business grows.",
+  },
+  {
+    q: "How do you handle data?",
+    a: "Every dataset and data product is handled under lawful, privacy-conscious data practices. Responsible use is a requirement, not an afterthought.",
+  },
+  {
+    q: "Where are you based, and how do I get started?",
+    a: "We are based in Bengaluru, Karnataka. Send an enquiry through the contact page, pick the requirement closest to what you need and tell us where you are — we will take it from there.",
+  },
 ];
