@@ -1,97 +1,60 @@
-import Link from "next/link";
-import { Logo } from "@/components/brand/Logo";
-import { SocialIcon } from "@/components/brand/SocialIcon";
-import { brand, contact, divisions, socials } from "@/content/site";
-
-const divisionLinks = divisions.map((d) => ({ href: d.href, label: d.name.charAt(0) + d.name.slice(1).toLowerCase() }));
-const companyLinks = [
-  { href: "/", label: "Home" },
-  { href: "/contact", label: "Contact" },
-  { href: "/privacy-policy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
-];
-
-const heading = "font-mono text-[0.68rem] font-bold uppercase tracking-[0.16em] text-gold";
-const link = "text-[0.95rem] text-ivory/80 transition-colors duration-200 hover:text-gold";
-
-/**
- * A solid base under the water: brand and positioning, then Divisions / Company / Get in touch columns,
- * then the copyright line. Phones: brand on top, the two link lists side by side, contact below.
- */
 export function Footer() {
-  const profiles = socials.filter((s) => s.url);
   return (
-    <footer className="relative border-t border-white/12 bg-sea-abyss text-ivory">
-      <div className="container-x py-14 sm:py-16">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[minmax(0,4fr)_minmax(0,2fr)_minmax(0,2fr)_minmax(0,3fr)] lg:gap-12">
-          <div className="col-span-2 lg:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-3" aria-label="Sathya Enterprises — home">
-              <Logo size={48} />
-              <span>
-                <span className="block font-display text-[1.1rem] font-extrabold">Sathya Enterprises</span>
-                <span className="block font-mono text-[0.62rem] font-bold tracking-[0.14em] text-gold">{brand.tagline}</span>
-              </span>
-            </Link>
-            <p className="mt-5 max-w-[34ch] text-[0.95rem] text-ivory/70">{brand.positioning}</p>
-            {profiles.length > 0 && (
-              <ul aria-label="Social media" className="mt-6 flex flex-wrap gap-3">
-                {profiles.map((s) => (
-                  <li key={s.id}>
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer me"
-                      aria-label={`Sathya Enterprises on ${s.label}`}
-                      className="grid h-11 w-11 place-items-center rounded-full border border-white/25 transition-colors duration-200 hover:border-gold hover:bg-gold hover:text-charcoal"
-                    >
-                      <SocialIcon id={s.id} className="h-[18px] w-[18px]" />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
+    <footer className="bg-gray-950 text-white py-16 md:py-24 border-t-8 border-red-600 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-red-900/20 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-900/10 blur-[150px] rounded-full pointer-events-none" />
+      
+      <div className="container-x relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 mb-16">
+          <div className="col-span-2 md:col-span-1 space-y-6">
+            <div className="flex items-center gap-3">
+              <img src="/icon.png" alt="" className="w-12 h-12 shrink-0 object-contain bg-white rounded-lg p-1" />
+              <p className="font-display text-xl font-extrabold uppercase tracking-tight md:text-2xl">
+                Sathya <span className="text-red">Enterprises</span>
+              </p>
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed max-w-xs font-medium">
+              Sathya Enterprises operates across digital growth, technology, data, products, infrastructure and business services.
+            </p>
           </div>
-
-          <nav aria-label="Divisions">
-            <p className={heading}>Divisions</p>
-            <ul className="mt-4 space-y-2.5">
-              {divisionLinks.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className={link}>
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
+          <div>
+            <h3 className="font-bold mb-6 text-white uppercase tracking-widest text-sm flex items-center gap-2">
+              <span className="w-2 h-2 bg-red-500 rounded-full"></span> Digital
+            </h3>
+            <ul className="space-y-4 text-sm text-gray-400 font-medium">
+              <li><a href="#" className="hover:text-red-400 transition-colors">Digital Marketing</a></li>
+              <li><a href="#" className="hover:text-red-400 transition-colors">SEO & SEM</a></li>
+              <li><a href="#" className="hover:text-red-400 transition-colors">Web Development</a></li>
             </ul>
-          </nav>
-
-          <nav aria-label="Company">
-            <p className={heading}>Company</p>
-            <ul className="mt-4 space-y-2.5">
-              {companyLinks.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className={link}>
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
+          </div>
+          <div>
+            <h3 className="font-bold mb-6 text-white uppercase tracking-widest text-sm flex items-center gap-2">
+              <span className="w-2 h-2 bg-yellow-500 rounded-full"></span> Technology
+            </h3>
+            <ul className="space-y-4 text-sm text-gray-400 font-medium">
+              <li><a href="#" className="hover:text-yellow-400 transition-colors">SaaS Products</a></li>
+              <li><a href="#" className="hover:text-yellow-400 transition-colors">AI Automation</a></li>
+              <li><a href="#" className="hover:text-yellow-400 transition-colors">WhatsApp Solutions</a></li>
             </ul>
-          </nav>
-
-          <div className="col-span-2 lg:col-span-1">
-            <p className={heading}>Get in touch</p>
-            <ul className="mt-4 space-y-2.5">
-              <li>
-                <a href={`mailto:${contact.email.value}`} className={`${link} [overflow-wrap:anywhere]`}>
-                  {contact.email.value}
-                </a>
-              </li>
-              <li className="text-[0.95rem] text-ivory/80">{contact.location}</li>
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <h3 className="font-bold mb-6 text-white uppercase tracking-widest text-sm flex items-center gap-2">
+              <span className="w-2 h-2 bg-gray-500 rounded-full"></span> Contact
+            </h3>
+            <ul className="space-y-4 text-sm text-gray-400 font-medium">
+              <li>Bengaluru, Karnataka</li>
+              <li>hello@sathyaenterprises.com</li>
+              <li>+91 00000 00000</li>
             </ul>
           </div>
         </div>
-
-        <p className="mt-12 border-t border-white/12 pt-6 text-[0.85rem] text-ivory/60">© {new Date().getFullYear()} Sathya Enterprises</p>
+        <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-gray-500 text-sm font-medium">© {new Date().getFullYear()} Sathya Enterprises. All rights reserved.</p>
+          <div className="flex gap-6 text-gray-500 text-sm font-medium">
+            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+          </div>
+        </div>
       </div>
     </footer>
   );

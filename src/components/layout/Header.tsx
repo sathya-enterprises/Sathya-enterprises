@@ -1,99 +1,45 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { useMotionValueEvent, useScroll } from "motion/react";
-import * as m from "motion/react-m";
-import { Menu } from "lucide-react";
-import { divisions } from "@/content/site";
-import { ease, dur } from "@/lib/motion";
-import { Logo } from "@/components/brand/Logo";
-import { MobileMenu } from "./MobileMenu";
+import { useEffect, useState } from "react";
+import { m } from "motion/react";
 
-/**
- * Content-width bar. Fully transparent at the top of a page so the ocean shows through; once the page
- * scrolls it gains a dark, see-through background (no shadow) so links stay readable over content.
- * Hides while scrolling down and returns on scroll up.
- */
 export function Header() {
-  const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { scrollY } = useScroll();
 
-  useMotionValueEvent(scrollY, "change", (y) => {
-    const prev = scrollY.getPrevious() ?? 0;
-    setScrolled(y > 24);
-    if (mobileOpen) return;
-    if (y > 480 && y > prev + 4) setHidden(true);
-    else if (y < prev - 4 || y <= 480) setHidden(false);
-  });
-
-  // Close the menu on route change.
-  const [lastPath, setLastPath] = useState(pathname);
-  if (pathname !== lastPath) {
-    setLastPath(pathname);
-    setMobileOpen(false);
-  }
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <>
-      <m.header
-        style={{ viewTransitionName: "site-header" }}
-        animate={{ y: hidden ? "-100%" : "0%" }}
-        transition={{ duration: dur.ui * 1.6, ease: ease.out }}
-        className={`on-water fixed inset-x-0 top-0 z-50 transition-[background-color] duration-300 ${
-          scrolled ? "bg-sea-abyss/90" : "bg-transparent"
-        }`}
-      >
-        <div className="container-x flex h-[var(--header-h)] items-center justify-between gap-4 text-ivory">
-          <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="Sathya Enterprises — home">
-            <Logo size={44} eager />
-            <span className="hidden font-display text-[1.05rem] font-extrabold tracking-[-0.01em] sm:inline">Sathya Enterprises</span>
-          </Link>
-
-          <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
-            {divisions.map((d) => {
-              const on = pathname === d.href;
-              return (
-                <Link
-                  key={d.id}
-                  href={d.href}
-                  aria-current={on ? "page" : undefined}
-                  className={`rounded-full px-3 py-2 text-[0.92rem] font-semibold transition-opacity duration-200 hover:opacity-100 ${
-                    on ? "underline decoration-gold decoration-2 underline-offset-8" : "opacity-80"
-                  }`}
-                >
-                  {d.name.charAt(0) + d.name.slice(1).toLowerCase()}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href="/contact"
-              className="hidden rounded-full bg-red px-5 py-2.5 text-[0.9rem] font-bold text-white transition-colors duration-200 hover:bg-red-deep sm:inline-flex"
-            >
-              Contact
-            </Link>
-            <button
-              type="button"
-              className="inline-flex h-11 items-center gap-2 rounded-full px-3 text-[0.92rem] font-bold lg:hidden"
-              aria-expanded={mobileOpen}
-              aria-controls="mobile-menu"
-              onClick={() => setMobileOpen(true)}
-            >
-              <Menu aria-hidden className="h-5 w-5" />
-              Menu
-            </button>
-          </div>
+    <header 
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
+        scrolled ? "bg-white/95 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-4 md:py-6"
+      }`}
+    >
+      <nav className="container-x flex justify-between items-center text-gray-900">
+        {/* Stacked lockup: short and wide enough to sit beside the logo on the narrowest phones. */}
+        <a href="/" aria-label="Sathya Enterprises — home" className="flex min-w-0 items-center gap-2.5">
+          <img src="/icon.png" alt="" className="h-9 w-9 shrink-0 rounded-full object-contain md:h-10 md:w-10" />
+          <span aria-hidden className="flex flex-col font-display uppercase leading-none">
+            <span className="text-[1.3rem] font-extrabold tracking-[-0.02em] md:text-[1.5rem]">Sathya</span>
+            <span className="mt-[3px] -mr-[0.3em] text-[0.5rem] font-bold tracking-[0.3em] text-red md:text-[0.58rem]">Enterprises</span>
+          </span>
+        </a>
+        <div className="hidden lg:flex items-center gap-8 font-bold text-sm tracking-wide">
+          <a href="#ecosystem" className="hover:text-red transition-colors">Ecosystem</a>
+          <a href="#ecosystem" className="hover:text-red transition-colors">Digital</a>
+          <a href="#ecosystem" className="hover:text-red transition-colors">Technology</a>
+          <a href="#ecosystem" className="hover:text-red transition-colors">Products</a>
+          <a href="#ecosystem" className="hover:text-red transition-colors">Services</a>
         </div>
-      </m.header>
-
-      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
-    </>
+        <a href="#contact" className="shrink-0 bg-red text-white px-4 py-2.5 md:px-7 md:py-3 rounded-full text-sm font-bold shadow-lg hover:bg-red-deep transition-all active:scale-95">
+          Contact Us
+        </a>
+      </nav>
+    </header>
   );
 }

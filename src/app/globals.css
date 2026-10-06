@@ -595,12 +595,11 @@ select optgroup {
   place-items: center;
   padding: var(--gutter);
   text-align: center;
-  color: var(--color-ivory);
-  background:
-    radial-gradient(ellipse 70% 60% at 50% 0%, rgb(170 220 238 / 0.18), transparent 70%),
-    linear-gradient(to bottom, var(--color-sea-shallow), var(--color-sea) 45%, var(--color-sea-deep));
+  color: var(--color-charcoal);
+  background: var(--color-ivory);
   transition:
     transform 700ms var(--ease-in-out),
+    border-radius 700ms var(--ease-in-out),
     opacity 700ms var(--ease-in-out);
   animation: preloader-fallback 400ms linear 6s forwards;
 }
@@ -610,8 +609,10 @@ select optgroup {
 :root:not([data-preloaded]) {
   --enter-base: 1.7s;
 }
+/* Lifts away like a curtain, its bottom edge rounding as it goes. */
 .preloader--out {
   transform: translateY(-100%);
+  border-radius: 0 0 50% 50% / 0 0 18% 18%;
   pointer-events: none;
 }
 .preloader__mark {
@@ -620,9 +621,16 @@ select optgroup {
   align-items: center;
   animation: preloader-rise 800ms var(--ease-out) both;
 }
-.preloader__logo {
-  border-radius: 9999px;
-  animation: preloader-bob 2.4s ease-in-out infinite;
+/* The four brand shapes pop in one after another, then keep a gentle bob. */
+.preloader__shape {
+  display: block;
+  animation:
+    preloader-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    preloader-bob 2.4s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 120ms), calc(600ms + var(--i, 0) * 160ms);
+}
+.preloader__name {
+  animation: preloader-rise 700ms var(--ease-out) 0.55s both;
 }
 .preloader__bar {
   display: block;
@@ -630,7 +638,7 @@ select optgroup {
   width: min(14rem, 60vw);
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, var(--color-gold), var(--color-red));
+  background: linear-gradient(90deg, var(--color-red), var(--color-gold));
   transform-origin: left;
   animation: preloader-bar 1.4s var(--ease-in-out) 150ms both;
 }
@@ -639,6 +647,9 @@ select optgroup {
 }
 @keyframes preloader-bob {
   50% { transform: translateY(-6px); }
+}
+@keyframes preloader-pop {
+  from { transform: scale(0) rotate(-60deg); opacity: 0; }
 }
 @keyframes preloader-bar {
   from { transform: scaleX(0); }
@@ -653,7 +664,8 @@ select optgroup {
     opacity: 0;
   }
   .preloader__mark,
-  .preloader__logo,
+  .preloader__shape,
+  .preloader__name,
   .preloader__bar {
     animation: none;
   }
@@ -717,5 +729,81 @@ select optgroup {
 @media (prefers-reduced-motion: reduce) {
   .whale-float {
     animation: none;
+  }
+}
+
+/* ── Shape field (home › ShapeField.tsx, behind the hero and ecosystem) ──
+ * Large brand-colour shapes that sit behind the hero, bleed off the edges and drift slowly
+ * (Labs-style). They grow in once the preloader lifts; reduced motion keeps them still. */
+.hero-shape-enter {
+  animation: hero-shape-enter 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--enter-base) + var(--d, 0s));
+}
+.hero-shape-float {
+  animation:
+    hero-shape-drift var(--float-dur, 9s) ease-in-out var(--float-phase, 0s) infinite,
+    hero-shape-turn calc(var(--float-dur, 9s) * 1.45) ease-in-out var(--float-phase, 0s) infinite;
+}
+@keyframes hero-shape-enter {
+  from {
+    scale: 0.35;
+    opacity: 0;
+    filter: blur(14px);
+  }
+}
+@keyframes hero-shape-drift {
+  0%, 100% { translate: 0 0; }
+  25% { translate: var(--amp-x, 1.5rem) var(--amp-y, 2rem); }
+  75% { translate: calc(var(--amp-x, 1.5rem) * -1) calc(var(--amp-y, 2rem) * -1); }
+}
+@keyframes hero-shape-turn {
+  0%, 100% { rotate: 0deg; }
+  25% { rotate: var(--amp-r, 8deg); }
+  75% { rotate: calc(var(--amp-r, 8deg) * -1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-shape-enter,
+  .hero-shape-float {
+    animation: none;
+  }
+}
+
+/* ── Story (home › StoryTelling.tsx) ──────────────────────────────────────
+ * Chapter text swaps as the scenes change. --show is 1 on screen, otherwise 0. --shift is -1 (passed, parked above),
+ * 0 (on screen) or 1 (still to come, parked below). Each letter takes a little longer than the one
+ * before, so the word arrives as a wave. */
+.story-text {
+  pointer-events: none;
+}
+.story-text[data-state="active"] {
+  pointer-events: auto;
+}
+.story-letter {
+  display: inline-block;
+  text-shadow: 18px 0 30px rgb(0 0 0 / 0.35);
+  opacity: var(--show);
+  transform: translateY(calc(var(--shift) * 110%));
+  transition:
+    transform calc(0.55s + var(--n, 0) * 0.09s) var(--ease-out),
+    opacity calc(0.45s + var(--n, 0) * 0.07s) var(--ease-out);
+}
+.story-lead,
+.story-body {
+  opacity: var(--show);
+  transform: translateY(calc(var(--shift) * 3rem));
+  transition:
+    transform 0.9s var(--ease-out),
+    opacity 0.7s var(--ease-out);
+}
+.story-body {
+  transform: translateY(calc(var(--shift) * 5rem));
+  transition-duration: 1.1s, 0.8s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-letter,
+  .story-lead,
+  .story-body {
+    transform: none;
+    transition-property: opacity;
   }
 }
