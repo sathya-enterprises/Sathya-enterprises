@@ -50,18 +50,19 @@ function Card({ step, index, progress }: { step: Step; index: number; progress: 
   const y = useTransform(flight, (f) => `${along(step.y, f)}%`);
   const rotate = useTransform(flight, (f) => along(step.r, f));
   const opacity = useTransform(flight, (f) => (f > 0 && f < 1 ? 1 : 0));
+  // Alternating red / deep-red cards with gold accents.
   const red = index % 2 === 0;
 
   return (
     <m.li
       style={{ x, y, rotate, opacity }}
-      className="absolute left-full top-[11%] flex h-[min(30rem,44svh)] w-[calc(min(30rem,44svh)*0.68)] flex-col md:h-[min(30rem,56svh)] md:w-[calc(min(30rem,56svh)*0.66)] rounded-[var(--radius-md)] bg-charcoal p-2 shadow-3"
+      className={`absolute left-full top-[11%] flex h-[min(30rem,44svh)] w-[calc(min(30rem,44svh)*0.68)] flex-col md:h-[min(30rem,56svh)] md:w-[calc(min(30rem,56svh)*0.66)] rounded-[var(--radius-md)] p-2 shadow-[0_28px_60px_-18px_rgb(158_16_38/0.55)] ${red ? "bg-red" : "bg-red-deep"}`}
     >
       <div className="relative h-[42%] overflow-hidden rounded-[calc(var(--radius-md)-6px)]">
         <Image src={step.photo} alt="" fill sizes="20rem" placeholder="blur" className="object-cover" />
         <span
           className={`absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-full font-mono text-sm font-bold md:h-12 md:w-12 ${
-            red ? "bg-red text-ivory" : "bg-gold text-charcoal"
+            red ? "bg-gold text-red-deep" : "bg-ivory text-red"
           }`}
         >
           {step.num}
@@ -70,9 +71,9 @@ function Card({ step, index, progress }: { step: Step; index: number; progress: 
       <div className="flex flex-1 flex-col justify-between p-3 text-ivory md:p-4">
         <h3 className="font-display text-[clamp(1.35rem,3.6svh,2.6rem)] font-extrabold uppercase leading-none tracking-tight">
           {step.title}
-          <span className={red ? "text-red" : "text-gold"}>.</span>
+          <span className="text-gold">.</span>
         </h3>
-        <p className="text-[0.8rem] leading-snug text-ivory/75 md:text-base">{step.desc}</p>
+        <p className="text-[0.8rem] leading-snug text-gold-light/90 md:text-base">{step.desc}</p>
       </div>
     </m.li>
   );
@@ -112,7 +113,7 @@ export function MoneySystemSequence() {
         <m.h2
           ref={headlineRef}
           style={{ x: headlineX }}
-          className="absolute inset-y-0 left-0 flex w-max items-center whitespace-nowrap px-[var(--gutter)] font-display text-[30vw] font-extrabold uppercase leading-none tracking-[-0.05em] text-charcoal lg:text-[24vw]"
+          className="absolute inset-y-0 left-0 flex w-max items-center whitespace-nowrap px-[var(--gutter)] font-display text-[30vw] font-extrabold uppercase leading-none tracking-[-0.05em] text-red lg:text-[24vw]"
         >
           Money-making&nbsp;
           <span className="bg-gradient-to-r from-red to-gold bg-clip-text text-transparent">system.</span>
@@ -121,7 +122,7 @@ export function MoneySystemSequence() {
         <div className="container-x absolute inset-x-0 bottom-[max(1.5rem,5svh)]">
           <div className="max-w-xs md:max-w-sm">
             <Eyebrow>The System</Eyebrow>
-            <p className="mt-4 text-sm leading-relaxed text-charcoal-soft md:text-base">
+            <p className="mt-4 text-sm font-semibold leading-relaxed text-red-deep md:text-base">
               From attention to leads. From leads to customers. From customers to growth.
             </p>
           </div>

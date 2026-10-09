@@ -69,10 +69,10 @@ export function Preloader() {
             </span>
           ))}
         </div>
-        <p className="preloader__name mt-8 font-display text-[clamp(1.6rem,7vw,2.6rem)] font-extrabold uppercase leading-none tracking-[-0.035em] text-charcoal">
+        <p className="preloader__name mt-8 font-display text-[clamp(1.6rem,7vw,2.6rem)] font-extrabold uppercase leading-none tracking-[-0.035em] text-ink">
           Sathya <span className="text-red">Enterprises</span>
         </p>
-        <p className="preloader__name t-eyebrow mt-3 text-charcoal-soft" style={{ animationDelay: "0.75s" }}>
+        <p className="preloader__name t-eyebrow mt-3 text-ink-soft" style={{ animationDelay: "0.75s" }}>
           {brand.tagline}
         </p>
         <span aria-hidden className="preloader__bar" />

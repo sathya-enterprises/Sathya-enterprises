@@ -28,7 +28,7 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-black leading-[0.9]">
+            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-ink leading-[0.9]">
               SATHYA <br />
               <span className="text-red-600">ENTERPRISES</span>
             </h1>
@@ -38,7 +38,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="text-lg md:text-xl text-gray-800 max-w-xl leading-relaxed font-medium"
+            className="text-lg md:text-xl text-ink-soft max-w-xl leading-relaxed font-medium"
           >
             Sathya Enterprises operates across digital growth, technology, data, products, infrastructure and business services — built as one connected ecosystem rather than a collection of unrelated ventures.
           </m.p>
@@ -47,7 +47,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            className="text-md md:text-lg text-gray-600 max-w-xl leading-relaxed"
+            className="text-md md:text-lg text-ink-soft max-w-xl leading-relaxed"
           >
             Every part of the business feeds the next: digital work creates attention, technology turns that attention into systems, and services and products deliver the real-world value customers came for.
           </m.p>

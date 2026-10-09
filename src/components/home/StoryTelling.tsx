@@ -1,8 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image, { type StaticImageData } from "next/image";
-import { m, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
+import { animate, m, useMotionValue, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
+import { ease } from "@/lib/motion";
+import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
 import { brand } from "@/content/site";
 import { Shape } from "./ShapeField";
 import meetingPhoto from "@/assets/photos/meeting.jpg";
@@ -83,16 +85,9 @@ function Scene({ index, t, chapter }: { index: number; t: MotionValue<number>; c
         <Image src={chapter.photo} alt="" fill sizes="100vw" placeholder="blur" className="object-cover" />
       </m.div>
 
-      {/* Middle: shade for legibility + a giant outlined chapter number */}
+      {/* Middle: shade for legibility */}
       <m.div style={{ y: midY }} className="absolute inset-x-0 -inset-y-[22svh]">
         <div className="absolute inset-0 bg-gradient-to-b from-charcoal/70 via-charcoal/55 to-charcoal/90" />
-        <span
-          aria-hidden
-          className="absolute right-[4%] top-[30%] font-display text-[42vw] font-extrabold leading-none tracking-tighter text-transparent md:text-[24vw]"
-          style={{ WebkitTextStroke: "1.5px rgb(255 253 248 / 0.16)" }}
-        >
-          {String(index + 1).padStart(2, "0")}
-        </span>
       </m.div>
 
       {/* Front: brand shapes rising from the bottom edge */}
@@ -147,17 +142,130 @@ function ChapterText({ chapter, state }: { chapter: Chapter; state: TextState })
   );
 }
 
+/** Wheel/swipe gestures arriving within this time of a chapter change are absorbed (trackpad momentum). */
+const LOCK_MS = 1100;
+/** Gaps shorter than this between wheel events mean the same gesture is still going. */
+const GESTURE_GAP_MS = 250;
+
 export function StoryTelling() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
 
-  // A short hold at each end, the scenes change in between. t runs 0 → 2 (one unit per scene change).
-  const t = useTransform(scrollYProgress, [0.06, 0.94], [0, LAST]);
+  // One screen of scroll per chapter; the nearest chapter is the active one. The scenes then glide
+  // to it on their own clock — 1.6s, eased — like a slider, so uneven wheel steps never jolt them.
   const [active, setActive] = useState(0);
-  useMotionValueEvent(t, "change", (v) => setActive(Math.round(v)));
+  const activeRef = useRef(0);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const next = Math.round(Math.min(1, Math.max(0, v)) * LAST);
+    activeRef.current = next;
+    setActive(next);
+  });
+  const reduced = useReducedMotionSafe();
+  const t = useMotionValue(0);
+  useEffect(() => {
+    const run = animate(t, active, { duration: reduced ? 0 : 1.6, ease: ease.inOut });
+    return () => run.stop();
+  }, [active, reduced, t]);
+
+  // While the stage is pinned, one wheel flick or swipe = one chapter (like a vertical slider).
+  // The page is moved straight to that chapter's scroll position, so the scroll position, the
+  // scrollbar and keyboard scrolling all stay in step. Past the first/last chapter, gestures
+  // fall through to normal page scrolling.
+  useEffect(() => {
+    let lockUntil = 0;
+    let lastEvent = 0;
+    let engaged = false;
+    let touchY: number | null = null;
+    let touchDone = false;
+
+    const geometry = () => {
+      const el = ref.current;
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      const pinned = r.top <= 1 && r.bottom >= window.innerHeight - 1;
+      return { pinned, top: window.scrollY + r.top, at: -r.top / window.innerHeight };
+    };
+    const goTo = (i: number, top: number) => {
+      window.scrollTo({ top: top + i * window.innerHeight, behavior: "instant" });
+      lockUntil = performance.now() + LOCK_MS;
+    };
+    /** Returns true when the gesture was used here (caller should cancel the native scroll). */
+    const step = (dir: number) => {
+      const now = performance.now();
+      // Events closer together than GESTURE_GAP_MS are one gesture (a trackpad flick and its momentum).
+      const continuing = now - lastEvent < GESTURE_GAP_MS;
+      lastEvent = now;
+      const g = geometry();
+      if (!g?.pinned) {
+        engaged = false;
+        return false;
+      }
+      if (!engaged) {
+        // Just arrived. If the gesture that brought us here is still going (momentum), or we're not
+        // resting on a chapter, settle on the chapter we came in on — the first one going down, the
+        // last one going up — rather than skipping ahead. A fresh gesture while resting turns the page.
+        engaged = true;
+        const settle = Math.min(LAST, Math.max(0, dir > 0 ? Math.floor(g.at) : Math.ceil(g.at)));
+        if (continuing || Math.abs(g.at - settle) > 0.02) {
+          goTo(settle, g.top);
+          return true;
+        }
+      }
+      if (now < lockUntil) {
+        // Keep absorbing for as long as the gesture keeps coming, so momentum never turns a second page.
+        lockUntil = Math.max(lockUntil, now + GESTURE_GAP_MS);
+        return true;
+      }
+      const next = activeRef.current + dir;
+      if (next < 0 || next > LAST) return false;
+      goTo(next, g.top);
+      return true;
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < Math.abs(e.deltaX) || e.ctrlKey) return;
+      if (step(Math.sign(e.deltaY))) e.preventDefault();
+    };
+    const onTouchStart = (e: TouchEvent) => {
+      touchY = e.touches[0].clientY;
+      touchDone = false;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (touchY === null) return;
+      if (touchDone) {
+        e.preventDefault();
+        return;
+      }
+      const dy = touchY - e.touches[0].clientY;
+      if (Math.abs(dy) < 30) {
+        if (geometry()?.pinned && engaged) e.preventDefault();
+        return;
+      }
+      if (step(Math.sign(dy))) {
+        touchDone = true;
+        e.preventDefault();
+      } else {
+        touchY = null; // leaving the section: let this swipe scroll the page
+      }
+    };
+    const onScroll = () => {
+      if (!geometry()?.pinned) engaged = false;
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
 
   return (
-    <section ref={ref} aria-label="Our story" className="relative h-[360svh] bg-charcoal">
+    <section ref={ref} aria-label="Our story" className="relative bg-charcoal" style={{ height: `${(LAST + 1) * 100}svh` }}>
       <div className="sticky top-0 h-svh overflow-hidden">
         {CHAPTERS.map((chapter, i) => (
           <Scene key={chapter.word} index={i} t={t} chapter={chapter} />
@@ -170,12 +278,11 @@ export function StoryTelling() {
           ))}
         </div>
 
-        {/* Progress: which chapter you're on */}
+        {/* Progress bars: which chapter you're on */}
         <div
           aria-hidden
           className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 md:bottom-auto md:left-auto md:right-[var(--gutter)] md:top-1/2 md:-translate-y-1/2 md:translate-x-0 md:flex-col"
         >
-          <span className="t-eyebrow text-ivory">{String(active + 1).padStart(2, "0")}</span>
           {CHAPTERS.map((c, i) => (
             <span
               key={c.word}
@@ -184,7 +291,6 @@ export function StoryTelling() {
               }`}
             />
           ))}
-          <span className="t-eyebrow text-ivory/50">{String(CHAPTERS.length).padStart(2, "0")}</span>
         </div>
       </div>
     </section>

@@ -79,7 +79,7 @@ export function BuiltToGrow({ items, photo }: { items: Item[]; photo: Photo }) {
 
         {/* The figure */}
         {figure && (
-          <Tile i={1} className="flex flex-col justify-between rounded-lg bg-gold p-6 text-charcoal [text-shadow:none] sm:p-8 lg:col-span-5">
+          <Tile i={1} className="flex flex-col justify-between rounded-lg bg-gold p-6 text-ink [text-shadow:none] sm:p-8 lg:col-span-5">
             <p className="font-display text-[clamp(4.5rem,11vw,7.5rem)] font-extrabold leading-[0.85] tracking-[-0.06em]">
               {figure.figure ? (
                 <>
@@ -90,7 +90,7 @@ export function BuiltToGrow({ items, photo }: { items: Item[]; photo: Photo }) {
             </p>
             <div className="mt-6">
               <h3 className="font-display text-[1.4rem] font-extrabold tracking-[-0.02em]">{figure.title}</h3>
-              <p className="mt-1.5 max-w-[34ch] text-[0.98rem] text-charcoal/75">{figure.body}</p>
+              <p className="mt-1.5 max-w-[34ch] text-[0.98rem] text-ink/75">{figure.body}</p>
             </div>
           </Tile>
         )}

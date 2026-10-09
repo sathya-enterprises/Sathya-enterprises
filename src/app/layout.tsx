@@ -8,6 +8,7 @@ import { organizationLd, siteUrl } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { OceanBackdrop } from "@/components/ocean/OceanBackdrop";
 import { Preloader } from "@/components/layout/Preloader";
+import { CookieConsent } from "@/components/layout/CookieConsent";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -77,6 +78,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <main id="main">{children}</main>
             <Footer />
           </div>
+          <CookieConsent />
         </MotionProvider>
       </body>
     </html>

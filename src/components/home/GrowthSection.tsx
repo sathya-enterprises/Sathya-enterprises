@@ -79,7 +79,7 @@ export function GrowthSection() {
                 <li key={stat.label} aria-label={stat.label} className="flex h-full min-w-0 flex-1 flex-col justify-end pt-16">
                   <m.p
                     variants={value}
-                    className="mb-2 font-display text-[clamp(1.35rem,6vw,3rem)] font-extrabold leading-none tracking-tight text-charcoal md:mb-3"
+                    className="mb-2 font-display text-[clamp(1.35rem,6vw,3rem)] font-extrabold leading-none tracking-tight text-ink md:mb-3"
                   >
                     {stat.value}
                   </m.p>
@@ -94,7 +94,7 @@ export function GrowthSection() {
           </div>
           <ul aria-hidden className="mt-3 flex gap-3 sm:gap-5 md:gap-6">
             {STATS.map((stat) => (
-              <li key={stat.label} className="t-eyebrow min-w-0 flex-1 text-[0.62rem] text-charcoal-soft md:text-[0.72rem]">
+              <li key={stat.label} className="t-eyebrow min-w-0 flex-1 text-[0.62rem] text-ink-soft md:text-[0.72rem]">
                 {stat.label}
               </li>
             ))}

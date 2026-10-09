@@ -49,7 +49,7 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
                     0{i + 1}
                   </span>
                   <span className="flex-1">{it.q}</span>
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/25 transition-colors duration-300 group-open:border-gold group-open:bg-gold group-open:text-charcoal">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/25 transition-colors duration-300 group-open:border-gold group-open:bg-gold group-open:text-ink">
                     <Plus aria-hidden className="h-4 w-4 transition-transform duration-300 group-open:rotate-45" />
                   </span>
                 </summary>

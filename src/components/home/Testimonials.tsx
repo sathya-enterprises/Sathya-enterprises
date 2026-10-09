@@ -16,9 +16,9 @@ const DELAY = 5500;
 
 /** Monogram tint per division, so the avatars in a row don't all look the same. */
 const tint: Record<Testimonial["division"], string> = {
-  digital: "from-gold to-red text-charcoal",
+  digital: "from-gold to-red text-ink",
   technology: "from-sea-shallow to-sea-deep text-ivory",
-  products: "from-gold-tint to-gold text-charcoal",
+  products: "from-gold-tint to-gold text-ink",
   services: "from-red to-red-deep text-ivory",
 };
 
@@ -41,7 +41,7 @@ function Avatar({ t }: { t: Testimonial }) {
 }
 
 const control =
-  "grid h-12 w-12 place-items-center rounded-full border border-white/25 text-ivory transition-colors duration-200 hover:border-gold hover:bg-gold hover:text-charcoal";
+  "grid h-12 w-12 place-items-center rounded-full border border-white/25 text-ivory transition-colors duration-200 hover:border-gold hover:bg-gold hover:text-ink";
 
 /**
  * Client words as a carousel: one card on phones, two on tablets, three from lg. Embla does the sliding

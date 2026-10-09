@@ -60,7 +60,7 @@ export function CardsSection() {
         </div>
 
         <div className="container mx-auto px-6 mb-12 relative z-10">
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight text-gray-900">
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight text-ink">
             OUR BUSINESS <br/><span className="text-red-600">ECOSYSTEM</span>
           </h2>
         </div>
@@ -86,10 +86,10 @@ export function CardsSection() {
 
                 {/* Content Area */}
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">
+                  <h3 className="text-2xl font-bold text-ink mb-3 tracking-tight">
                     {card.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm">
+                  <p className="text-ink-soft leading-relaxed text-sm">
                     {card.description}
                   </p>
 

@@ -20,7 +20,7 @@ export function Header() {
         scrolled ? "bg-white/95 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-4 md:py-6"
       }`}
     >
-      <nav className="container-x flex justify-between items-center text-gray-900">
+      <nav className="container-x flex justify-between items-center text-ink">
         {/* Stacked lockup: short and wide enough to sit beside the logo on the narrowest phones. */}
         <a href="/" aria-label="Sathya Enterprises — home" className="flex min-w-0 items-center gap-2.5">
           <img src="/icon.png" alt="" className="h-9 w-9 shrink-0 rounded-full object-contain md:h-10 md:w-10" />

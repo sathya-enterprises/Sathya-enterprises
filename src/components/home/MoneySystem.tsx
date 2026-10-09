@@ -90,13 +90,13 @@ export function MoneySystem({ stages }: { stages: SystemStage[] }) {
                 <li
                   key={s.stage}
                   className={`relative flex w-[min(80vw,22rem)] shrink-0 snap-start flex-col overflow-hidden rounded-lg border p-6 transition-[border-color,background-color,opacity] duration-500 sm:w-[23rem] sm:p-8 lg:w-[25rem] ${
-                    last ? "border-gold bg-gold text-charcoal [text-shadow:none]" : on ? "border-gold/70 bg-sea-abyss/90" : "border-white/12 bg-sea-abyss/70"
+                    last ? "border-gold bg-gold text-ink [text-shadow:none]" : on ? "border-gold/70 bg-sea-abyss/90" : "border-white/12 bg-sea-abyss/70"
                   } ${on || last ? "opacity-100" : "opacity-60"}`}
                 >
                   <span
                     aria-hidden
                     className={`pointer-events-none absolute right-5 top-4 font-display text-[5.5rem] font-extrabold leading-[0.8] tracking-[-0.05em] sm:right-7 sm:top-6 sm:text-[6.5rem] ${
-                      last ? "text-charcoal/10" : "text-outline"
+                      last ? "text-ink/10" : "text-outline"
                     }`}
                   >
                     0{i + 1}
@@ -107,7 +107,7 @@ export function MoneySystem({ stages }: { stages: SystemStage[] }) {
                   <h3 className="relative mt-16 font-display text-[clamp(2rem,4vw,2.75rem)] font-extrabold leading-none tracking-[-0.04em] sm:mt-24">
                     {s.stage}
                   </h3>
-                  <p className={`relative mt-3 text-[1rem] ${last ? "text-charcoal/80" : "text-ivory/80"}`}>{s.items}</p>
+                  <p className={`relative mt-3 text-[1rem] ${last ? "text-ink/80" : "text-ivory/80"}`}>{s.items}</p>
                   <ul className={`relative mt-6 flex flex-wrap gap-2 border-t pt-5 ${last ? "border-charcoal/15" : "border-white/12"}`}>
                     {s.links.map((l) => (
                       <li key={l.href}>

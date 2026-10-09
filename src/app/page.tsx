@@ -2,7 +2,7 @@ import { HeroParallax } from "@/components/home/HeroParallax";
 import { StoryTelling } from "@/components/home/StoryTelling";
 import { EcosystemCards } from "@/components/home/EcosystemCards";
 import { MoneySystemSequence } from "@/components/home/MoneySystemSequence";
-import { GrowthSection } from "@/components/home/GrowthSection";
+import { StartGrowing } from "@/components/home/StartGrowing";
 import { CtaSection } from "@/components/home/CtaSection";
 
 export default function Home() {
@@ -12,7 +12,7 @@ export default function Home() {
       <StoryTelling />
       <EcosystemCards />
       <MoneySystemSequence />
-      <GrowthSection />
+      <StartGrowing />
       <CtaSection />
     </main>
   );

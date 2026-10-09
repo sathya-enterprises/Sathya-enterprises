@@ -80,7 +80,7 @@ export function BusinessExplorer({ items, division }: { items: Business[]; divis
               >
                 <span
                   className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border transition-[background-color,color,border-color] duration-300 ${
-                    on ? "border-gold bg-gold text-charcoal" : "border-(--tone-line) text-(--tone-accent)"
+                    on ? "border-gold bg-gold text-ink" : "border-(--tone-line) text-(--tone-accent)"
                   }`}
                 >
                   <Icon aria-hidden className="h-5 w-5" />

@@ -30,7 +30,7 @@ export function GrowthSteps({ steps }: { steps: GrowthStep[] }) {
               <li key={s.verb} className="timeline-step relative grid grid-cols-[2.5rem_minmax(0,1fr)] gap-4 pb-12 last:pb-0 sm:grid-cols-[3rem_minmax(0,1fr)] sm:gap-6 sm:pb-16">
                 <span
                   aria-hidden
-                  className="timeline-node relative z-10 grid h-10 w-10 place-items-center rounded-full border-2 border-gold bg-gold font-mono text-[0.78rem] font-bold text-charcoal sm:h-12 sm:w-12 sm:text-[0.85rem]"
+                  className="timeline-node relative z-10 grid h-10 w-10 place-items-center rounded-full border-2 border-gold bg-gold font-mono text-[0.78rem] font-bold text-ink sm:h-12 sm:w-12 sm:text-[0.85rem]"
                 >
                   0{i + 1}
                 </span>

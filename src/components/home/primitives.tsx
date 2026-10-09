@@ -66,8 +66,8 @@ export function SectionHeader({
   return (
     <Reveal className={`max-w-2xl ${centered ? "mx-auto text-center" : ""} ${className}`}>
       {eyebrow && <div className="mb-5"><Eyebrow>{eyebrow}</Eyebrow></div>}
-      <h2 className="t-h1 uppercase text-charcoal">{title}</h2>
-      {lead && <p className={`t-lead mt-5 text-charcoal-soft ${centered ? "mx-auto" : ""}`}>{lead}</p>}
+      <h2 className="t-h1 uppercase text-ink">{title}</h2>
+      {lead && <p className={`t-lead mt-5 text-ink-soft ${centered ? "mx-auto" : ""}`}>{lead}</p>}
     </Reveal>
   );
 }
@@ -87,7 +87,7 @@ export function ButtonLink({
   const look =
     variant === "primary"
       ? "bg-red text-ivory shadow-2 hover:bg-red-deep"
-      : "border-2 border-gold bg-white text-charcoal hover:bg-gold-light";
+      : "border-2 border-gold bg-white text-ink hover:bg-gold-light";
   return (
     <a href={href} className={`${buttonBase} ${look}`}>
       {children}

@@ -25,8 +25,10 @@ Brand tokens (from the live `:root`):
 | gold           | `#f4c542`            | secondary, hover state, satellites|
 | gold-light     | `#fff5d6`            | warm surface                      |
 | ivory          | `#fffdf8`            | page ground                       |
-| charcoal       | `#1a1a1a`            | ink                               |
-| charcoal-soft  | `#4a4642`            | body copy                         |
+| charcoal       | `#1a1a1a`            | dark backgrounds only, never text |
+| charcoal-soft  | `#4a4642`            | dark surfaces (soft)              |
+| ink            | `#6e0b1c`            | text — headings and copy are red, never black |
+| ink-soft       | `#8a2b2b`            | body copy                         |
 | line           | `rgba(26,26,26,.1)`  | hairlines                         |
 | tints          | `#ffe9ec`, `#ffe7ac` | soft red / soft gold fills        |
 

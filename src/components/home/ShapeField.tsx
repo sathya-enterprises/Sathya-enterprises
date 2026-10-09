@@ -47,7 +47,8 @@ const SLOTS: Slot[] = [
   {
     kind: "clover",
     color: "text-gold",
-    place: "left-[96%] top-[14%] md:left-[82%] md:top-[22%]",
+    // Desktop: tucked further right and lower, clear of the one-line ecosystem heading.
+    place: "left-[96%] top-[14%] md:left-[82%] md:top-[22%] lg:left-[96%] lg:top-[36%]",
     size: "w-[clamp(9rem,40vw,22rem)]",
     tilt: -18,
     depth: 220,
