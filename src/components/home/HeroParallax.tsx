@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { m, useScroll, useTransform, type MotionValue } from "motion/react";
+import { m, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
 import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
 import bg from "@/assets/hero/bg.jpg";
 import man from "@/assets/hero/man.png";
@@ -23,6 +23,10 @@ import mountainRight from "@/assets/hero/mountain-right.png";
  */
 
 const LAYER = "pointer-events-none select-none object-cover";
+/** Layers are zoomed on scroll, so they are served at higher quality (allowed in next.config.ts). */
+const QUALITY = 90;
+/** Sized for the zoomed-in end of the scroll (~1.6×), so phones fetch enough pixels for it too. */
+const SIZES = "160vw";
 
 /** Scroll progress (0–100) → transform for one layer; `x`/`y` in %, `s` is extra scale per unit. */
 function useLayer(p: MotionValue<number>, { x = 0, y = 0, s = 0 }: { x?: number; y?: number; s?: number }) {
@@ -33,17 +37,22 @@ export function HeroParallax() {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotionSafe();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  // The scene follows the scroll through a spring rather than jumping with it, so each wheel notch
+  // glides instead of stepping (the page itself still scrolls natively).
+  const smooth = useSpring(scrollYProgress, { stiffness: 110, damping: 26, mass: 0.6, restDelta: 0.0005 });
   // Function form on purpose: the array form gets handed to a native scroll timeline, which misreads
   // a sticky section's range.
-  const p = useTransform(scrollYProgress, (v) => (reduced ? 0 : Math.min(1, Math.max(0, v)) * 100));
+  const p = useTransform(smooth, (v) => (reduced ? 0 : Math.min(1, Math.max(0, v)) * 100));
 
-  const sky = useLayer(p, { s: 0.004 });
-  const text = useLayer(p, { y: 0.9, s: 0.006 });
-  const hiker = useLayer(p, { y: 1.2, s: 0.02 });
-  const cloudsA = useLayer(p, { x: 1.2, y: 0.4, s: 0.015 });
-  const cloudsB = useLayer(p, { x: -1.2, y: 0.2, s: 0.015 });
-  const left = useLayer(p, { x: -1.1, s: 0.012 });
-  const right = useLayer(p, { x: 1.1, s: 0.012 });
+  // Zoom is capped so no layer is enlarged past ~1.6×: the cut-outs are 2049px wide, and beyond that
+  // their pixels show. The fly-through comes from the layers parting and dropping away instead.
+  const sky = useLayer(p, { s: 0.0015 });
+  const text = useLayer(p, { y: 0.9, s: 0.004 });
+  const hiker = useLayer(p, { y: 1.3, s: 0.006 });
+  const cloudsA = useLayer(p, { x: 1.4, y: 0.4, s: 0.005 });
+  const cloudsB = useLayer(p, { x: -1.4, y: 0.2, s: 0.005 });
+  const left = useLayer(p, { x: -1.25, s: 0.004 });
+  const right = useLayer(p, { x: 1.25, s: 0.004 });
   const textOpacity = useTransform(p, (v) => Math.max(0, 1 - Math.max(0, v - 45) / 35));
   const veil = useTransform(p, (v) => Math.max(0, (v - 70) / 30));
 
@@ -51,7 +60,7 @@ export function HeroParallax() {
     <section ref={ref} aria-label="Sathya Enterprises" className="relative h-[220svh] bg-ivory">
       <div className="sticky top-0 h-svh overflow-hidden bg-[#cfe3f1]">
         <m.div style={{ transform: sky }} className="absolute inset-0">
-          <Image src={bg} alt="" fill priority sizes="100vw" placeholder="blur" className={LAYER} />
+          <Image src={bg} alt="" fill priority sizes={SIZES} quality={QUALITY} placeholder="blur" className={LAYER} />
         </m.div>
 
         <m.div style={{ transform: text, opacity: textOpacity }} className="absolute inset-0 flex items-start justify-center pt-[calc(var(--header-h)+8svh)]">
@@ -63,29 +72,29 @@ export function HeroParallax() {
 
         <m.div style={{ transform: hiker }} className="absolute inset-0 origin-bottom">
           <div className="hero-in-up absolute inset-0" style={{ "--d": "0.5s" } as React.CSSProperties}>
-            <Image src={man} alt="" fill sizes="100vw" className={`${LAYER} object-bottom`} />
+            <Image src={man} alt="" fill sizes={SIZES} quality={QUALITY} className={`${LAYER} object-bottom`} />
           </div>
         </m.div>
 
         <m.div style={{ transform: cloudsA }} className="absolute inset-0">
           <div className="hero-in-up absolute inset-0" style={{ "--d": "0.8s" } as React.CSSProperties}>
-            <Image src={clouds1} alt="" fill sizes="100vw" className={LAYER} />
+            <Image src={clouds1} alt="" fill sizes={SIZES} quality={QUALITY} className={LAYER} />
           </div>
         </m.div>
         <m.div style={{ transform: cloudsB }} className="absolute inset-0">
           <div className="hero-in-up absolute inset-0" style={{ "--d": "1.1s" } as React.CSSProperties}>
-            <Image src={clouds2} alt="" fill sizes="100vw" className={LAYER} />
+            <Image src={clouds2} alt="" fill sizes={SIZES} quality={QUALITY} className={LAYER} />
           </div>
         </m.div>
 
         <m.div style={{ transform: left }} className="absolute inset-0 origin-left">
           <div className="hero-in-left absolute inset-0" style={{ "--d": "0.2s" } as React.CSSProperties}>
-            <Image src={mountainLeft} alt="" fill sizes="100vw" className={`${LAYER} object-left`} />
+            <Image src={mountainLeft} alt="" fill sizes={SIZES} quality={QUALITY} className={`${LAYER} object-left`} />
           </div>
         </m.div>
         <m.div style={{ transform: right }} className="absolute inset-0 origin-right">
           <div className="hero-in-right absolute inset-0" style={{ "--d": "0.2s" } as React.CSSProperties}>
-            <Image src={mountainRight} alt="" fill sizes="100vw" className={`${LAYER} object-right`} />
+            <Image src={mountainRight} alt="" fill sizes={SIZES} quality={QUALITY} className={`${LAYER} object-right`} />
           </div>
         </m.div>
 

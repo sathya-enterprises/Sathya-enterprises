@@ -53,6 +53,8 @@ const CARDS = (() => {
 
 /** Time each card spends in the centre. */
 const INTERVAL_MS = 3500;
+/** Length of the fan-out entrance, including the stagger out to the furthest card. */
+const ENTRANCE_MS = 1700;
 
 /**
  * Card size (px), plus the wheel's pivot: the distance from a card's top edge down to the wheel
@@ -69,15 +71,42 @@ const LG = { maxH: 560, minH: 380, ratio: 0.7, gap: 28, below: 44 };
 /** Fixed space the desktop layout spends besides the heading and cards: header, gaps, padding. */
 const LG_CHROME = 72 + 16 + 16 + 12;
 
-function desktopGeometry(viewportH: number, headingH: number): Geometry {
-  const room = viewportH - LG_CHROME - headingH - LG.below;
-  // 10px steps, so small resizes don't nudge the cards.
-  const h = Math.max(LG.minH, Math.min(LG.maxH, Math.floor(room / 10) * 10));
-  return { w: Math.round(h * LG.ratio), h, gap: LG.gap, pivot: Math.round(h * 7.2), below: LG.below };
-}
-
 /** Cards shown either side of the centre — enough to reach both edges of a wide screen. */
 const SIDE = 3;
+
+/** Room left under the lowest card corner for its shadow. */
+const SHADOW_ROOM = 24;
+
+/**
+ * Space needed under the centre card so no on-screen side card is clipped. A side card turned by
+ * `t` around the pivot sinks, and its outer bottom corner sinks furthest:
+ * (pivot - h)(1 - cos t) + (w / 2) sin t. Cards entirely past the screen edge don't count.
+ */
+function withBelow(g: Omit<Geometry, "below">, minBelow: number, viewportW: number): Geometry {
+  const r = g.pivot - g.h;
+  const step = (g.w + g.gap) / r;
+  let drop = 0;
+  for (let k = 1; k <= SIDE; k++) {
+    const t = k * step;
+    // Inner bottom corner is the card's point nearest the centre.
+    if (r * Math.sin(t) - (g.w / 2) * Math.cos(t) >= viewportW / 2) break;
+    drop = r * (1 - Math.cos(t)) + (g.w / 2) * Math.sin(t);
+  }
+  return { ...g, below: Math.max(minBelow, Math.ceil(drop) + SHADOW_ROOM) };
+}
+
+function desktopGeometry(viewportW: number, viewportH: number, headingH: number): Geometry {
+  const room = viewportH - LG_CHROME - headingH;
+  // Largest card (in 10px steps, so small resizes don't nudge the cards) whose arc still fits.
+  for (let h = LG.maxH; ; h -= 10) {
+    const g = withBelow(
+      { w: Math.round(h * LG.ratio), h, gap: LG.gap, pivot: Math.round(h * 7.2) },
+      LG.below,
+      viewportW,
+    );
+    if (h <= LG.minH || h + g.below <= room) return g;
+  }
+}
 /** The set is repeated until it is long enough to fill both sides and wrap out of sight. */
 const MIN_RING = SIDE * 2 + 3;
 const RING = Array.from({ length: Math.ceil(MIN_RING / CARDS.length) }, (_, copy) =>
@@ -105,12 +134,12 @@ function useGeometry(heading: React.RefObject<HTMLElement | null>) {
     const update = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
+        const vw = document.documentElement.clientWidth;
+        const base = md.matches ? GEOMETRY.md : GEOMETRY.sm;
         const next =
           lg.matches && heading.current
-            ? desktopGeometry(window.innerHeight, heading.current.offsetHeight)
-            : md.matches
-              ? GEOMETRY.md
-              : GEOMETRY.sm;
+            ? desktopGeometry(vw, window.innerHeight, heading.current.offsetHeight)
+            : withBelow(base, base.below, vw);
         setG((prev) => (prev.h === next.h && prev.w === next.w && prev.below === next.below ? prev : next));
       });
     };
@@ -141,6 +170,23 @@ export function EcosystemCards() {
   // Always turns while on screen (reduced motion only drops the animation, via MotionConfig); it
   // pauses only while a card link has keyboard focus.
 
+  // Entrance on scroll into view: the cards start stacked low in the centre and fan out along the
+  // arc, centre first. "in" lasts while that runs (its stagger must not slow later turns); leaving
+  // the screen re-stacks them, so it replays on every arrival.
+  const [entrance, setEntrance] = useState<"out" | "in" | "done">("out");
+  useEffect(() => {
+    if (!inView) {
+      const id = requestAnimationFrame(() => setEntrance("out"));
+      return () => cancelAnimationFrame(id);
+    }
+    const start = requestAnimationFrame(() => setEntrance("in"));
+    const done = window.setTimeout(() => setEntrance("done"), ENTRANCE_MS);
+    return () => {
+      cancelAnimationFrame(start);
+      window.clearTimeout(done);
+    };
+  }, [inView]);
+
   const tabVisible = useSyncExternalStore(subscribeVisibility, () => !document.hidden, () => true);
   const playing = inView && !held && tabVisible;
   useEffect(() => {
@@ -156,7 +202,7 @@ export function EcosystemCards() {
 
   return (
     <section ref={sectionRef} id="ecosystem" className="section-y relative flex flex-col justify-center overflow-hidden bg-ivory lg:min-h-svh lg:pb-3 lg:pt-[calc(var(--header-h)+1rem)]">
-      <ShapeField progress={scrollYProgress} />
+      <ShapeField progress={scrollYProgress} play={inView} />
 
       <div ref={headingRef} className="container-x relative">
         <SectionHeader
@@ -196,8 +242,18 @@ export function EcosystemCards() {
               key={key}
               aria-hidden={!centered}
               initial={false}
-              animate={{ opacity: hidden ? 0 : 1, rotate: offset * stepDeg }}
-              transition={{ duration: 0.7, ease: ease.out, opacity: { duration: 0.3 } }}
+              animate={
+                entrance === "out"
+                  ? { opacity: 0, rotate: 0, y: 140 }
+                  : { opacity: hidden ? 0 : 1, rotate: offset * stepDeg, y: 0 }
+              }
+              transition={
+                entrance === "out"
+                  ? { duration: 0.3 }
+                  : entrance === "in"
+                    ? { duration: 1.1, ease: ease.out, delay: 0.15 + Math.abs(offset) * 0.12 }
+                    : { duration: 0.7, ease: ease.out, opacity: { duration: 0.3 } }
+              }
               className="absolute left-1/2 top-0 flex flex-col rounded-[26px] bg-white shadow-2"
               style={{
                 width: g.w,

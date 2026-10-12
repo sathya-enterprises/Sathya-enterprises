@@ -2,9 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image, { type StaticImageData } from "next/image";
-import { animate, m, useMotionValue, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
-import { ease } from "@/lib/motion";
-import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
+import { useMotionValueEvent, useScroll } from "motion/react";
 import { brand } from "@/content/site";
 import { Shape } from "./ShapeField";
 import meetingPhoto from "@/assets/photos/meeting.jpg";
@@ -61,44 +59,42 @@ const CHAPTERS: Chapter[] = [
 ];
 
 const LAST = CHAPTERS.length - 1;
-const clamp = (v: number) => Math.max(-1, Math.min(1, v));
 
 /**
- * One full-screen scene. Scenes sit stacked like slides; scrolling slides them up one screen at a
- * time. Inside each scene the layers lag behind by different amounts (back 35%, middle 20%,
- * front 14%), which is what gives the depth.
+ * One full-screen scene. Scenes sit stacked like slides; changing chapter slides them up one
+ * screen at a time. Inside each scene the layers lag behind by different amounts (back 35%,
+ * middle 20%, front 14%), which is what gives the depth, and the scene on screen slowly pushes in.
+ *
+ * Everything moves with CSS transitions on transform (see .story-slide in globals.css), so the
+ * compositor runs the whole glide and nothing on the main thread can make it stutter.
  */
-function Scene({ index, t, chapter }: { index: number; t: MotionValue<number>; chapter: Chapter }) {
-  // d: where this scene sits relative to the screen. 0 = on screen, 1 = one screen below, -1 = above.
-  const d = useTransform(t, (v) => clamp(index - v));
-  const y = useTransform(d, (v) => `${v * 100}%`);
-  const backY = useTransform(d, (v) => `${-v * 35}svh`);
-  const midY = useTransform(d, (v) => `${-v * 20}svh`);
-  const frontY = useTransform(d, (v) => `${-v * 14}svh`);
-  // The scene on screen is pushed in slightly; it settles back as it leaves.
-  const zoom = useTransform(d, (v) => 1.12 - 0.12 * Math.abs(v));
+function Scene({ index, active, zoomed, chapter }: { index: number; active: number; zoomed: boolean; chapter: Chapter }) {
+  // Where this scene sits: 0 = on screen, 1 = one screen below, -1 = above.
+  const d = Math.max(-1, Math.min(1, index - active));
 
   return (
-    <m.div style={{ y }} className="absolute inset-0 overflow-hidden bg-charcoal">
-      {/* Back: photograph */}
-      <m.div style={{ y: backY, scale: zoom }} className="absolute inset-x-0 -inset-y-[36svh]">
-        <Image src={chapter.photo} alt="" fill sizes="100vw" placeholder="blur" className="object-cover" />
-      </m.div>
+    <div className="story-slide absolute inset-0" style={{ "--d": d } as React.CSSProperties}>
+      <div className="story-zoom absolute inset-0 overflow-hidden bg-charcoal" data-active={zoomed}>
+        {/* Back: photograph */}
+        <div className="story-layer absolute inset-0" style={{ "--depth": "35svh" } as React.CSSProperties}>
+          <Image src={chapter.photo} alt="" fill sizes="100vw" placeholder="blur" className="object-cover" />
+        </div>
 
-      {/* Middle: shade for legibility */}
-      <m.div style={{ y: midY }} className="absolute inset-x-0 -inset-y-[22svh]">
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal/70 via-charcoal/55 to-charcoal/90" />
-      </m.div>
+        {/* Middle: shade for legibility */}
+        <div className="story-layer absolute inset-0" style={{ "--depth": "20svh" } as React.CSSProperties}>
+          <div className="absolute inset-0 bg-gradient-to-b from-charcoal/70 via-charcoal/55 to-charcoal/90" />
+        </div>
 
-      {/* Front: brand shapes rising from the bottom edge */}
-      <m.div style={{ y: frontY }} aria-hidden className="absolute inset-x-0 -inset-y-[16svh]">
-        {chapter.shapes.map((s) => (
-          <div key={s.kind + s.place} className={`absolute ${s.place} ${s.color}`}>
-            <Shape kind={s.kind} />
-          </div>
-        ))}
-      </m.div>
-    </m.div>
+        {/* Front: brand shapes rising from the bottom edge */}
+        <div aria-hidden className="story-layer absolute inset-0" style={{ "--depth": "14svh" } as React.CSSProperties}>
+          {chapter.shapes.map((s) => (
+            <div key={s.kind + s.place} className={`absolute ${s.place} ${s.color}`}>
+              <Shape kind={s.kind} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -142,8 +138,12 @@ function ChapterText({ chapter, state }: { chapter: Chapter; state: TextState })
   );
 }
 
-/** Wheel/swipe gestures arriving within this time of a chapter change are absorbed (trackpad momentum). */
-const LOCK_MS = 1100;
+/**
+ * After a chapter change, new wheel turns are ignored for this long (the gesture that caused it
+ * is absorbed for as long as it lasts). Shorter than the 1.6s glide: a turn mid-glide simply
+ * retargets it, which CSS transitions do smoothly.
+ */
+const LOCK_MS = 900;
 /** Gaps shorter than this between wheel events mean the same gesture is still going. */
 const GESTURE_GAP_MS = 250;
 
@@ -152,7 +152,7 @@ export function StoryTelling() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
 
   // One screen of scroll per chapter; the nearest chapter is the active one. The scenes then glide
-  // to it on their own clock — 1.6s, eased — like a slider, so uneven wheel steps never jolt them.
+  // to it on their own clock (1.6s) like a slider, so uneven wheel steps never jolt them.
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => {
@@ -160,12 +160,22 @@ export function StoryTelling() {
     activeRef.current = next;
     setActive(next);
   });
-  const reduced = useReducedMotionSafe();
-  const t = useMotionValue(0);
+
+  // Whether the section is on screen (it covers the middle of the screen), or still to come / already
+  // passed. Until it arrives, the chapter it will open on stays parked off screen, so the first
+  // chapter animates in on arrival just like the others — and replays each time you come back.
+  const { scrollYProgress: arrival } = useScroll({ target: ref, offset: ["start center", "end center"] });
+  const [phase, setPhase] = useState<"before" | "on" | "after">("before");
+  const toPhase = (v: number) => (v <= 0 ? "before" : v >= 1 ? "after" : "on");
+  useMotionValueEvent(arrival, "change", (v) => setPhase(toPhase(v)));
+  // Also read it once after the first frame, for a page that loads already scrolled into the section.
   useEffect(() => {
-    const run = animate(t, active, { duration: reduced ? 0 : 1.6, ease: ease.inOut });
-    return () => run.stop();
-  }, [active, reduced, t]);
+    const id = requestAnimationFrame(() => setPhase(toPhase(arrival.get())));
+    return () => cancelAnimationFrame(id);
+  }, [arrival]);
+  const shown = phase === "on" ? active : -1;
+  const textState = (i: number): TextState =>
+    i === shown ? "active" : i === active ? (phase === "before" ? "future" : "past") : i < active ? "past" : "future";
 
   // While the stage is pinned, one wheel flick or swipe = one chapter (like a vertical slider).
   // The page is moved straight to that chapter's scroll position, so the scroll position, the
@@ -182,11 +192,18 @@ export function StoryTelling() {
       const el = ref.current;
       if (!el) return null;
       const r = el.getBoundingClientRect();
-      const pinned = r.top <= 1 && r.bottom >= window.innerHeight - 1;
-      return { pinned, top: window.scrollY + r.top, at: -r.top / window.innerHeight };
+      const vh = window.innerHeight;
+      return {
+        pinned: r.top <= 1 && r.bottom >= vh - 1,
+        // At least half the screen is the section, coming in from below / from above.
+        enteringDown: r.top > 1 && r.top < vh / 2,
+        enteringUp: r.bottom < vh - 1 && r.bottom > vh / 2,
+        top: window.scrollY + r.top,
+        at: -r.top / vh,
+      };
     };
-    const goTo = (i: number, top: number) => {
-      window.scrollTo({ top: top + i * window.innerHeight, behavior: "instant" });
+    const goTo = (i: number, top: number, behavior: ScrollBehavior = "instant") => {
+      window.scrollTo({ top: top + i * window.innerHeight, behavior });
       lockUntil = performance.now() + LOCK_MS;
     };
     /** Returns true when the gesture was used here (caller should cancel the native scroll). */
@@ -196,25 +213,37 @@ export function StoryTelling() {
       const continuing = now - lastEvent < GESTURE_GAP_MS;
       lastEvent = now;
       const g = geometry();
-      if (!g?.pinned) {
+      if (!g) return false;
+      if (now < lockUntil) {
+        // A page just turned. Absorb the rest of that gesture — extending the lock for as long as
+        // it keeps coming, so trackpad momentum never turns a second page.
+        if (continuing) lockUntil = Math.max(lockUntil, now + GESTURE_GAP_MS);
+        return true;
+      }
+      if (!g.pinned) {
         engaged = false;
+        // Once the section has scrolled halfway on, one wheel turn carries it the rest of the way
+        // (first chapter going down, last going up), instead of the wheel pushing it there.
+        if (dir > 0 && g.enteringDown) {
+          goTo(0, g.top, "smooth");
+          return true;
+        }
+        if (dir < 0 && g.enteringUp) {
+          goTo(LAST, g.top, "smooth");
+          return true;
+        }
         return false;
       }
       if (!engaged) {
-        // Just arrived. If the gesture that brought us here is still going (momentum), or we're not
-        // resting on a chapter, settle on the chapter we came in on — the first one going down, the
-        // last one going up — rather than skipping ahead. A fresh gesture while resting turns the page.
         engaged = true;
-        const settle = Math.min(LAST, Math.max(0, dir > 0 ? Math.floor(g.at) : Math.ceil(g.at)));
-        if (continuing || Math.abs(g.at - settle) > 0.02) {
-          goTo(settle, g.top);
+        // Just arrived with plain scrolling. If that gesture is still going (momentum), settle on
+        // the chapter we came in on rather than skipping ahead. A fresh turn falls through and turns
+        // the page straight away — the stage already shows a whole chapter, so it is never spent
+        // just lining the page up.
+        if (continuing) {
+          goTo(Math.min(LAST, Math.max(0, dir > 0 ? Math.floor(g.at) : Math.ceil(g.at))), g.top);
           return true;
         }
-      }
-      if (now < lockUntil) {
-        // Keep absorbing for as long as the gesture keeps coming, so momentum never turns a second page.
-        lockUntil = Math.max(lockUntil, now + GESTURE_GAP_MS);
-        return true;
       }
       const next = activeRef.current + dir;
       if (next < 0 || next > LAST) return false;
@@ -268,13 +297,13 @@ export function StoryTelling() {
     <section ref={ref} aria-label="Our story" className="relative bg-charcoal" style={{ height: `${(LAST + 1) * 100}svh` }}>
       <div className="sticky top-0 h-svh overflow-hidden">
         {CHAPTERS.map((chapter, i) => (
-          <Scene key={chapter.word} index={i} t={t} chapter={chapter} />
+          <Scene key={chapter.word} index={i} active={active} zoomed={i === shown} chapter={chapter} />
         ))}
 
         {/* Text sits above the scenes and swaps chapter by chapter */}
         <div className="absolute inset-0 flex items-center">
           {CHAPTERS.map((chapter, i) => (
-            <ChapterText key={chapter.word} chapter={chapter} state={i === active ? "active" : i < active ? "past" : "future"} />
+            <ChapterText key={chapter.word} chapter={chapter} state={textState(i)} />
           ))}
         </div>
 

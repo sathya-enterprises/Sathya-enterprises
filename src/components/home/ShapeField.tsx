@@ -109,11 +109,25 @@ function SlotShape({ slot, progress }: { slot: Slot; progress: MotionValue<numbe
 
 /**
  * Labs-style shape field in brand red and gold, used behind the hero and the ecosystem.
- * `progress` is the section's scroll progress, which drives the parallax.
+ * `progress` is the section's scroll progress, which drives the parallax. Leave `play` out to run
+ * the entrance on page load; pass it to hold the shapes back until it turns true (e.g. on scroll
+ * into view) — it replays each time it does.
  */
-export function ShapeField({ progress, className = "inset-0" }: { progress: MotionValue<number>; className?: string }) {
+export function ShapeField({
+  progress,
+  play,
+  className = "inset-0",
+}: {
+  progress: MotionValue<number>;
+  play?: boolean;
+  className?: string;
+}) {
   return (
-    <div aria-hidden className={`pointer-events-none absolute overflow-hidden ${className}`}>
+    <div
+      aria-hidden
+      data-play={play === undefined ? undefined : play}
+      className={`shape-field pointer-events-none absolute overflow-hidden ${className}`}
+    >
       {SLOTS.map((slot) => (
         <SlotShape key={slot.kind} slot={slot} progress={progress} />
       ))}

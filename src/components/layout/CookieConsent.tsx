@@ -2,7 +2,8 @@
 
 import { useEffect, useId, useState } from "react";
 import { Cookie } from "lucide-react";
-import { OPEN_CONSENT_EVENT, openConsentSettings, readConsent, writeConsent, type Consent } from "@/lib/consent";
+import { CONSENT_EVENT, OPEN_CONSENT_EVENT, openConsentSettings, readConsent, writeConsent, type Consent } from "@/lib/consent";
+import { applyConsent } from "@/lib/trackers";
 
 const CATEGORIES: { id: keyof Consent | "necessary"; title: string; body: string }[] = [
   { id: "necessary", title: "Necessary", body: "Keep the site working and remember this choice. Always on." },
@@ -12,7 +13,9 @@ const CATEGORIES: { id: keyof Consent | "necessary"; title: string; body: string
 
 /**
  * Cookie banner. Shows once (after the preloader) until the visitor chooses; "Cookie settings" in
- * the footer reopens it with their current choice. Accept and Reject carry equal weight.
+ * the footer reopens it with their current choice. Accept and Reject carry equal weight. The choice
+ * is enforced by trackers.ts: analytics and marketing tags only load once allowed, and are stopped
+ * (their cookies deleted) when it is withdrawn.
  */
 export function CookieConsent() {
   const [open, setOpen] = useState(false);
@@ -21,19 +24,25 @@ export function CookieConsent() {
   const titleId = useId();
 
   useEffect(() => {
-    // Wait for the opening curtain to lift before asking.
+    // A choice from an earlier visit: run (or keep blocked) the tags it covers straight away.
+    const saved = readConsent();
+    if (saved) applyConsent(saved);
+    // Otherwise ask — once the opening curtain has lifted.
     const timer = window.setTimeout(() => {
       if (!readConsent()) setOpen(true);
-    }, 2600);
+    }, 2900);
     const reopen = () => {
       setChoice(readConsent() ?? { analytics: false, marketing: false });
       setCustom(true);
       setOpen(true);
     };
+    const changed = (e: Event) => applyConsent((e as CustomEvent<Consent>).detail);
     window.addEventListener(OPEN_CONSENT_EVENT, reopen);
+    window.addEventListener(CONSENT_EVENT, changed);
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener(OPEN_CONSENT_EVENT, reopen);
+      window.removeEventListener(CONSENT_EVENT, changed);
     };
   }, []);
 

@@ -35,6 +35,53 @@ export function Reveal({
   );
 }
 
+/**
+ * A headline line split into .rise-letter spans (see globals.css), for sections using useArrival.
+ * `line` delays the whole line by that many steps. `gradient` paints a red → gold sweep across the
+ * line, each letter showing its own slice of it (a clipped gradient on the parent can't survive the
+ * letters moving independently).
+ */
+export function RiseLetters({ text, line = 0, gradient = false }: { text: string; line?: number; gradient?: boolean }) {
+  const count = text.replace(/\s/g, "").length;
+  let n = 0;
+  // Words stay whole (nowrap) and the spaces between them stay real, so the line still wraps.
+  const words = text.split(/(\s+)/).map((part, w) =>
+    /^\s*$/.test(part) ? (
+      part
+    ) : (
+      <span key={w} className="inline-block whitespace-nowrap">
+        {[...part].map((ch) => {
+          const i = n++;
+          return (
+            <span
+              key={i}
+              className={`rise-letter ${gradient ? "bg-gradient-to-r from-red to-gold bg-clip-text text-transparent" : ""}`}
+              style={
+                {
+                  "--i": line,
+                  "--n": i,
+                  ...(gradient && {
+                    backgroundSize: `${count * 100}% 100%`,
+                    backgroundPosition: `${count > 1 ? (i / (count - 1)) * 100 : 0}% 0`,
+                  }),
+                } as React.CSSProperties
+              }
+            >
+              {ch}
+            </span>
+          );
+        })}
+      </span>
+    ),
+  );
+  return (
+    <>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden>{words}</span>
+    </>
+  );
+}
+
 export function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
     <span className="t-eyebrow inline-flex items-center gap-2 rounded-full border border-red/20 bg-white px-4 py-2 text-red">

@@ -5,6 +5,7 @@ import { m, useMotionValue, useScroll, useSpring, useTransform, type MotionValue
 import { Building2, ChevronDown, Mail, Nfc, Phone, Send, Sparkles, Timer, User } from "lucide-react";
 import { contact } from "@/content/site";
 import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
+import { useArrival } from "@/lib/useArrival";
 
 /**
  * "Start growing" — a frosted-glass enquiry panel beside a glass membership-style card, floating over
@@ -137,6 +138,8 @@ export function StartGrowing() {
   const titleId = useId();
   const sectionRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotionSafe();
+  // On arrival the form's contents lift in one row after another (replays on return).
+  const arrived = useArrival(sectionRef);
 
   // Scroll-linked, both directions. p: 0 = section just below the screen, 0.5 = filling it, 1 = gone above.
   // Function transforms on purpose (the array form gets handed to a native scroll timeline, which
@@ -179,6 +182,7 @@ export function StartGrowing() {
       id="start"
       aria-labelledby={titleId}
       ref={sectionRef}
+      data-arrived={arrived}
       className="relative isolate flex items-center overflow-hidden py-[var(--section-y)] lg:min-h-svh lg:py-[calc(var(--header-h)+2rem)]"
     >
       <LiquidBackdrop progress={p} />
@@ -187,7 +191,7 @@ export function StartGrowing() {
         {/* Enquiry panel */}
         <m.div style={formStyle}>
           <form onSubmit={send} className={`rounded-[32px] p-6 text-ink sm:p-9 ${GLASS}`}>
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="rise flex flex-wrap items-start justify-between gap-4">
               <div className="flex items-center gap-4">
                 <span aria-hidden className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-gold/50 bg-gold-light">
                   <Sparkles className="h-6 w-6 text-red" />
@@ -211,8 +215,8 @@ export function StartGrowing() {
             <div className="my-7 h-px bg-ink/10" />
   
             <div className="grid gap-4 sm:grid-cols-2">
-              {FIELDS.map(({ icon: Icon, ...f }) => (
-                <div key={f.name} className="relative">
+              {FIELDS.map(({ icon: Icon, ...f }, i) => (
+                <div key={f.name} className="rise relative" style={{ "--i": i + 1 } as React.CSSProperties}>
                   <label htmlFor={`sg-${f.name}`} className="sr-only">
                     {f.label}
                     {f.required ? " (required)" : ""}
@@ -235,7 +239,7 @@ export function StartGrowing() {
   
             <div className="my-7 h-px bg-ink/10" />
   
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <div className="rise flex flex-col gap-4 sm:flex-row sm:items-end" style={{ "--i": FIELDS.length + 1 } as React.CSSProperties}>
               <div className="sm:w-[42%]">
                 <label htmlFor="sg-service" className="mb-2 block text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ink-soft">
                   Service
@@ -267,7 +271,7 @@ export function StartGrowing() {
               </button>
             </div>
   
-            <p role="status" className="mt-5 text-[0.82rem] text-ink-soft">
+            <p role="status" className="rise mt-5 text-[0.82rem] text-ink-soft" style={{ "--i": FIELDS.length + 2 } as React.CSSProperties}>
               {sent ? (
                 <>
                   Your email app should have opened with the enquiry. If it didn&apos;t, write to{" "}

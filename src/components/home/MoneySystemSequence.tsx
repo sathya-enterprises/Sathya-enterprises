@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import Image, { type StaticImageData } from "next/image";
 import { m, useMotionValue, useScroll, useTransform, type MotionValue } from "motion/react";
-import { Eyebrow } from "./primitives";
+import { useArrival } from "@/lib/useArrival";
+import { Eyebrow, RiseLetters } from "./primitives";
 import digitalPhoto from "@/assets/photos/digital.jpg";
 import meetingPhoto from "@/assets/photos/meeting.jpg";
 import teamPhoto from "@/assets/photos/team.jpg";
@@ -88,6 +89,8 @@ export function MoneySystemSequence() {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const overflow = useMotionValue(0);
+  // On arrival the headline rises in letter by letter and the copy lifts in (replays on return).
+  const arrived = useArrival(sectionRef);
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
   const headlineX = useTransform(() => -scrollYProgress.get() * overflow.get());
@@ -108,19 +111,19 @@ export function MoneySystemSequence() {
   }, [overflow]);
 
   return (
-    <section ref={sectionRef} id="system" className="relative h-[600svh] bg-ivory">
+    <section ref={sectionRef} id="system" data-arrived={arrived} className="relative h-[600svh] bg-ivory">
       <div className="sticky top-0 h-svh overflow-hidden">
         <m.h2
           ref={headlineRef}
           style={{ x: headlineX }}
           className="absolute inset-y-0 left-0 flex w-max items-center whitespace-nowrap px-[var(--gutter)] font-display text-[30vw] font-extrabold uppercase leading-none tracking-[-0.05em] text-red lg:text-[24vw]"
         >
-          Money-making&nbsp;
-          <span className="bg-gradient-to-r from-red to-gold bg-clip-text text-transparent">system.</span>
+          <RiseLetters text="Money-making " />
+          <RiseLetters text="system." line={1} gradient />
         </m.h2>
 
         <div className="container-x absolute inset-x-0 bottom-[max(1.5rem,5svh)]">
-          <div className="max-w-xs md:max-w-sm">
+          <div className="rise max-w-xs md:max-w-sm" style={{ "--i": 4 } as React.CSSProperties}>
             <Eyebrow>The System</Eyebrow>
             <p className="mt-4 text-sm font-semibold leading-relaxed text-red-deep md:text-base">
               From attention to leads. From leads to customers. From customers to growth.
