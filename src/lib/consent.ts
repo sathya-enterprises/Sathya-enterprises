@@ -6,7 +6,7 @@
  * CONSENT_EVENT to react when the visitor changes their mind.
  */
 
-export const CONSENT_COOKIE = "se_consent";
+const CONSENT_COOKIE = "se_consent";
 /** Bump when the categories change, so everyone is asked again. */
 const VERSION = 1;
 const MAX_AGE = 60 * 60 * 24 * 180; // 180 days
@@ -18,7 +18,7 @@ export const CONSENT_EVENT = "se:consent";
 /** Dispatch on window to reopen the banner's preferences (e.g. from a footer link). */
 export const OPEN_CONSENT_EVENT = "se:consent-open";
 
-export function parseConsent(raw: string | undefined | null): Consent | null {
+function parseConsent(raw: string | undefined | null): Consent | null {
   if (!raw) return null;
   const [v, a, m] = decodeURIComponent(raw).split(".");
   if (Number(v) !== VERSION) return null;

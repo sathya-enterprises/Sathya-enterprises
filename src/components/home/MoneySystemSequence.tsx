@@ -12,7 +12,7 @@ import technologyPhoto from "@/assets/photos/technology.jpg";
 import productsPhoto from "@/assets/photos/products.jpg";
 import workshopPhoto from "@/assets/photos/workshop.jpg";
 
-type Step = {
+export type Step = {
   num: string;
   title: string;
   desc: string;
@@ -33,7 +33,6 @@ const STEPS: Step[] = [
 
 /** Each card flies for half of the section's scroll; starts are spread so the last one lands at the end. */
 const FLIGHT = 0.5;
-const STAGGER = (1 - FLIGHT) / (STEPS.length - 1);
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
@@ -44,7 +43,8 @@ function along(points: [number, number, number, number], p: number) {
   return lerp(points[i], points[i + 1], s - i);
 }
 
-function Card({ step, index, progress }: { step: Step; index: number; progress: MotionValue<number> }) {
+function Card({ step, index, count, progress }: { step: Step; index: number; count: number; progress: MotionValue<number> }) {
+  const STAGGER = (1 - FLIGHT) / Math.max(1, count - 1);
   const flight = useTransform(progress, (p) => Math.max(0, Math.min((p - index * STAGGER) / FLIGHT, 1)));
   // Enters just past the right edge, sweeps across and leaves past the left edge.
   const x = useTransform(flight, (f) => `${lerp(25, -650, f)}%`);
@@ -85,7 +85,20 @@ function Card({ step, index, progress }: { step: Step; index: number; progress: 
  * from the right one after another, each on its own swooping path, and leave to the left.
  * Everything is tied to scroll position, so it plays backwards when scrolling up.
  */
-export function MoneySystemSequence() {
+export function MoneySystemSequence({
+  steps = STEPS,
+  id = "system",
+  headline = ["Money-making ", "system."],
+  eyebrow = "The System",
+  caption = "From attention to leads. From leads to customers. From customers to growth.",
+}: {
+  steps?: Step[];
+  id?: string;
+  /** Giant sliding headline; the second part is set in the accent gradient. */
+  headline?: [string, string];
+  eyebrow?: string;
+  caption?: string;
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const overflow = useMotionValue(0);
@@ -111,29 +124,27 @@ export function MoneySystemSequence() {
   }, [overflow]);
 
   return (
-    <section ref={sectionRef} id="system" data-arrived={arrived} className="relative h-[600svh] bg-ivory">
+    <section ref={sectionRef} id={id} data-arrived={arrived} className="relative bg-ivory" style={{ height: `${steps.length * 100}svh` }}>
       <div className="sticky top-0 h-svh overflow-hidden">
         <m.h2
           ref={headlineRef}
           style={{ x: headlineX }}
           className="absolute inset-y-0 left-0 flex w-max items-center whitespace-nowrap px-[var(--gutter)] font-display text-[30vw] font-extrabold uppercase leading-none tracking-[-0.05em] text-red lg:text-[24vw]"
         >
-          <RiseLetters text="Money-making " />
-          <RiseLetters text="system." line={1} gradient />
+          <RiseLetters text={headline[0]} />
+          <RiseLetters text={headline[1]} line={1} gradient />
         </m.h2>
 
         <div className="container-x absolute inset-x-0 bottom-[max(1.5rem,5svh)]">
           <div className="rise max-w-xs md:max-w-sm" style={{ "--i": 4 } as React.CSSProperties}>
-            <Eyebrow>The System</Eyebrow>
-            <p className="mt-4 text-sm font-semibold leading-relaxed text-red-deep md:text-base">
-              From attention to leads. From leads to customers. From customers to growth.
-            </p>
+            <Eyebrow>{eyebrow}</Eyebrow>
+            <p className="mt-4 text-sm font-semibold leading-relaxed text-red-deep md:text-base">{caption}</p>
           </div>
         </div>
 
-        <ol aria-label="The six steps" className="absolute inset-0">
-          {STEPS.map((step, i) => (
-            <Card key={step.num} step={step} index={i} progress={scrollYProgress} />
+        <ol aria-label={eyebrow} className="absolute inset-0">
+          {steps.map((step, i) => (
+            <Card key={step.num} step={step} index={i} count={steps.length} progress={scrollYProgress} />
           ))}
         </ol>
       </div>

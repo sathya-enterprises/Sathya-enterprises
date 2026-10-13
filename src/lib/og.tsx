@@ -67,7 +67,7 @@ export async function ogImage({ eyebrow, title, tone = "default" }: { eyebrow: s
             <span style={{ fontSize: 34, fontWeight: 800 }}>SATHYA</span>
             <span style={{ fontSize: 34, fontWeight: 800, color: "#c8102e" }}>ENTERPRISES</span>
           </div>
-          <span style={{ letterSpacing: 4, color: t.soft }}>BUILD. MARKET. AUTOMATE. GROW.</span>
+          <span style={{ letterSpacing: 4, color: t.soft }}>BUILD. MARKET. LEAD. GROW.</span>
         </div>
       </div>
     ),

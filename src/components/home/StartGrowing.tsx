@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import { m, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
-import { Building2, ChevronDown, Mail, Nfc, Phone, Send, Sparkles, Timer, User } from "lucide-react";
+import { Building2, ChevronDown, Mail, Nfc, Phone, Send, Timer, User } from "lucide-react";
 import { contact } from "@/content/site";
 import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
 import { useArrival } from "@/lib/useArrival";
@@ -108,7 +108,7 @@ function GrowthCard({ holder, plan }: { holder: string; plan: string }) {
             </div>
 
             <p className="mt-auto whitespace-nowrap font-mono text-[clamp(0.62rem,1.05vw,0.95rem)] font-bold tracking-[0.12em]">
-              BUILD · MARKET · AUTOMATE · GROW
+              BUILD · MARKET · LEAD · GROW
             </p>
 
             <div className="mt-[5%] flex items-end gap-[8%]">
@@ -192,19 +192,14 @@ export function StartGrowing() {
         <m.div style={formStyle}>
           <form onSubmit={send} className={`rounded-[32px] p-6 text-ink sm:p-9 ${GLASS}`}>
             <div className="rise flex flex-wrap items-start justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <span aria-hidden className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-gold/50 bg-gold-light">
-                  <Sparkles className="h-6 w-6 text-red" />
-                </span>
-                <div>
-                  <h2 id={titleId} className="font-display text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-none tracking-[-0.03em]">
-                    Start Growing
-                  </h2>
-                  <p className="mt-2 inline-flex items-center gap-1.5 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ink-soft">
-                    <Timer aria-hidden className="h-3.5 w-3.5 text-red" />
-                    Takes under a minute
-                  </p>
-                </div>
+              <div>
+                <h2 id={titleId} className="font-display text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-none tracking-[-0.03em]">
+                  Start Growing
+                </h2>
+                <p className="mt-2 inline-flex items-center gap-1.5 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ink-soft">
+                  <Timer aria-hidden className="h-3.5 w-3.5 text-red" />
+                  Takes under a minute
+                </p>
               </div>
               <span className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/70 px-3.5 py-2 text-[0.8rem] font-semibold" aria-live="polite">
                 <span aria-hidden className="h-2 w-2 rounded-full bg-gold" />

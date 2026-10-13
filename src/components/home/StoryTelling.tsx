@@ -1,25 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image, { type StaticImageData } from "next/image";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { brand } from "@/content/site";
-import { Shape } from "./ShapeField";
-import meetingPhoto from "@/assets/photos/meeting.jpg";
-import technologyPhoto from "@/assets/photos/technology.jpg";
-import teamPhoto from "@/assets/photos/team.jpg";
+import { CellsBackdrop } from "./CellsBackdrop";
 
-type ShapeKind = "clover" | "circle" | "square" | "hexagon";
-
-type Chapter = {
+export type Chapter = {
   lead: string;
   word: string;
   /** Colour of the closing full stop — red and gold alternate. */
   stop: string;
   body: string;
-  photo: StaticImageData;
-  /** Foreground shapes: the closest layer, so they travel the furthest. */
-  shapes: { kind: ShapeKind; color: string; place: string }[];
 };
 
 const CHAPTERS: Chapter[] = [
@@ -28,75 +19,20 @@ const CHAPTERS: Chapter[] = [
     word: "Business",
     stop: "text-red",
     body: brand.positioning,
-    photo: meetingPhoto,
-    shapes: [
-      { kind: "clover", color: "text-gold", place: "-right-[14%] bottom-[-12%] w-[58vw] md:w-[30vw]" },
-      { kind: "circle", color: "text-red", place: "-left-[10%] bottom-[-8%] w-[34vw] md:w-[16vw]" },
-    ],
   },
   {
     lead: "A growing",
     word: "Ecosystem",
     stop: "text-gold",
     body: "Sathya Enterprises operates across digital growth, technology, data, products, infrastructure and business services.",
-    photo: technologyPhoto,
-    shapes: [
-      { kind: "hexagon", color: "text-red", place: "-left-[16%] bottom-[-14%] w-[56vw] md:w-[28vw]" },
-      { kind: "square", color: "text-gold", place: "-right-[8%] bottom-[-6%] w-[30vw] md:w-[15vw]" },
-    ],
   },
   {
     lead: "Built as",
     word: "One",
     stop: "text-red",
     body: "Every part of the business feeds the next: digital work creates attention, technology turns that attention into systems, and services and products deliver the real-world value customers came for.",
-    photo: teamPhoto,
-    shapes: [
-      { kind: "circle", color: "text-gold", place: "-left-[12%] bottom-[-16%] w-[60vw] md:w-[30vw]" },
-      { kind: "clover", color: "text-red", place: "-right-[10%] bottom-[-8%] w-[32vw] md:w-[16vw]" },
-    ],
   },
 ];
-
-const LAST = CHAPTERS.length - 1;
-
-/**
- * One full-screen scene. Scenes sit stacked like slides; changing chapter slides them up one
- * screen at a time. Inside each scene the layers lag behind by different amounts (back 35%,
- * middle 20%, front 14%), which is what gives the depth, and the scene on screen slowly pushes in.
- *
- * Everything moves with CSS transitions on transform (see .story-slide in globals.css), so the
- * compositor runs the whole glide and nothing on the main thread can make it stutter.
- */
-function Scene({ index, active, zoomed, chapter }: { index: number; active: number; zoomed: boolean; chapter: Chapter }) {
-  // Where this scene sits: 0 = on screen, 1 = one screen below, -1 = above.
-  const d = Math.max(-1, Math.min(1, index - active));
-
-  return (
-    <div className="story-slide absolute inset-0" style={{ "--d": d } as React.CSSProperties}>
-      <div className="story-zoom absolute inset-0 overflow-hidden bg-charcoal" data-active={zoomed}>
-        {/* Back: photograph */}
-        <div className="story-layer absolute inset-0" style={{ "--depth": "35svh" } as React.CSSProperties}>
-          <Image src={chapter.photo} alt="" fill sizes="100vw" placeholder="blur" className="object-cover" />
-        </div>
-
-        {/* Middle: shade for legibility */}
-        <div className="story-layer absolute inset-0" style={{ "--depth": "20svh" } as React.CSSProperties}>
-          <div className="absolute inset-0 bg-gradient-to-b from-charcoal/70 via-charcoal/55 to-charcoal/90" />
-        </div>
-
-        {/* Front: brand shapes rising from the bottom edge */}
-        <div aria-hidden className="story-layer absolute inset-0" style={{ "--depth": "14svh" } as React.CSSProperties}>
-          {chapter.shapes.map((s) => (
-            <div key={s.kind + s.place} className={`absolute ${s.place} ${s.color}`}>
-              <Shape kind={s.kind} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 type TextState = "past" | "active" | "future";
 
@@ -147,7 +83,8 @@ const LOCK_MS = 900;
 /** Gaps shorter than this between wheel events mean the same gesture is still going. */
 const GESTURE_GAP_MS = 250;
 
-export function StoryTelling() {
+export function StoryTelling({ chapters = CHAPTERS, label = "Our story" }: { chapters?: Chapter[]; label?: string } = {}) {
+  const LAST = chapters.length - 1;
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
 
@@ -291,18 +228,18 @@ export function StoryTelling() {
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [LAST]);
 
   return (
-    <section ref={ref} aria-label="Our story" className="relative bg-charcoal" style={{ height: `${(LAST + 1) * 100}svh` }}>
+    <section ref={ref} id="story" aria-label={label} className="relative bg-[#0b2a33]" style={{ height: `${(LAST + 1) * 100}svh` }}>
       <div className="sticky top-0 h-svh overflow-hidden">
-        {CHAPTERS.map((chapter, i) => (
-          <Scene key={chapter.word} index={i} active={active} zoomed={i === shown} chapter={chapter} />
-        ))}
+        {/* Glowing water cells behind every chapter, with a soft shade so the headline stays legible */}
+        <CellsBackdrop className="absolute inset-0" />
+        <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_50%,rgb(4_22_28/0.55),transparent)]" />
 
-        {/* Text sits above the scenes and swaps chapter by chapter */}
+        {/* Text sits above the backdrop and swaps chapter by chapter */}
         <div className="absolute inset-0 flex items-center">
-          {CHAPTERS.map((chapter, i) => (
+          {chapters.map((chapter, i) => (
             <ChapterText key={chapter.word} chapter={chapter} state={textState(i)} />
           ))}
         </div>
@@ -312,7 +249,7 @@ export function StoryTelling() {
           aria-hidden
           className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 md:bottom-auto md:left-auto md:right-[var(--gutter)] md:top-1/2 md:-translate-y-1/2 md:translate-x-0 md:flex-col"
         >
-          {CHAPTERS.map((c, i) => (
+          {chapters.map((c, i) => (
             <span
               key={c.word}
               className={`block rounded-full transition-all duration-500 ${

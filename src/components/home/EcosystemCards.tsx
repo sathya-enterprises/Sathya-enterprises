@@ -1,32 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import Image, { type StaticImageData } from "next/image";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import Image from "next/image";
 import { m, useInView, useScroll } from "motion/react";
 import { ArrowRight } from "lucide-react";
-import { businesses, type DivisionId } from "@/content/site";
+import { businesses, type Business, type DivisionId } from "@/content/site";
+import { toCards } from "./businessCards";
 import { ease } from "@/lib/motion";
 import { Accent, SectionHeader } from "./primitives";
 import { ShapeField } from "./ShapeField";
-import digitalPhoto from "@/assets/photos/digital.jpg";
-import technologyPhoto from "@/assets/photos/technology.jpg";
-import workshopPhoto from "@/assets/photos/workshop.jpg";
-import productsPhoto from "@/assets/photos/products.jpg";
-import teamPhoto from "@/assets/photos/team.jpg";
-import servicesPhoto from "@/assets/photos/services.jpg";
 
 /**
  * Labs-style carousel: cards ride the top edge of a very large wheel that turns on its own, so
  * cards travel along a shallow arc and tilt with it. No controls; it pauses only while off screen
  * or in a background tab, or while a card link has keyboard focus.
  */
-
-const PHOTOS: Record<DivisionId, StaticImageData[]> = {
-  digital: [digitalPhoto, teamPhoto],
-  technology: [technologyPhoto, workshopPhoto],
-  products: [productsPhoto, teamPhoto],
-  services: [servicesPhoto, workshopPhoto],
-};
 
 /** Division label on each card: red and gold alternate across the four divisions. */
 const DIVISION_PILL: Record<DivisionId, string> = {
@@ -35,21 +23,6 @@ const DIVISION_PILL: Record<DivisionId, string> = {
   products: "bg-red text-ivory",
   services: "bg-gold text-ink",
 };
-
-const CARDS = (() => {
-  const seen: Record<string, number> = {};
-  return businesses.map((b) => {
-    const n = (seen[b.division] = (seen[b.division] ?? -1) + 1);
-    return {
-      slug: b.slug,
-      title: b.name,
-      division: b.division,
-      description: b.intro,
-      cta: b.cta,
-      photo: PHOTOS[b.division][n % PHOTOS[b.division].length],
-    };
-  });
-})();
 
 /** Time each card spends in the centre. */
 const INTERVAL_MS = 3500;
@@ -109,9 +82,11 @@ function desktopGeometry(viewportW: number, viewportH: number, headingH: number)
 }
 /** The set is repeated until it is long enough to fill both sides and wrap out of sight. */
 const MIN_RING = SIDE * 2 + 3;
-const RING = Array.from({ length: Math.ceil(MIN_RING / CARDS.length) }, (_, copy) =>
-  CARDS.map((card) => ({ card, key: `${card.slug}-${copy}` })),
-).flat();
+function toRing(cards: ReturnType<typeof toCards>) {
+  return Array.from({ length: Math.ceil(MIN_RING / cards.length) }, (_, copy) =>
+    cards.map((card) => ({ card, key: `${card.slug}-${copy}` })),
+  ).flat();
+}
 
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 
@@ -157,7 +132,24 @@ function useGeometry(heading: React.RefObject<HTMLElement | null>) {
   return g;
 }
 
-export function EcosystemCards() {
+export function EcosystemCards({
+  items = businesses,
+  id = "ecosystem",
+  eyebrow = "The Ecosystem",
+  title = (
+    <>
+      Explore our <Accent>ecosystem.</Accent>
+    </>
+  ),
+  lead = "Four divisions, one connected ecosystem.",
+}: {
+  items?: Business[];
+  id?: string;
+  eyebrow?: string;
+  title?: React.ReactNode;
+  lead?: string;
+} = {}) {
+  const RING = useMemo(() => toRing(toCards(items)), [items]);
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
   const inView = useInView(sectionRef, { amount: 0.3 });
@@ -201,7 +193,7 @@ export function EcosystemCards() {
   const half = Math.floor(RING.length / 2);
 
   return (
-    <section ref={sectionRef} id="ecosystem" className="section-y relative flex flex-col justify-center overflow-hidden bg-ivory lg:min-h-svh lg:pb-3 lg:pt-[calc(var(--header-h)+1rem)]">
+    <section ref={sectionRef} id={id} className="section-y relative flex flex-col justify-center overflow-hidden bg-ivory lg:min-h-svh lg:pb-3 lg:pt-[calc(var(--header-h)+1rem)]">
       <ShapeField progress={scrollYProgress} play={inView} />
 
       <div ref={headingRef} className="container-x relative">
@@ -209,13 +201,9 @@ export function EcosystemCards() {
           align="center"
           // One-line heading on desktop: every pixel saved goes to the cards.
           className="lg:max-w-none"
-          eyebrow="The Ecosystem"
-          title={
-            <>
-              Explore our <Accent>ecosystem.</Accent>
-            </>
-          }
-          lead="Four divisions, one connected ecosystem."
+          eyebrow={eyebrow}
+          title={title}
+          lead={lead}
         />
       </div>
 
@@ -264,6 +252,12 @@ export function EcosystemCards() {
                 pointerEvents: hidden ? "none" : undefined,
               }}
             >
+              {/* The centre card turns gold → red; faded in so it follows the card as it arrives. */}
+              <div
+                aria-hidden
+                className={`absolute inset-0 rounded-[26px] bg-[linear-gradient(180deg,var(--color-gold)_0%,var(--color-red)_58%,var(--color-red-deep)_100%)] transition-opacity duration-700 ease-[var(--ease-out)] ${centered ? "opacity-100" : "opacity-0"}`}
+              />
+
               {/* Square photo; shorter on small desktop cards so the copy still fits. */}
               <div className={`relative m-4 shrink-0 overflow-hidden rounded-[16px] md:m-5 ${g.h < 400 ? "aspect-[4/3]" : "aspect-square"}`}>
                 <Image
@@ -275,19 +269,19 @@ export function EcosystemCards() {
                   placeholder="blur"
                   className={`object-cover transition-transform duration-700 ease-[var(--ease-out)] ${centered ? "scale-100" : "scale-110"}`}
                 />
-                <span className={`t-eyebrow absolute left-3 top-3 rounded-full px-3 py-1.5 ${DIVISION_PILL[card.division]}`}>
+                <span className={`t-eyebrow absolute left-3 top-3 rounded-full px-3 py-1.5 ${centered ? "bg-ivory text-red" : DIVISION_PILL[card.division]}`}>
                   {card.division}
                 </span>
               </div>
-              <div className="mx-4 mb-4 flex flex-1 flex-col md:mx-5 md:mb-5">
-                <h3 className="line-clamp-2 font-display text-lg font-bold leading-tight tracking-tight text-ink">
+              <div className="relative mx-4 mb-4 flex flex-1 flex-col md:mx-5 md:mb-5">
+                <h3 className={`line-clamp-2 font-display text-lg font-bold leading-tight tracking-tight transition-colors duration-700 ${centered ? "text-ivory" : "text-ink"}`}>
                   {card.title}
                 </h3>
-                <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-soft">{card.description}</p>
+                <p className={`mt-2 line-clamp-2 text-sm leading-relaxed transition-colors duration-700 ${centered ? "text-ivory/85" : "text-ink-soft"}`}>{card.description}</p>
                 <a
-                  href="#contact"
+                  href="/contact"
                   tabIndex={centered ? 0 : -1}
-                  className="group mt-auto inline-flex items-center gap-1.5 self-start pt-3 text-sm font-bold text-red"
+                  className={`group mt-auto inline-flex items-center gap-1.5 self-start pt-3 text-sm font-bold transition-colors duration-700 ${centered ? "text-gold-light" : "text-red"}`}
                 >
                   {card.cta}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />

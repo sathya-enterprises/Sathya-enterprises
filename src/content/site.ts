@@ -1,5 +1,3 @@
-import type { StaticImageData } from "next/image";
-
 /**
  * Single source of truth for all site copy.
  * Every string here is taken from the existing Sathya Enterprises website
@@ -40,23 +38,47 @@ export type Business = {
 
 export const brand = {
   name: "Sathya Enterprises",
-  first: "SATHYA",
-  second: "ENTERPRISES",
   positioning: "One Enterprise. Multiple Businesses. One Connected Ecosystem.",
-  verbs: ["BUILD.", "MARKET.", "AUTOMATE.", "GROW."] as const,
-  tagline: "BUILD. MARKET. AUTOMATE. GROW.",
+  tagline: "BUILD. MARKET. LEAD. GROW.",
   summary:
     "Sathya Enterprises operates across digital growth, technology, data, products, infrastructure and business services — one connected ecosystem built to grow.",
-  whoWeAre:
-    "Sathya Enterprises operates across digital growth, technology, data, products, infrastructure and business services — built as one connected ecosystem rather than a collection of unrelated ventures. Every part of the business feeds the next: digital work creates attention, technology turns that attention into systems, and services and products deliver the real-world value customers came for.",
-  opportunities: "10+ BUSINESS OPPORTUNITIES. ONE VISION.",
+};
+
+/** About page (live site › About). */
+export const about = {
+  intro: "The story behind one enterprise, multiple businesses, and one connected ecosystem.",
+  chapters: [
+    {
+      title: "Who We Are",
+      body: "A connected business ecosystem spanning digital, technology, products and services — built as one enterprise, not a loose collection of ventures.",
+    },
+    {
+      title: "Our Vision",
+      body: "To be the connected engine behind ambitious, modern Indian businesses — one platform for growth across every channel that matters.",
+    },
+    {
+      title: "Our Mission",
+      body: "Build the systems, tools and services that let businesses attract attention, capture leads, convert customers, and grow with less manual effort.",
+    },
+    {
+      title: "Our Values",
+      body: "Reliability, transparency and craftsmanship — every division is held to the same standard, whether it is a website or a borewell installation.",
+    },
+    {
+      title: "Our Approach",
+      body: "Start with the connected story — digital creates attention, technology creates systems, data creates intelligence, and services deliver real-world value.",
+    },
+    {
+      title: "Our Future",
+      body: "New businesses, new products, new technology and new partnerships — all connected back to the same ecosystem.",
+    },
+  ],
 };
 
 export const contact = {
   phone: { value: "+91 00000 00000", placeholder: true },
   email: { value: "hello@sathyaenterprises.com", placeholder: false },
   location: "Bengaluru, Karnataka, India",
-  heading: "LET'S BUILD WHAT'S NEXT.",
   intro: "Tell us what you're building and which part of the ecosystem you need — we'll take it from there.",
   requirements: [
     "Digital Marketing",
@@ -455,7 +477,7 @@ export const businesses: Business[] = [
     headline: "BUSINESSES. CUSTOMERS. SERVICE PROVIDERS.",
     intro:
       "One platform, three sides — customers who need something, businesses who provide it, and the service providers who deliver it.",
-    cta: "Learn More",
+    cta: "Explore the Marketplace",
     flow: { steps: ["Customers", "Businesses", "Service Providers"], vertical: true },
     groups: [],
     note: {
@@ -596,61 +618,20 @@ export const businesses: Business[] = [
   },
 ];
 
-export const businessBySlug = Object.fromEntries(businesses.map((b) => [b.slug, b])) as Record<
-  string,
-  Business
->;
-
 export const divisionById = Object.fromEntries(divisions.map((d) => [d.id, d])) as Record<DivisionId, Division>;
 
 export function businessesIn(id: DivisionId, { includeAlso = true } = {}) {
   return businesses.filter((b) => b.division === id || (includeAlso && b.also?.includes(id)));
 }
 
-/** Contact form requirement option for each business (options as published on the live contact form). */
-export const requirementFor: Record<string, string> = {
-  "digital-marketing": "Digital Marketing",
-  "logo-design": "Logo Design",
-  "web-development": "Web Development",
-  seo: "SEO",
-  sem: "SEM",
-  "social-media-management": "Social Media",
-  "instagram-marketing": "Instagram Marketing",
-  "lead-generation": "Lead Generation",
-  "saas-products": "SaaS",
-  "ai-automation": "AI Automation",
-  "whatsapp-business-solutions": "WhatsApp Solutions",
-  "data-solutions": "Data Solutions",
-  "digital-data-products": "Other",
-  "business-marketplace": "Other",
-  "water-pumps": "Water Pumps",
-  "borewell-services": "Borewell",
-  "cctv-security": "CCTV",
-  travels: "Travels",
-  "interiors-architecture": "Interiors",
-  "startup-consulting": "Startup Consulting",
-};
-
-/** Businesses no longer have their own pages — each one lives as an anchor on its division page. */
+/** The division page that lists a business. */
 export function businessHref(b: Business) {
-  return `${divisionById[b.division].href}#${b.slug}`;
+  return divisionById[b.division].href;
 }
 
-/** BUILD. MARKET. AUTOMATE. GROW. — each verb mapped to the businesses that deliver it (lines from published headlines). */
-export const growthSteps = [
-  { verb: "BUILD.", line: "Websites, brands and software built for business.", slugs: ["web-development", "logo-design", "saas-products"] },
-  {
-    verb: "MARKET.",
-    line: "Get found. Get traffic. Get business.",
-    slugs: ["digital-marketing", "seo", "sem", "social-media-management", "instagram-marketing"],
-  },
-  { verb: "AUTOMATE.", line: "Less manual work. More business.", slugs: ["ai-automation", "whatsapp-business-solutions", "lead-generation"] },
-  { verb: "GROW.", line: "Turn data into decisions — from idea to scale.", slugs: ["data-solutions", "startup-consulting", "business-marketplace"] },
-];
-
 /**
- * Social profiles. Paste a full profile URL to show its icon in the footer; empty entries are
- * hidden, so the site never links anywhere that doesn't exist yet.
+ * Social profiles. Paste a full profile URL to list it in the site's structured data (sameAs);
+ * empty entries are skipped, so the site never links anywhere that doesn't exist yet.
  */
 export const socials: { id: "instagram" | "facebook" | "linkedin" | "youtube" | "x" | "whatsapp"; label: string; url: string }[] = [
   { id: "instagram", label: "Instagram", url: "" },
@@ -659,140 +640,4 @@ export const socials: { id: "instagram" | "facebook" | "linkedin" | "youtube" | 
   { id: "youtube", label: "YouTube", url: "" },
   { id: "x", label: "X (Twitter)", url: "" },
   { id: "whatsapp", label: "WhatsApp", url: "" },
-];
-
-/**
- * The Sathya Money-Making System — the six stages from the live home page ("The System"), each with the
- * offerings listed under it there, linked to the businesses that deliver them.
- */
-export const moneySystem: { stage: string; items: string; slugs: string[] }[] = [
-  { stage: "ATTRACT", items: "Digital Marketing, Instagram Marketing, SEO, SEM", slugs: ["digital-marketing", "instagram-marketing", "seo", "sem"] },
-  { stage: "CAPTURE", items: "Website, Landing Pages, Lead Generation", slugs: ["web-development", "lead-generation"] },
-  { stage: "CONVERT", items: "CRM, WhatsApp, Follow-up", slugs: ["saas-products", "whatsapp-business-solutions"] },
-  { stage: "AUTOMATE", items: "SaaS, AI, Automation", slugs: ["saas-products", "ai-automation"] },
-  { stage: "UNDERSTAND", items: "Data, Analytics", slugs: ["data-solutions", "digital-data-products"] },
-  { stage: "GROW", items: "Customers, Revenue, Scale", slugs: ["startup-consulting", "business-marketplace"] },
-];
-
-/** "Built to Grow" — the four highlights from the live home page. */
-export const builtToGrow: { title: string; body: string; figure?: { value: number; suffix: string } }[] = [
-  {
-    title: "Business Verticals",
-    figure: { value: 10, suffix: "+" },
-    body: "Digital, technology, products and on-the-ground services under one roof.",
-  },
-  { title: "Growing Client Base", body: "Businesses that start with one service and add the next as they grow." },
-  { title: "Multiple Active Projects", body: "Campaigns, software builds and site work running side by side." },
-  { title: "Open Partner Network", body: "Service providers who extend what the ecosystem can deliver." },
-];
-
-/** "Looking Ahead / What's Next?" — the four growth areas from the live home page. */
-export const lookingAhead = [
-  { title: "New Business", body: "Vertical expansion within the ecosystem." },
-  { title: "New Product", body: "SaaS modules and data products." },
-  { title: "New Technology", body: "AI, automation and data tooling." },
-  { title: "New Partnership", body: "Service providers extending our capabilities." },
-];
-
-export type Testimonial = {
-  quote: string;
-  /** Role and type of business — no personal names until the client has agreed to be named. */
-  role: string;
-  place: string;
-  division: DivisionId;
-  /** Avatar monogram: two letters standing for the business, shown until a client photo is added. */
-  initials: string;
-  /** The client's own photo (with their permission). Replaces the monogram. */
-  photo?: StaticImageData;
-  placeholder: boolean;
-};
-
-/**
- * PLACEHOLDERS — the live site has no testimonials yet. These show the layout with representative
- * copy only; replace each with a real client quote (and the client's permission) before launch, then set
- * `placeholder: false`.
- */
-export const testimonials: Testimonial[] = [
-  {
-    quote:
-      "We came in for a new website and left with a working lead pipeline. The site, the Google Ads and the WhatsApp follow-ups finally talk to each other.",
-    role: "Founder, interior design studio",
-    initials: "ID",
-    place: "Bengaluru",
-    division: "digital",
-    placeholder: true,
-  },
-  {
-    quote:
-      "Our sales team used to chase enquiries on spreadsheets. With the CRM and automated follow-ups, every lead has an owner and nothing slips through.",
-    role: "Sales head, real-estate developer",
-    initials: "RE",
-    place: "Bengaluru",
-    division: "technology",
-    placeholder: true,
-  },
-  {
-    quote:
-      "One call covered the borewell, the pump and the CCTV for our new site. One team to coordinate with instead of three different vendors.",
-    role: "Owner, farm property",
-    initials: "FP",
-    place: "Bengaluru Rural",
-    division: "services",
-    placeholder: true,
-  },
-  {
-    quote:
-      "They handled our private limited incorporation and compliance, then helped us get our pitch ready for investors. We could stay focused on the product.",
-    role: "Co-founder, early-stage startup",
-    initials: "ES",
-    place: "Bengaluru",
-    division: "services",
-    placeholder: true,
-  },
-  {
-    quote:
-      "Our Instagram finally has a plan. Reels go out on schedule, the feed looks like one brand, and enquiries now arrive through DMs every week.",
-    role: "Owner, café and bakery",
-    initials: "CB",
-    place: "Bengaluru",
-    division: "digital",
-    placeholder: true,
-  },
-  {
-    quote:
-      "Sales, marketing and stock numbers used to live in five different files. Now there is one dashboard the whole team actually opens.",
-    role: "Director, distribution business",
-    initials: "DB",
-    place: "Karnataka",
-    division: "technology",
-    placeholder: true,
-  },
-];
-
-/** Home FAQ — every answer restates what the site already says; no new claims. */
-export const faqs: { q: string; a: string }[] = [
-  {
-    q: "What does Sathya Enterprises do?",
-    a: `Sathya Enterprises operates across digital growth, technology, data, products, infrastructure and business services — ${divisions.length} divisions and ${businesses.length} businesses, built as one connected ecosystem rather than a collection of unrelated ventures.`,
-  },
-  {
-    q: "Do I need to use every division?",
-    a: "No. Start with the one thing you need — a website, a CRM, a CCTV installation, company registration — and add more only when it helps. Because everything sits in one ecosystem, each next step connects to what is already in place.",
-  },
-  {
-    q: "How do the divisions work together?",
-    a: "Digital creates attention, technology turns that attention into systems, data creates intelligence, and services and products deliver the real-world value customers came for. In practice: attract, capture, convert, automate, understand, grow.",
-  },
-  {
-    q: "Can your software grow with my business?",
-    a: "Yes. Our SaaS is modular — CRM, lead management, sales management, dashboards, automation and analytics. Start with one module and add more as the business grows.",
-  },
-  {
-    q: "How do you handle data?",
-    a: "Every dataset and data product is handled under lawful, privacy-conscious data practices. Responsible use is a requirement, not an afterthought.",
-  },
-  {
-    q: "Where are you based, and how do I get started?",
-    a: "We are based in Bengaluru, Karnataka. Send an enquiry through the contact page, pick the requirement closest to what you need and tell us where you are — we will take it from there.",
-  },
 ];

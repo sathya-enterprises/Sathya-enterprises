@@ -1,14 +1,33 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { useArrival } from "@/lib/useArrival";
+import { brand, businessesIn, contact, divisions } from "@/content/site";
 import { CookieSettingsButton } from "@/components/layout/CookieConsent";
+import logo from "../../../public/logo-512.png";
 
 const step = (i: number) => ({ "--i": i }) as React.CSSProperties;
 
+const PAGES = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
+
+const LEGAL = [
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms of Service", href: "/terms" },
+];
+
+const link = "transition-colors hover:text-red";
+
 /**
- * On arrival the red top edge draws across, then the brand column, the three link columns and the
- * bottom bar lift in one after another (useArrival + .rise; replays on return).
+ * Site map in the footer: the brand and a way to get in touch, the company pages, then every
+ * division with the businesses it runs — so every page on the site is one click away from any other.
+ * On arrival the red top edge draws across and the columns lift in one after another (useArrival + .rise).
  */
 export function Footer() {
   const ref = useRef<HTMLElement>(null);
@@ -16,61 +35,105 @@ export function Footer() {
   const arrived = useArrival(ref, "0px 0px -10% 0px");
 
   return (
-    <footer ref={ref} data-arrived={arrived} className="bg-gold-light text-ink py-16 md:py-24 relative overflow-hidden">
+    <footer ref={ref} data-arrived={arrived} className="relative overflow-hidden bg-gold-light py-16 text-ink md:py-24">
       <div aria-hidden className="rise-line absolute inset-x-0 top-0 h-2 bg-red" />
-      <div className="absolute top-0 right-0 w-96 h-96 bg-red/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold/30 blur-[150px] rounded-full pointer-events-none" />
-      
+      <div aria-hidden className="pointer-events-none absolute right-0 top-0 h-96 w-96 rounded-full bg-red/10 blur-[150px]" />
+      <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-96 w-96 rounded-full bg-gold/30 blur-[150px]" />
+
       <div className="container-x relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 mb-16">
-          <div className="rise col-span-2 md:col-span-1 space-y-6">
-            <div className="flex items-center gap-3">
-              <img src="/icon.png" alt="" className="w-12 h-12 shrink-0 object-contain bg-white rounded-lg p-1" />
-              <p className="font-display text-xl font-extrabold uppercase tracking-tight md:text-2xl">
+        {/* Brand · pages · contact */}
+        <div className="grid gap-x-8 gap-y-12 md:grid-cols-12">
+          <div className="rise space-y-6 md:col-span-6 lg:col-span-5">
+            <Link href="/" className="inline-flex items-center gap-3" aria-label="Sathya Enterprises — home">
+              <Image src={logo} alt="" width={48} height={48} className="h-12 w-12 shrink-0 rounded-lg bg-white object-contain p-1" />
+              <span className="font-display text-xl font-extrabold uppercase tracking-tight md:text-2xl">
                 Sathya <span className="text-red">Enterprises</span>
+              </span>
+            </Link>
+            <p className="max-w-sm text-sm font-medium leading-relaxed text-ink-soft">{brand.summary}</p>
+            <p className="font-mono text-[0.72rem] font-bold tracking-[0.14em] text-red">{brand.tagline}</p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 rounded-full bg-red px-6 py-3 text-sm font-bold text-ivory shadow-2 transition-colors hover:bg-red-deep"
+            >
+              Start a Conversation
+              <ArrowUpRight aria-hidden className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <nav aria-label="Company" className="rise md:col-span-2 lg:col-span-3" style={step(1)}>
+            <h2 className="mb-5 flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
+              <span aria-hidden className="h-2 w-2 rounded-full bg-gold" /> Company
+            </h2>
+            <ul className="space-y-3 text-sm font-medium text-ink-soft">
+              {PAGES.map((p) => (
+                <li key={p.href}>
+                  <Link href={p.href} className={link}>
+                    {p.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="rise md:col-span-4" style={step(2)}>
+            <h2 className="mb-5 flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
+              <span aria-hidden className="h-2 w-2 rounded-full bg-red" /> Get in touch
+            </h2>
+            <address className="space-y-3 text-sm font-medium not-italic text-ink-soft">
+              <p>{contact.location}</p>
+              <p>
+                <a href={`mailto:${contact.email.value}`} className={link}>
+                  {contact.email.value}
+                </a>
               </p>
-            </div>
-            <p className="text-ink-soft text-sm leading-relaxed max-w-xs font-medium">
-              Sathya Enterprises operates across digital growth, technology, data, products, infrastructure and business services.
-            </p>
-          </div>
-          <div className="rise" style={step(1)}>
-            <h3 className="font-bold mb-6 text-ink uppercase tracking-widest text-sm flex items-center gap-2">
-              <span className="w-2 h-2 bg-red-500 rounded-full"></span> Digital
-            </h3>
-            <ul className="space-y-4 text-sm text-ink-soft font-medium">
-              <li><a href="#" className="hover:text-red transition-colors">Digital Marketing</a></li>
-              <li><a href="#" className="hover:text-red transition-colors">SEO & SEM</a></li>
-              <li><a href="#" className="hover:text-red transition-colors">Web Development</a></li>
-            </ul>
-          </div>
-          <div className="rise" style={step(2)}>
-            <h3 className="font-bold mb-6 text-ink uppercase tracking-widest text-sm flex items-center gap-2">
-              <span className="w-2 h-2 bg-yellow-500 rounded-full"></span> Technology
-            </h3>
-            <ul className="space-y-4 text-sm text-ink-soft font-medium">
-              <li><a href="#" className="hover:text-red transition-colors">SaaS Products</a></li>
-              <li><a href="#" className="hover:text-red transition-colors">AI Automation</a></li>
-              <li><a href="#" className="hover:text-red transition-colors">WhatsApp Solutions</a></li>
-            </ul>
-          </div>
-          <div className="rise col-span-2 md:col-span-1" style={step(3)}>
-            <h3 className="font-bold mb-6 text-ink uppercase tracking-widest text-sm flex items-center gap-2">
-              <span className="w-2 h-2 bg-red-deep rounded-full"></span> Contact
-            </h3>
-            <ul className="space-y-4 text-sm text-ink-soft font-medium">
-              <li>Bengaluru, Karnataka</li>
-              <li>hello@sathyaenterprises.com</li>
-              <li>+91 00000 00000</li>
-            </ul>
+              {/* The phone number is still a placeholder on the live site — shown once it's real. */}
+              {!contact.phone.placeholder && (
+                <p>
+                  <a href={`tel:${contact.phone.value.replace(/\s/g, "")}`} className={link}>
+                    {contact.phone.value}
+                  </a>
+                </p>
+              )}
+            </address>
           </div>
         </div>
-        <div style={step(4)} className="rise pt-8 border-t border-ink/15 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-ink-soft text-sm font-medium">© {new Date().getFullYear()} Sathya Enterprises. All rights reserved.</p>
-          <div className="flex gap-6 text-ink-soft text-sm font-medium">
-            <a href="#" className="hover:text-red transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-red transition-colors">Terms of Service</a>
-            <CookieSettingsButton className="hover:text-red transition-colors" />
+
+        {/* Every division and its businesses */}
+        <nav aria-label="Divisions" className="mt-14 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-ink/15 pt-12 lg:grid-cols-4">
+          {divisions.map((d, i) => (
+            <div key={d.id} className="rise" style={step(3 + i)}>
+              <h2 className="mb-5 text-sm font-bold uppercase tracking-widest">
+                <Link href={d.href} className={`group inline-flex items-center gap-2 ${link}`}>
+                  <span aria-hidden className={`h-2 w-2 rounded-full ${i % 2 ? "bg-gold" : "bg-red"}`} />
+                  {d.name.charAt(0) + d.name.slice(1).toLowerCase()}
+                  <ArrowUpRight aria-hidden className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
+                </Link>
+              </h2>
+              <ul className="space-y-3 text-sm font-medium text-ink-soft">
+                {businessesIn(d.id, { includeAlso: false }).map((b) => (
+                  <li key={b.slug}>
+                    <Link href={d.href} className={link}>
+                      {b.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
+        <div style={step(7)} className="rise mt-14 flex flex-col items-center justify-between gap-6 border-t border-ink/15 pt-8 md:flex-row">
+          <p className="text-sm font-medium text-ink-soft">
+            © {new Date().getFullYear()} {brand.name}. All rights reserved.
+          </p>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium text-ink-soft">
+            {LEGAL.map((l) => (
+              <Link key={l.href} href={l.href} className={link}>
+                {l.label}
+              </Link>
+            ))}
+            <CookieSettingsButton className={link} />
           </div>
         </div>
       </div>

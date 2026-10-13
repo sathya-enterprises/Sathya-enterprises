@@ -1,9 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { m, useScroll, useSpring } from "motion/react";
+import { Menu } from "lucide-react";
+import { MobileMenu } from "./MobileMenu";
 
-const LINKS = ["Ecosystem", "Digital", "Technology", "Products", "Services"];
+/** Pages only — no links into sections of a page. Home is the logo. */
+const LINKS = [
+  { label: "About", href: "/about" },
+  { label: "Digital", href: "/digital" },
+  { label: "Technology", href: "/technology" },
+  { label: "Products", href: "/products" },
+  { label: "Services", href: "/services" },
+];
 
 const step = (i: number) => ({ "--i": i }) as React.CSSProperties;
 
@@ -14,6 +25,9 @@ const step = (i: number) => ({ "--i": i }) as React.CSSProperties;
  */
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+  const pathname = usePathname();
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
 
@@ -41,28 +55,52 @@ export function Header() {
     >
       <nav className="container-x flex justify-between items-center text-ink">
         {/* Stacked lockup: short and wide enough to sit beside the logo on the narrowest phones. */}
-        <a href="/" aria-label="Sathya Enterprises — home" className="nav-in flex min-w-0 items-center gap-2.5">
+        <Link href="/" aria-label="Sathya Enterprises — home" className="nav-in flex min-w-0 items-center gap-2.5">
           <img src="/icon.png" alt="" className="h-9 w-9 shrink-0 rounded-full object-contain md:h-10 md:w-10" />
           <span aria-hidden className="flex flex-col font-display uppercase leading-none">
             <span className="text-[1.3rem] font-extrabold tracking-[-0.02em] md:text-[1.5rem]">Sathya</span>
             <span className="mt-[3px] -mr-[0.3em] text-[0.5rem] font-bold tracking-[0.3em] text-red md:text-[0.58rem]">Enterprises</span>
           </span>
-        </a>
+        </Link>
         <div className="hidden lg:flex items-center gap-8 font-bold text-sm tracking-wide">
-          {LINKS.map((label, i) => (
-            <a key={label} href="#ecosystem" style={step(i + 1)} className="nav-in link-draw transition-[color,background-size] hover:text-red">
-              {label}
-            </a>
-          ))}
+          {LINKS.map(({ label, href }, i) => {
+            const current = href === pathname;
+            return (
+              <Link
+                key={label}
+                href={href}
+                aria-current={current ? "page" : undefined}
+                style={step(i + 1)}
+                className={`nav-in link-draw transition-[color,background-size] hover:text-red ${current ? "text-red" : ""}`}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </div>
-        <a
-          href="#contact"
-          style={step(LINKS.length + 1)}
-          className="nav-in shrink-0 bg-red text-white px-4 py-2.5 md:px-7 md:py-3 rounded-full text-sm font-bold shadow-lg hover:bg-red-deep transition-all active:scale-95"
-        >
-          Contact Us
-        </a>
+        <div className="flex shrink-0 items-center gap-2">
+          <Link
+            href="/contact"
+            aria-current={pathname === "/contact" ? "page" : undefined}
+            style={step(LINKS.length + 1)}
+            className="nav-in shrink-0 bg-red text-white px-4 py-2.5 md:px-7 md:py-3 rounded-full text-sm font-bold shadow-lg hover:bg-red-deep transition-all active:scale-95"
+          >
+            Contact Us
+          </Link>
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMenuOpen(true)}
+            style={step(LINKS.length + 2)}
+            className="nav-in grid h-10 w-10 place-items-center rounded-full border border-ink/15 bg-white/80 text-ink lg:hidden"
+          >
+            <Menu aria-hidden className="h-5 w-5" />
+          </button>
+        </div>
       </nav>
+      <MobileMenu open={menuOpen} onClose={closeMenu} />
 
       {/* Reading progress */}
       <m.div

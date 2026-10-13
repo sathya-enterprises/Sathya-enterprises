@@ -14,7 +14,12 @@ const step = (i: number) => ({ "--i": i }) as React.CSSProperties;
  * shapes grow in, the headline rises letter by letter, then the copy, buttons and email follow
  * (replays on return). Nothing runs per scroll frame or on a loop.
  */
-export function CtaSection() {
+export function CtaSection({
+  secondary = { href: "/#ecosystem", label: "Explore Ecosystem" },
+}: {
+  /** Second button, e.g. on to the next division. */
+  secondary?: { href: string; label: string };
+} = {}) {
   const ref = useRef<HTMLElement>(null);
   const arrived = useArrival(ref);
 
@@ -58,9 +63,9 @@ export function CtaSection() {
             className="rise relative mx-auto mt-10 flex max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4 lg:mt-[4vh]"
             style={step(7)}
           >
-            <ButtonLink href={`mailto:${contact.email.value}`}>Start a Conversation</ButtonLink>
-            <ButtonLink href="#ecosystem" variant="secondary">
-              Explore Ecosystem
+            <ButtonLink href="/contact">Start a Conversation</ButtonLink>
+            <ButtonLink href={secondary.href} variant="secondary">
+              {secondary.label}
             </ButtonLink>
           </div>
 

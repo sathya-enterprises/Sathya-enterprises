@@ -90,28 +90,23 @@ export function breadcrumbLd(trail: { name: string; path: string }[]) {
   };
 }
 
-export function itemListLd(name: string, items: { name: string; path: string }[]) {
+/** A division's businesses as a list of services offered by the organisation. */
+export function servicesLd(name: string, path: string, items: { name: string; description: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name,
+    url: `${siteUrl}${path}`,
     itemListElement: items.map((it, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      name: it.name,
-      url: `${siteUrl}${it.path}`,
-    })),
-  };
-}
-
-export function faqLd(items: { q: string; a: string }[]) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: items.map((it) => ({
-      "@type": "Question",
-      name: it.q,
-      acceptedAnswer: { "@type": "Answer", text: it.a },
+      item: {
+        "@type": "Service",
+        name: it.name,
+        description: it.description,
+        provider: { "@id": orgId },
+        areaServed: { "@type": "Country", name: "India" },
+      },
     })),
   };
 }

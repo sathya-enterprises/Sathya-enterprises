@@ -6,7 +6,6 @@ import { Footer } from "@/components/layout/Footer";
 import { brand } from "@/content/site";
 import { organizationLd, siteUrl } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { OceanBackdrop } from "@/components/ocean/OceanBackdrop";
 import { Preloader } from "@/components/layout/Preloader";
 import { CookieConsent } from "@/components/layout/CookieConsent";
 import "./globals.css";
@@ -28,7 +27,7 @@ const spaceMono = Space_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Sathya Enterprises — Build. Market. Automate. Grow.",
+    default: "Sathya Enterprises — Build. Market. Lead. Grow.",
     template: "%s — Sathya Enterprises",
   },
   description: brand.summary,
@@ -41,7 +40,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Sathya Enterprises",
     locale: "en_IN",
-    title: "Sathya Enterprises — Build. Market. Automate. Grow.",
+    title: "Sathya Enterprises — Build. Market. Lead. Grow.",
     description: brand.positioning,
   },
   twitter: { card: "summary_large_image" },
@@ -49,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#237592",
+  themeColor: "#fffdf8",
 };
 
 
@@ -72,7 +71,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <Preloader />
         <MotionProvider>
-          <OceanBackdrop />
           <Header />
           <div className="relative z-10 overflow-x-clip">
             <main id="main">{children}</main>

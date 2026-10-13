@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /*
- * Sathya Enterprises design tokens — see docs/DESIGN.md.
- * Colours are the live brand palette. Do not add hues that are not listed there.
+ * Sathya Enterprises design tokens. Colours are the live brand palette (red, gold, ivory, ink);
+ * do not add new hues.
  */
 @theme {
   --color-red: #c8102e;
@@ -18,28 +18,19 @@
   --color-ink: #6e0b1c;
   --color-ink-soft: #8a2b2b;
   --color-line: rgb(26 26 26 / 0.1);
-  --color-line-strong: rgb(26 26 26 / 0.18);
-  --color-line-inverse: rgb(255 253 248 / 0.14);
 
-  /* Ocean — the background only. Red and gold stay the UI colours on top of it. */
+  /* Water colours for the preloader's logo splash only. */
   --color-sea-shallow: #237592;
-  --color-sea: #165a76;
-  --color-sea-deep: #0c3c55;
-  --color-sea-abyss: #06202f;
-  --color-whale: #24435c;
   --color-whale-belly: #a3c9da;
 
   --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
   --font-sans: var(--font-manrope), "Helvetica Neue", Arial, sans-serif;
   --font-mono: var(--font-space-mono), "Courier New", monospace;
 
-  --radius-sm: 10px;
   --radius-md: 18px;
   --radius-lg: 28px;
 
-  --shadow-1: 0 1px 2px rgb(26 26 26 / 0.06), 0 2px 8px rgb(26 26 26 / 0.04);
   --shadow-2: 0 12px 32px -12px rgb(26 26 26 / 0.18);
-  --shadow-3: 0 30px 60px -20px rgb(26 26 26 / 0.28);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0.05, 0.36, 1);
@@ -51,46 +42,7 @@
   --section-y: clamp(5rem, 11vw, 9.5rem);
   --header-h: 72px;
 
-  --dur-micro: 160ms;
   --dur-ui: 240ms;
-  --dur-reveal: 640ms;
-  --dur-hero: 1000ms;
-
-  /* Everything sits on the water: ivory text, gold accents, hairline dividers. */
-  --tone-bg: transparent;
-  --tone-ink: var(--color-ivory);
-  --tone-soft: rgb(255 253 248 / 0.8);
-  --tone-accent: var(--color-gold);
-  --tone-line: rgb(255 253 248 / 0.18);
-}
-
-[data-tone="digital"] {
-  --tone-bg: var(--color-ivory);
-  --tone-ink: var(--color-ink);
-  --tone-soft: var(--color-ink-soft);
-  --tone-accent: var(--color-red);
-  --tone-line: var(--color-line);
-}
-[data-tone="technology"] {
-  --tone-bg: var(--color-charcoal);
-  --tone-ink: var(--color-ivory);
-  --tone-soft: rgb(255 253 248 / 0.68);
-  --tone-accent: var(--color-gold);
-  --tone-line: var(--color-line-inverse);
-}
-[data-tone="products"] {
-  --tone-bg: var(--color-gold-light);
-  --tone-ink: var(--color-ink);
-  --tone-soft: var(--color-ink-soft);
-  --tone-accent: var(--color-red-deep);
-  --tone-line: rgb(158 16 38 / 0.16);
-}
-[data-tone="services"] {
-  --tone-bg: var(--color-red-deep);
-  --tone-ink: var(--color-ivory);
-  --tone-soft: rgb(255 253 248 / 0.74);
-  --tone-accent: var(--color-gold);
-  --tone-line: rgb(255 253 248 / 0.18);
 }
 
 /* ── Base ─────────────────────────────────────────────── */
@@ -100,8 +52,8 @@ html {
 }
 
 body {
-  background: var(--color-sea-abyss);
-  color: var(--color-ivory);
+  background: var(--color-ivory);
+  color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.65;
@@ -120,28 +72,9 @@ body {
   outline-offset: 3px;
   border-radius: 6px;
 }
-[data-tone="technology"] :focus-visible,
-[data-tone="services"] :focus-visible {
-  outline-color: var(--color-gold);
-}
 
 /* ── Type scale ───────────────────────────────────────── */
 @layer components {
-  .t-mega {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: clamp(3.5rem, 13vw, 13rem);
-    line-height: 0.86;
-    letter-spacing: -0.045em;
-    font-stretch: 112%;
-  }
-  .t-display {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: clamp(2.6rem, 7vw, 6rem);
-    line-height: 0.94;
-    letter-spacing: -0.035em;
-  }
   .t-h1 {
     font-family: var(--font-display);
     font-weight: 800;
@@ -149,13 +82,6 @@ body {
     font-size: clamp(2.2rem, min(5vw, 8vh), 4.25rem);
     line-height: 0.98;
     letter-spacing: -0.03em;
-  }
-  .t-h2 {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: clamp(1.75rem, 3.4vw, 3rem);
-    line-height: 1.02;
-    letter-spacing: -0.025em;
   }
   .t-h3 {
     font-family: var(--font-display);
@@ -187,16 +113,6 @@ body {
   .section-y {
     padding-block: var(--section-y);
   }
-  .tone {
-    background: var(--tone-bg);
-    color: var(--tone-ink);
-  }
-
-  /* Text set straight on the water gets a soft shadow so it holds up over light rays and creatures. */
-  .on-water {
-    text-shadow: 0 1px 14px rgb(3 18 30 / 0.45);
-  }
-
   /* Line-draw link underline (subtle tier) */
   .link-draw {
     background-image: linear-gradient(currentColor, currentColor);
@@ -247,9 +163,6 @@ body {
     animation-name: vt-fade;
     animation-duration: 220ms;
   }
-  [data-ambient] {
-    animation: none !important;
-  }
   html {
     scroll-behavior: auto !important;
   }
@@ -258,333 +171,9 @@ body {
   from { opacity: 0; }
 }
 
-/* ── Entrances (CSS so they never wait on hydration) ────── */
+/* ── Entrance timing: CSS entrances start after this delay (longer while the preloader is up) ── */
 :root {
   --enter-base: 0.12s;
-}
-/* Travel only — content is painted from the first frame (crawlers and LCP see it immediately);
- * the route crossfade provides the fade. */
-.enter {
-  transform: translateY(28px);
-  animation: enter-rise var(--dur-hero) var(--ease-out) forwards;
-  animation-delay: calc(var(--enter-base) + var(--i, 0) * 90ms);
-}
-.enter-mask {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.04em;
-  margin-bottom: -0.04em;
-}
-.enter-mask > .enter {
-  transform: translateY(102%);
-  animation-name: enter-line;
-}
-/* Headline words: always painted (opacity 1), only travel — safe for LCP. */
-.enter-word {
-  display: inline-block;
-  transform: translateY(0.32em) rotate(1.5deg);
-  animation: enter-word 900ms var(--ease-out) forwards;
-  animation-delay: calc(var(--enter-base) - 0.25s + var(--w, 0) * 55ms);
-}
-@keyframes enter-rise {
-  to { transform: none; }
-}
-@keyframes enter-line {
-  to { transform: none; }
-}
-@keyframes enter-word {
-  to { transform: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .enter,
-  .enter-mask > .enter {
-    animation: none;
-    transform: none;
-  }
-  .enter-word {
-    animation: none;
-    transform: none;
-  }
-}
-
-/* ── Flow signal (FlowLine) — transform-only travel along a track ── */
-.flow-signal {
-  animation: flow-v var(--flow-dur, 3s) var(--ease-in-out) 1s infinite both;
-}
-@media (min-width: 768px) {
-  .flow-signal--h {
-    animation-name: flow-h;
-  }
-}
-@keyframes flow-v {
-  0% {
-    transform: translateY(0);
-    opacity: 0;
-  }
-  12%,
-  88% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-}
-@keyframes flow-h {
-  0% {
-    transform: translateX(0);
-    opacity: 0;
-  }
-  12%,
-  88% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-/* ── Marquee (business tickers) ───────────────────────── */
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* ── Timeline (home › How we help) ────────────────────────
- * The rail fills as the middle of the screen travels down the list; each step's node and text light
- * up as they cross the middle. Only `from` states are animated, so without scroll-driven animation
- * support (or with reduced motion) everything simply shows lit. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .timeline {
-      view-timeline-name: --timeline;
-    }
-    .timeline-fill {
-      animation: timeline-fill linear both;
-      animation-timeline: --timeline;
-      animation-range: cover 25% cover 75%;
-    }
-    .timeline-node,
-    .timeline-body {
-      animation: timeline-node linear both;
-      animation-timeline: view();
-      animation-range: cover 30% cover 45%;
-    }
-    .timeline-body {
-      animation-name: timeline-body;
-    }
-  }
-}
-@keyframes timeline-fill {
-  from {
-    transform: scaleY(0);
-  }
-}
-@keyframes timeline-node {
-  from {
-    background-color: var(--color-sea-abyss);
-    border-color: rgb(255 253 248 / 0.3);
-    color: rgb(255 253 248 / 0.6);
-    transform: scale(0.8);
-  }
-}
-@keyframes timeline-body {
-  from {
-    opacity: 0.3;
-    transform: translateX(16px);
-  }
-}
-
-/* Browser autofill: keep fields dark and readable on the water instead of the default bright fill. */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--color-ivory);
-  caret-color: var(--color-ivory);
-  -webkit-box-shadow: 0 0 0 1000px var(--color-sea-deep) inset;
-  transition: background-color 9999s ease-out;
-}
-select option,
-select optgroup {
-  background: var(--color-sea-deep);
-  color: var(--color-ivory);
-}
-
-/* ── Scroll reveals ───────────────────────────────────────────────────────
- * Native scroll-driven animations: each element animates as it travels into view, tied to the
- * scroll position (runs off the main thread, no JS). Content is always in the HTML; browsers
- * without support, and reduced-motion users, simply see it in place.
- *   .reveal          rise + fade
- *   .reveal-left     slide in from the left
- *   .reveal-right    slide in from the right
- *   .reveal-zoom     grow + fade
- *   .reveal-stagger  children rise one after another
- */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .reveal,
-    .reveal-left,
-    .reveal-right,
-    .reveal-zoom,
-    .reveal-stagger > * {
-      animation: reveal-up linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 30%;
-    }
-    .reveal-left {
-      animation-name: reveal-left;
-    }
-    .reveal-right {
-      animation-name: reveal-right;
-    }
-    .reveal-zoom {
-      animation-name: reveal-zoom;
-    }
-    /* Last thing on the page: finish as soon as it is fully on screen (the page can't scroll further). */
-    .reveal-end {
-      animation-range: entry 0% entry 100%;
-    }
-    .reveal-stagger > :nth-child(2) {
-      animation-range: entry 8% cover 34%;
-    }
-    .reveal-stagger > :nth-child(3) {
-      animation-range: entry 16% cover 38%;
-    }
-    .reveal-stagger > :nth-child(n + 4) {
-      animation-range: entry 24% cover 42%;
-    }
-  }
-}
-@keyframes reveal-up {
-  from {
-    opacity: 0;
-    transform: translateY(56px);
-  }
-}
-@keyframes reveal-left {
-  from {
-    opacity: 0;
-    transform: translateX(-72px);
-  }
-}
-@keyframes reveal-right {
-  from {
-    opacity: 0;
-    transform: translateX(72px);
-  }
-}
-@keyframes reveal-zoom {
-  from {
-    opacity: 0;
-    transform: translateY(40px) scale(0.9);
-  }
-}
-
-/* ── Sections ─────────────────────────────────────────────────────────────
- * Business tickers, panel edges, and photos that open and settle as they scroll in.
- */
-
-/* Business ticker: names stream across, edges fade into the water. */
-.ticker {
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-}
-.ticker__track {
-  animation: marquee var(--ticker-dur, 50s) linear infinite;
-}
-.ticker__track--reverse {
-  animation-direction: reverse;
-}
-.ticker:hover .ticker__track {
-  animation-play-state: paused;
-}
-.text-outline {
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgb(255 253 248 / 0.55);
-}
-
-/* A red → gold edge around a panel. Static on purpose: animating the gradient angle repaints the
- * whole panel border every frame, which measurably cost scroll smoothness. */
-.edge-glow {
-  position: relative;
-  isolation: isolate;
-}
-.edge-glow::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: -1;
-  border-radius: inherit;
-  padding: 1px;
-  background: conic-gradient(from 200deg, transparent 0 40%, var(--color-gold) 62%, var(--color-red) 80%, transparent 100%);
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: var(--edge-opacity, 0.9);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ticker {
-    overflow-x: auto;
-  }
-  .ticker__track {
-    animation: none;
-  }
-}
-
-/* Photos open from a clipped strip and settle from a slight zoom as they scroll in. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .photo-reveal {
-      animation: photo-open linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 35%;
-    }
-    .photo-parallax {
-      animation: photo-settle linear both;
-      animation-timeline: view();
-      animation-range: entry 0% exit 100%;
-    }
-  }
-}
-@keyframes photo-open {
-  from {
-    clip-path: inset(18% 12% 18% 12% round 28px);
-    opacity: 0.3;
-  }
-}
-@keyframes photo-settle {
-  from {
-    transform: scale(1.22) translateY(-4%);
-  }
-  to {
-    transform: scale(1.06) translateY(4%);
-  }
-}
-
-/* ── Who we are ───────────────────────────────────────────────────────────
- * .photo-expand  an immersive photo section that starts inset to the page gutter with rounded corners
- *                and opens out to the screen edges as it scrolls in. Without scroll-driven animation
- *                support, or with reduced motion, it simply sits full width. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .photo-expand {
-      animation: photo-expand linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 50%;
-    }
-  }
-}
-@keyframes photo-expand {
-  from {
-    clip-path: inset(0 var(--gutter) round 28px);
-  }
-  to {
-    clip-path: inset(0 0 round 0);
-  }
 }
 
 /* ── Preloader ────────────────────────────────────────────────────────────
@@ -748,67 +337,6 @@ select optgroup {
   }
 }
 
-/* Testimonials: time until autoplay moves on (Testimonials.tsx). */
-@keyframes voices-timer {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
-/* FAQ: answers slide open where <details> content can be animated; elsewhere they just open. */
-@supports (interpolate-size: allow-keywords) {
-  @media (prefers-reduced-motion: no-preference) {
-    .faq {
-      interpolate-size: allow-keywords;
-    }
-    .faq::details-content {
-      block-size: 0;
-      opacity: 0;
-      overflow-y: clip;
-      transition:
-        block-size 420ms var(--ease-out),
-        opacity 320ms var(--ease-out),
-        content-visibility 420ms allow-discrete;
-    }
-    .faq[open]::details-content {
-      block-size: auto;
-      opacity: 1;
-    }
-  }
-}
-
-/* Whale (ocean/Whale.tsx): the photo melts into the sea at its edges — the left edge where the head
- * faces the hero text, and the bottom into the deep. Phones: top and bottom, as it fills the screen. */
-.whale-photo {
-  -webkit-mask-image:
-    linear-gradient(to bottom, transparent 0, #000 18%, #000 58%, transparent 92%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 18%, #000 58%, transparent 92%);
-}
-@media (min-width: 1024px) {
-  .whale-photo {
-    -webkit-mask-image:
-      linear-gradient(to right, transparent 0, #000 28%),
-      linear-gradient(to bottom, #000 0, #000 62%, transparent 96%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      linear-gradient(to right, transparent 0, #000 28%),
-      linear-gradient(to bottom, #000 0, #000 62%, transparent 96%);
-    mask-composite: intersect;
-  }
-}
-/* A very slow float between scrolls. */
-.whale-float {
-  animation: whale-float 11s ease-in-out infinite alternate;
-}
-@keyframes whale-float {
-  from { transform: translateY(-1%); }
-  to { transform: translateY(1.2%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .whale-float {
-    animation: none;
-  }
-}
-
 /* ── Shape field (home › ShapeField.tsx, behind the hero and ecosystem) ──
  * Large brand-colour shapes that sit behind the hero, bleed off the edges and drift slowly
  * (Labs-style). They grow in once the preloader lifts; reduced motion keeps them still. */
@@ -959,29 +487,9 @@ select optgroup {
 }
 
 /* ── Story (home › StoryTelling.tsx) ──────────────────────────────────────
- * Timings follow a Swiper parallax slider (speed 1600, CSS `ease`): `ease` starts moving at once
- * and settles slowly, which is what makes the glide feel smooth.
- *
- * Scenes: --d is 0 on screen, 1 one screen below, -1 above. Each layer lags the scene by its
- * --depth, and the scene on screen pushes in to 1.35x over 2s. */
-.story-slide {
-  transform: translate3d(0, calc(var(--d) * 100%), 0);
-  transition: transform 1.6s ease;
-}
-.story-zoom {
-  transform: scale(1);
-  transition: transform 2s ease;
-}
-.story-zoom[data-active="true"] {
-  transform: scale(1.35);
-}
-.story-layer {
-  transform: translate3d(0, calc(var(--d) * var(--depth) * -1), 0);
-  transition: transform 1.6s ease;
-  will-change: transform;
-}
+ * The glowing water-cell backdrop (CellsBackdrop.tsx) stays put; chapters swap over it. */
 
-/* Chapter text swaps as the scenes change. --show is 1 on screen, otherwise 0. --shift is -1
+/* Chapter text swaps as you scroll. --show is 1 on screen, otherwise 0. --shift is -1
  * (passed, parked above), 0 (on screen) or 1 (still to come, parked below). Each letter takes 0.2s
  * longer than the one before, so the word arrives as a wave; letters overlap slightly, each one
  * stacked over the next. */
@@ -1014,14 +522,6 @@ select optgroup {
     opacity 1s ease;
 }
 @media (prefers-reduced-motion: reduce) {
-  .story-slide,
-  .story-layer {
-    transition-duration: 0s;
-  }
-  .story-zoom,
-  .story-zoom[data-active="true"] {
-    transform: none;
-  }
   .story-letter,
   .story-lead,
   .story-body {
@@ -1060,6 +560,21 @@ select optgroup {
   .hero-in-left,
   .hero-in-right {
     animation: none;
+  }
+}
+
+/* ── Invitation parallax (InvitationParallax.tsx) ── */
+.invite-in {
+  transition: transform 1.2s var(--ease-out) var(--d, 0s);
+}
+[data-arrived="false"] .invite-in {
+  transform: var(--from);
+  transition-duration: 0s;
+  transition-delay: 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-arrived="false"] .invite-in {
+    transform: none;
   }
 }
 
