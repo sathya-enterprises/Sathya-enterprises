@@ -50,7 +50,7 @@ export function Header() {
   return (
     <header
       className={`site-header fixed top-0 left-0 w-full z-[100] ${
-        scrolled ? "bg-white/95 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-4 md:py-6"
+        scrolled ? "bg-white/95 shadow-sm py-3" : "bg-transparent py-4 md:py-6"
       }`}
     >
       <nav className="container-x flex justify-between items-center text-ink">

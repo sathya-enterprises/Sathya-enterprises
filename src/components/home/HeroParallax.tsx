@@ -22,6 +22,8 @@ import mountainRight from "@/assets/hero/mountain-right.png";
  */
 
 const LAYER = "pointer-events-none select-none object-cover";
+/** Each layer moves every scroll frame: keep it on its own GPU layer so it is never repainted. */
+const MOVING = "absolute inset-0 will-change-transform";
 /** Layers are zoomed on scroll, so they are served at higher quality (allowed in next.config.ts). */
 const QUALITY = 90;
 /**
@@ -71,11 +73,11 @@ export function HeroParallax({
   return (
     <section ref={ref} aria-label={label} className="relative h-[220svh] bg-ivory">
       <div className="sticky top-0 h-svh overflow-hidden bg-[#cfe3f1]">
-        <m.div style={{ transform: sky }} className="absolute inset-0">
+        <m.div style={{ transform: sky }} className={MOVING}>
           <Image src={bg} alt="" fill priority sizes={SIZES} quality={QUALITY} placeholder="blur" className={LAYER} />
         </m.div>
 
-        <m.div style={{ transform: text, opacity: textOpacity }} className="absolute inset-0 z-10 flex items-start justify-center pt-[calc(var(--header-h)+8svh)]">
+        <m.div style={{ transform: text, opacity: textOpacity }} className="absolute inset-0 z-10 will-change-transform flex items-start justify-center pt-[calc(var(--header-h)+8svh)]">
           <h1 className="hero-in-up px-[var(--gutter)] text-center font-display font-extrabold uppercase leading-[0.86] tracking-[-0.03em] [text-shadow:0_2px_4px_rgb(0_0_0/0.35)]" style={{ "--d": "0s" } as React.CSSProperties}>
             {/* Capped by its letter count so long page names (e.g. "Technology") still fit a phone's width. */}
             <span
@@ -91,23 +93,23 @@ export function HeroParallax({
           </h1>
         </m.div>
 
-        <m.div style={{ transform: cloudsA }} className="absolute inset-0">
+        <m.div style={{ transform: cloudsA }} className={MOVING}>
           <div className="hero-in-up absolute inset-0" style={{ "--d": "0.8s" } as React.CSSProperties}>
             <Image src={clouds1} alt="" fill sizes={SIZES} quality={QUALITY} className={LAYER} />
           </div>
         </m.div>
-        <m.div style={{ transform: cloudsB }} className="absolute inset-0">
+        <m.div style={{ transform: cloudsB }} className={MOVING}>
           <div className="hero-in-up absolute inset-0" style={{ "--d": "1.1s" } as React.CSSProperties}>
             <Image src={clouds2} alt="" fill sizes={SIZES} quality={QUALITY} className={LAYER} />
           </div>
         </m.div>
 
-        <m.div style={{ transform: left }} className="absolute inset-0 origin-left">
+        <m.div style={{ transform: left }} className={`${MOVING} origin-left`}>
           <div className="hero-in-left absolute inset-0" style={{ "--d": "0.2s" } as React.CSSProperties}>
             <Image src={mountainLeft} alt="" fill sizes={SIZES} quality={QUALITY} className={`${LAYER} object-[38%_50%] md:object-[30%_50%]`} />
           </div>
         </m.div>
-        <m.div style={{ transform: right }} className="absolute inset-0 origin-right">
+        <m.div style={{ transform: right }} className={`${MOVING} origin-right`}>
           <div className="hero-in-right absolute inset-0" style={{ "--d": "0.2s" } as React.CSSProperties}>
             <Image src={mountainRight} alt="" fill sizes={SIZES} quality={QUALITY} className={`${LAYER} object-[62%_50%] md:object-[70%_50%]`} />
           </div>

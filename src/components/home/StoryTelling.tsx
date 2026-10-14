@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image, { type StaticImageData } from "next/image";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { brand } from "@/content/site";
-import { CellsBackdrop } from "./CellsBackdrop";
+import businessPhoto from "@/assets/story/business.jpg";
+import ecosystemPhoto from "@/assets/story/ecosystem.jpg";
+import oneTeamPhoto from "@/assets/story/one-team.jpg";
+import growthPhoto from "@/assets/story/growth.jpg";
 
 export type Chapter = {
   lead: string;
@@ -11,6 +15,8 @@ export type Chapter = {
   /** Colour of the closing full stop — red and gold alternate. */
   stop: string;
   body: string;
+  /** Full-screen photo behind the chapter (Unsplash). */
+  image: StaticImageData;
 };
 
 const CHAPTERS: Chapter[] = [
@@ -19,18 +25,28 @@ const CHAPTERS: Chapter[] = [
     word: "Business",
     stop: "text-red",
     body: brand.positioning,
+    image: businessPhoto,
   },
   {
     lead: "A growing",
     word: "Ecosystem",
     stop: "text-gold",
     body: "Sathya Enterprises operates across digital growth, technology, data, products, infrastructure and business services.",
+    image: ecosystemPhoto,
   },
   {
     lead: "Built as",
     word: "One",
     stop: "text-red",
     body: "Every part of the business feeds the next: digital work creates attention, technology turns that attention into systems, and services and products deliver the real-world value customers came for.",
+    image: oneTeamPhoto,
+  },
+  {
+    lead: "Made to",
+    word: "Grow",
+    stop: "text-gold",
+    body: "New businesses, new products, new technology and new partnerships — all connected back to the same ecosystem.",
+    image: growthPhoto,
   },
 ];
 
@@ -218,24 +234,46 @@ export function StoryTelling({ chapters = CHAPTERS, label = "Our story" }: { cha
       if (!geometry()?.pinned) engaged = false;
     };
 
-    window.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    window.addEventListener("scroll", onScroll, { passive: true });
+    // Non-passive wheel/touch listeners make the browser wait on the main thread before every
+    // scroll, so they are only attached while the section is on or near the screen.
+    let attached = false;
+    const attach = (on: boolean) => {
+      if (on === attached) return;
+      attached = on;
+      if (on) {
+        window.addEventListener("wheel", onWheel, { passive: false });
+        window.addEventListener("touchstart", onTouchStart, { passive: true });
+        window.addEventListener("touchmove", onTouchMove, { passive: false });
+        window.addEventListener("scroll", onScroll, { passive: true });
+      } else {
+        window.removeEventListener("wheel", onWheel);
+        window.removeEventListener("touchstart", onTouchStart);
+        window.removeEventListener("touchmove", onTouchMove);
+        window.removeEventListener("scroll", onScroll);
+        engaged = false;
+      }
+    };
+    const io = new IntersectionObserver(([e]) => attach(e.isIntersecting), { rootMargin: "50% 0px" });
+    if (ref.current) io.observe(ref.current);
     return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("scroll", onScroll);
+      io.disconnect();
+      attach(false);
     };
   }, [LAST]);
 
   return (
-    <section ref={ref} id="story" aria-label={label} className="relative bg-[#0b2a33]" style={{ height: `${(LAST + 1) * 100}svh` }}>
+    <section ref={ref} id="story" aria-label={label} className="relative bg-[#141011]" style={{ height: `${(LAST + 1) * 100}svh` }}>
       <div className="sticky top-0 h-svh overflow-hidden">
-        {/* Glowing water cells behind every chapter, with a soft shade so the headline stays legible */}
-        <CellsBackdrop className="absolute inset-0" />
-        <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_50%,rgb(4_22_28/0.55),transparent)]" />
+        {/* One photo per chapter, crossfading with it; a dark shade keeps the headline legible */}
+        <div aria-hidden className="absolute inset-0">
+          {chapters.map((chapter, i) => (
+            <div key={chapter.word} className="story-photo absolute inset-0" data-active={i === active}>
+              <Image src={chapter.image} alt="" fill sizes="100vw" quality={75} placeholder="blur" className="object-cover" />
+            </div>
+          ))}
+        </div>
+        <div aria-hidden className="absolute inset-0 bg-[rgb(16_10_12/0.55)]" />
+        <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_65%_50%_at_50%_50%,rgb(16_10_12/0.5),transparent)]" />
 
         {/* Text sits above the backdrop and swaps chapter by chapter */}
         <div className="absolute inset-0 flex items-center">

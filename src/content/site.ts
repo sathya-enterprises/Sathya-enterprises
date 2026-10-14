@@ -64,14 +64,6 @@ export const about = {
       title: "Our Values",
       body: "Reliability, transparency and craftsmanship — every division is held to the same standard, whether it is a website or a borewell installation.",
     },
-    {
-      title: "Our Approach",
-      body: "Start with the connected story — digital creates attention, technology creates systems, data creates intelligence, and services deliver real-world value.",
-    },
-    {
-      title: "Our Future",
-      body: "New businesses, new products, new technology and new partnerships — all connected back to the same ecosystem.",
-    },
   ],
 };
 

@@ -37,8 +37,8 @@ export function Footer() {
   return (
     <footer ref={ref} data-arrived={arrived} className="relative overflow-hidden bg-gold-light py-16 text-ink md:py-24">
       <div aria-hidden className="rise-line absolute inset-x-0 top-0 h-2 bg-red" />
-      <div aria-hidden className="pointer-events-none absolute right-0 top-0 h-96 w-96 rounded-full bg-red/10 blur-[150px]" />
-      <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-96 w-96 rounded-full bg-gold/30 blur-[150px]" />
+      <div aria-hidden className="pointer-events-none absolute -right-48 -top-48 h-[48rem] w-[48rem] bg-[radial-gradient(closest-side,rgb(200_16_46/0.1),transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-48 h-[48rem] w-[48rem] bg-[radial-gradient(closest-side,rgb(244_197_66/0.3),transparent)]" />
 
       <div className="container-x relative z-10">
         {/* Brand · pages · contact */}

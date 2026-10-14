@@ -57,7 +57,7 @@ function Card({ step, index, count, progress }: { step: Step; index: number; cou
   return (
     <m.li
       style={{ x, y, rotate, opacity }}
-      className={`absolute left-full top-[11%] flex h-[min(30rem,44svh)] w-[calc(min(30rem,44svh)*0.68)] flex-col md:h-[min(30rem,56svh)] md:w-[calc(min(30rem,56svh)*0.66)] rounded-[var(--radius-md)] p-2 shadow-[0_28px_60px_-18px_rgb(158_16_38/0.55)] ${red ? "bg-red" : "bg-red-deep"}`}
+      className={`absolute left-full top-[11%] flex will-change-transform h-[min(30rem,44svh)] w-[calc(min(30rem,44svh)*0.68)] flex-col md:h-[min(30rem,56svh)] md:w-[calc(min(30rem,56svh)*0.66)] rounded-[var(--radius-md)] p-2 shadow-[0_28px_60px_-18px_rgb(158_16_38/0.55)] ${red ? "bg-red" : "bg-red-deep"}`}
     >
       <div className="relative h-[42%] overflow-hidden rounded-[calc(var(--radius-md)-6px)]">
         <Image src={step.photo} alt="" fill sizes="20rem" placeholder="blur" className="object-cover" />
@@ -129,7 +129,7 @@ export function MoneySystemSequence({
         <m.h2
           ref={headlineRef}
           style={{ x: headlineX }}
-          className="absolute inset-y-0 left-0 flex w-max items-center whitespace-nowrap px-[var(--gutter)] font-display text-[30vw] font-extrabold uppercase leading-none tracking-[-0.05em] text-red lg:text-[24vw]"
+          className="absolute inset-y-0 left-0 flex w-max will-change-transform items-center whitespace-nowrap px-[var(--gutter)] font-display text-[30vw] font-extrabold uppercase leading-none tracking-[-0.05em] text-red lg:text-[24vw]"
         >
           <RiseLetters text={headline[0]} />
           <RiseLetters text={headline[1]} line={1} gradient />
