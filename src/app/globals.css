@@ -442,11 +442,14 @@ body {
   cursor: pointer;
   outline: none;
 }
-.cta-seg path {
+.cta-seg path,
+.cta-seg circle {
   transition: filter 0.3s ease;
 }
 .cta-seg:hover path,
-.cta-seg:focus-visible path {
+.cta-seg:focus-visible path,
+.cta-seg:hover circle,
+.cta-seg:focus-visible circle {
   filter: brightness(1.12);
 }
 @media (prefers-reduced-motion: reduce) {
@@ -757,5 +760,51 @@ body {
   .liquid-cells,
   .card-float {
     animation: none;
+  }
+}
+
+/* ── Inner page tones (inner/Sections.tsx) ────────────────────────────────
+ * Every inner section is solid gold or solid red, and its cards take the other colour, so pages
+ * stay strictly in the flag's two colours. Cards and headings read these variables; the defaults
+ * (on :root) are the gold tone, which is what cards outside a tone section (e.g. home) pick up. */
+:root,
+.tone-gold {
+  --tone-head: var(--color-ink);
+  --tone-accent: var(--color-red);
+  --tone-lead: var(--color-ink);
+  --tone-shape: var(--color-gold-tint);
+  --card: var(--color-red);
+  --card-hover: var(--color-red-deep);
+  --card-ink: var(--color-ivory);
+  --card-soft: rgb(255 253 248 / 0.86);
+  --card-accent: var(--color-gold);
+}
+.tone-red {
+  --tone-head: var(--color-ivory);
+  --tone-accent: var(--color-gold);
+  --tone-lead: rgb(255 253 248 / 0.88);
+  --tone-shape: var(--color-red-deep);
+  --card: var(--color-gold);
+  --card-hover: var(--color-gold-tint);
+  --card-ink: var(--color-ink);
+  --card-soft: var(--color-ink-soft);
+  --card-accent: var(--color-red);
+}
+
+/* ── Card wheel (inner › CardWheel.tsx): colours ease over as a card turns into / out of the lit centre ── */
+.wheel-card,
+.wheel-card * {
+  transition-property: color, background-color, border-color, outline-color;
+  transition-duration: 0.6s;
+  transition-timing-function: ease;
+}
+
+/* .deal: a card dealt in — it drops from above at a tilt (--tilt) and settles (inner › Steps). */
+.reveal.deal[data-shown="false"] {
+  transform: translate3d(0, -3rem, 0) rotate(var(--tilt, -6deg)) scale(0.92);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal.deal[data-shown="false"] {
+    transform: none;
   }
 }

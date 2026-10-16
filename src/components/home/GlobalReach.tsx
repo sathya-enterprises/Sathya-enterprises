@@ -80,7 +80,6 @@ export function GlobalReach() {
       red: token("--color-red"),
       gold: token("--color-gold"),
       ivory: token("--color-ivory"),
-      tint: token("--color-gold-light"),
     };
     const font = getComputedStyle(canvas).fontFamily;
 
@@ -156,33 +155,45 @@ export function GlobalReach() {
       glow.addColorStop(1, fade(C.gold, 0));
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, size, size);
-      const body = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r);
-      body.addColorStop(0, C.ivory);
-      body.addColorStop(1, C.tint);
+      // Karnataka flag on the sphere: yellow over red, split at the equator of the view, with a soft
+      // highlight on top so it still reads as a ball.
+      const body = ctx.createLinearGradient(0, cy - r, 0, cy + r);
+      body.addColorStop(0.5, C.gold);
+      body.addColorStop(0.5, C.red);
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.fillStyle = body;
+      ctx.fill();
+      const shine = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r);
+      shine.addColorStop(0, fade(C.ivory, 0.35));
+      shine.addColorStop(1, fade(C.ivory, 0));
+      ctx.fillStyle = shine;
       ctx.fill();
       ctx.lineWidth = dpr;
       ctx.strokeStyle = fade(C.ink, 0.18);
       ctx.stroke();
 
-      // Land, in three depth bands so the edge fades: one path and one fill per band.
+      // Land, in three depth bands so the edge fades: one path and one fill per band. Red dots on
+      // the yellow half, yellow dots on the red half.
       const dot = Math.max(1.2 * dpr, r * 0.0105);
-      for (let band = 0; band < 3; band++) {
-        const lo = [0, 0.35, 0.7][band];
-        const hi = [0.35, 0.7, 1.01][band];
-        ctx.beginPath();
-        for (let i = 0; i < dx.length; i++) {
-          const z = dz[i] * cl + dx[i] * sl;
-          const x = dx[i] * cl - dz[i] * sl;
-          const depth = dy[i] * st + z * ct;
-          if (depth < lo || depth >= hi) continue;
-          const s = dot * (0.65 + 0.35 * depth);
-          ctx.rect(sx(x) - s / 2, sy(dy[i] * ct - z * st) - s / 2, s, s);
+      for (const upper of [true, false]) {
+        for (let band = 0; band < 3; band++) {
+          const lo = [0, 0.35, 0.7][band];
+          const hi = [0.35, 0.7, 1.01][band];
+          ctx.beginPath();
+          for (let i = 0; i < dx.length; i++) {
+            const z = dz[i] * cl + dx[i] * sl;
+            const x = dx[i] * cl - dz[i] * sl;
+            const depth = dy[i] * st + z * ct;
+            if (depth < lo || depth >= hi) continue;
+            const py = dy[i] * ct - z * st;
+            if (py >= 0 !== upper) continue;
+            const s = dot * (0.65 + 0.35 * depth);
+            ctx.rect(sx(x) - s / 2, sy(py) - s / 2, s, s);
+          }
+          ctx.fillStyle = upper ? fade(C.red, [0.35, 0.6, 0.85][band]) : fade(C.gold, [0.35, 0.6, 0.85][band]);
+          ctx.fill();
         }
-        ctx.fillStyle = fade(C.ink, [0.22, 0.45, 0.7][band]);
-        ctx.fill();
       }
 
       // Routes: a faint track always, and a bright stroke running along it on its cycle.
@@ -213,14 +224,10 @@ export function GlobalReach() {
           ctx.stroke();
         };
 
-        segment(0, 1, fade(C.red, 0.22), dpr, [2 * dpr, 4 * dpr]);
+        segment(0, 1, fade(C.ivory, 0.5), dpr, [2 * dpr, 4 * dpr]);
         if (head <= tail) return;
-        const a = project(pts[0], [0, 0, 0]);
-        const b = project(pts[STEPS], [0, 0, 0]);
-        const grad = ctx.createLinearGradient(sx(a[0]), sy(a[1]), sx(b[0]), sy(b[1]));
-        grad.addColorStop(0, C.red);
-        grad.addColorStop(1, C.gold);
-        segment(tail, head, grad, 2 * dpr, []);
+        // Ivory, so the route shows on both halves of the flag.
+        segment(tail, head, C.ivory, 2 * dpr, []);
 
         // A spark at the leading end while it travels.
         if (head < 1) {
@@ -228,8 +235,8 @@ export function GlobalReach() {
           if (visible(q)) {
             ctx.beginPath();
             ctx.arc(sx(q[0]), sy(q[1]), 3 * dpr, 0, Math.PI * 2);
-            ctx.fillStyle = C.gold;
-            ctx.shadowColor = C.gold;
+            ctx.fillStyle = C.ivory;
+            ctx.shadowColor = C.ivory;
             ctx.shadowBlur = 10 * dpr;
             ctx.fill();
             ctx.shadowBlur = 0;
@@ -257,7 +264,7 @@ export function GlobalReach() {
           const t = ((time / 1000) % 1.6) / 1.6;
           ctx.beginPath();
           ctx.arc(x, y, (6 + 16 * t) * dpr, 0, Math.PI * 2);
-          ctx.strokeStyle = isHub ? C.red : C.gold;
+          ctx.strokeStyle = C.ivory;
           ctx.lineWidth = 2 * dpr;
           ctx.globalAlpha = alpha * (1 - t);
           ctx.stroke();
@@ -268,7 +275,7 @@ export function GlobalReach() {
         ctx.fillStyle = isHub ? C.red : C.gold;
         ctx.fill();
         ctx.lineWidth = 2 * dpr;
-        ctx.strokeStyle = isHub ? C.gold : C.red;
+        ctx.strokeStyle = C.ivory;
         ctx.stroke();
 
         if (at[2] > 0.3) {

@@ -26,7 +26,8 @@ import {
 } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { CtaSplit, IconTile, PageIntro, Section, SectionHeading, ServiceCard } from "@/components/inner/Sections";
-import { Reveal } from "@/components/inner/Reveal";
+import { CardWheel } from "@/components/inner/CardWheel";
+import { CardFan } from "@/components/inner/CardFan";
 import { divisionById, type DivisionId } from "@/content/site";
 import { ctaBody, divisionPages, systemChain } from "@/content/pages";
 import { breadcrumbLd, servicesLd } from "@/lib/seo";
@@ -88,7 +89,7 @@ export function DivisionPage({ id }: { id: DivisionId }) {
   const count = page.services.length;
 
   return (
-    <div className="min-h-screen bg-ivory">
+    <div className="min-h-screen bg-gold">
       <JsonLd
         data={[
           breadcrumbLd([{ name, path: division.href }]),
@@ -102,13 +103,15 @@ export function DivisionPage({ id }: { id: DivisionId }) {
 
       <PageIntro kicker={`${division.index} · ${name} — ${page.tagline}`} title={page.h1} lead={<p>{page.intro}</p>} image={introPhoto} />
 
-      <Section id="services-title" tone="warm">
-        <SectionHeading id="services-title" title={page.heading.join(" ")} lead={`${count} services, one team, one standard. Pick one or combine them.`} />
-        <div className={`mt-10 grid grid-cols-1 gap-6 ${count > 1 ? "lg:grid-cols-2" : ""}`}>
-          {page.services.map((s, i) => (
-            <ServiceCard key={s.slug} service={s} Icon={ICONS[s.slug]} i={i % 2} />
+      <Section id="services-title" tone="red">
+        <SectionHeading id="services-title" title={page.heading[0]} accent={page.heading[1]} lead={`${count} services, one team, one standard. Pick one or combine them.`}
+          center />
+        {/* Each card is as tall as the screen allows and scrolls within itself, so the section stays one screen. */}
+        <CardWheel label={`${name} services`} size="service" reserve={360} className="mt-5">
+          {page.services.map((s) => (
+            <ServiceCard key={s.slug} service={s} Icon={ICONS[s.slug]} />
           ))}
-        </div>
+        </CardWheel>
       </Section>
 
       <Section id="ecosystem-title">
@@ -116,35 +119,39 @@ export function DivisionPage({ id }: { id: DivisionId }) {
           id="ecosystem-title"
           title="Part of one connected ecosystem"
           lead="Every division feeds the next. Work with one and the others are ready when you need them."
-          center
         />
-        <ul className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {systemChain.map((s, i) => {
+        <CardFan
+          label="Sathya Enterprises divisions"
+          padded={false}
+          start={Math.max(0, systemChain.findIndex((s) => s.id === id))}
+          className="mt-6"
+        >
+          {systemChain.map((s) => {
             const d = divisionById[s.id];
             const here = s.id === id;
             return (
-              <Reveal as="li" key={s.id} i={i}>
+              <div key={s.id} className="h-full">
                 <Link
                   href={d.href}
                   aria-current={here ? "page" : undefined}
-                  className={`flex h-full flex-col rounded-lg border p-6 transition-colors ${
-                    here ? "border-red bg-red/5" : "border-ink/10 bg-white hover:border-red"
-                  }`}
+                  className="flex h-full flex-col p-6"
                 >
                   <IconTile Icon={DIVISION_ICONS[s.id]} />
-                  <span className="mt-4 text-sm font-semibold text-red">
+                  <span className="t-eyebrow mt-4 text-(--card-accent)">
                     {d.index} · {s.role}
                   </span>
-                  <span className="mt-1 text-lg font-semibold text-ink">{d.name.charAt(0) + d.name.slice(1).toLowerCase()}</span>
-                  <span className="mt-2 text-sm text-charcoal-soft">{s.line}</span>
-                  <span className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-semibold text-ink">
+                  <span className="mt-2 font-display text-2xl font-extrabold uppercase leading-none tracking-tight">
+                    {d.name.charAt(0) + d.name.slice(1).toLowerCase()}
+                  </span>
+                  <span className="mt-2 text-sm text-(--card-soft)">{s.line}</span>
+                  <span className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-bold uppercase tracking-wide text-(--card-accent)">
                     {here ? "You're here" : <>Explore <ArrowRight aria-hidden className="size-4" /></>}
                   </span>
                 </Link>
-              </Reveal>
+              </div>
             );
           })}
-        </ul>
+        </CardFan>
       </Section>
 
       <CtaSplit heading={page.cta.heading} body={ctaBody} label={page.cta.label} image={ctaPhoto} />

@@ -3,19 +3,37 @@ import Link from "next/link";
 import { ArrowRight, Check, type LucideIcon } from "lucide-react";
 import { Arrive } from "@/components/inner/Arrive";
 import { Reveal } from "@/components/inner/Reveal";
+import { CardWheel } from "@/components/inner/CardWheel";
+import { CardFan } from "@/components/inner/CardFan";
+import { CardDeck } from "@/components/inner/CardDeck";
+import { Eyebrow } from "@/components/home/primitives";
+import { Shape } from "@/components/home/ShapeField";
 import { whatsappHref } from "@/content/site";
 import type { ServiceDetail } from "@/content/pages";
 
 /**
- * Section patterns for the inner pages, adapted from HyperUI's open-source Tailwind marketing
- * blocks (github.com/markmead/hyperui): split section, section heading, feature grid, stats, steps,
- * FAQ and split CTA — restyled in the brand palette. Each section lifts its blocks in as it scrolls
- * into view (Arrive + .rise, staggered by --i); cards and rows reveal on their own arrival (Reveal).
+ * Section patterns for the inner pages (split intro, section heading, feature grid, steps, service
+ * cards, FAQ, split CTA), set strictly in the home page's Karnataka-flag colours: every section is
+ * solid gold or solid red and its cards take the other colour (.tone-gold / .tone-red in
+ * globals.css), with brand shapes behind. Each section is one screen tall: headings are capped by
+ * the screen height (like .t-h1). Card sets move in one of a few ways so sections don't repeat
+ * each other: the home page's turning wheel for big sets (CardWheel), a fanned hand for small ones
+ * (CardFan), a self-dealing deck beside a heading (CardDeck) and a zig-zag timeline for steps; the
+ * brand shapes behind change from section to section too. Blocks lift in as the section arrives.
  */
 
 export const step = (i: number) => ({ "--i": i }) as React.CSSProperties;
 
-const wrap = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
+const wrap = "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8";
+
+/** One screen tall, clear of the fixed header, content centred in what is left. */
+const screen = "relative flex min-h-svh flex-col overflow-hidden pb-10 pt-[calc(var(--header-h)+1.75rem)] md:pb-12";
+
+/** Heading sizes, capped by screen height so a heading never crowds out its section. */
+const h1Size = "text-[clamp(2rem,min(4.4vw,7.5vh),3.75rem)] leading-[0.98] tracking-[-0.03em]";
+const h2Size = "text-[clamp(1.75rem,min(3.4vw,6vh),2.9rem)] leading-[1] tracking-[-0.03em]";
+
+export type Tone = "gold" | "red";
 
 export function Button({
   href,
@@ -25,14 +43,15 @@ export function Button({
 }: {
   href: string;
   children: React.ReactNode;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "gold";
   external?: boolean;
 }) {
-  const look =
-    variant === "primary"
-      ? "bg-red text-white hover:bg-red-deep"
-      : "border border-ink/20 bg-white text-ink hover:border-red hover:text-red";
-  const cls = `inline-flex w-full items-center justify-center gap-2 rounded-full sm:w-auto px-6 py-3 text-sm font-semibold transition-colors focus:ring-2 focus:ring-gold focus:outline-hidden ${look}`;
+  const look = {
+    primary: "bg-red text-ivory shadow-2 hover:bg-red-deep",
+    secondary: "border-2 border-red text-red hover:bg-red hover:text-ivory",
+    gold: "bg-gold text-ink hover:bg-gold-tint",
+  }[variant];
+  const cls = `inline-flex w-full items-center justify-center gap-2 rounded-full sm:w-auto px-6 py-3.5 text-sm font-bold uppercase tracking-wide transition-[background-color,color,transform] duration-200 active:scale-95 ${look}`;
   return external ? (
     <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
       {children}
@@ -44,9 +63,61 @@ export function Button({
   );
 }
 
+/** Colours the last word of a heading (or `accent`, when given) in the tone's accent colour. */
+function Accented({ title, accent, className = "text-(--tone-accent)" }: { title: string; accent?: string; className?: string }) {
+  const cut = accent ? title.length : title.lastIndexOf(" ") + 1;
+  return (
+    <>
+      {title.slice(0, cut)}
+      {accent && " "}
+      <span className={className}>{accent ?? title.slice(cut)}</span>
+    </>
+  );
+}
+
+type ShapeKind = React.ComponentProps<typeof Shape>["kind"];
+
+/** Arrangements of brand shapes (kind, placement, size), so neighbouring sections differ. */
+const SHAPE_SETS: [ShapeKind, string][][] = [
+  [
+    ["clover", "-right-24 top-16 w-[clamp(9rem,22vw,19rem)] -rotate-12"],
+    ["hexagon", "-bottom-20 -left-16 w-[clamp(8rem,16vw,14rem)] rotate-12"],
+  ],
+  [
+    ["circle", "-left-28 -top-10 w-[clamp(10rem,24vw,20rem)]"],
+    ["square", "-bottom-24 -right-20 w-[clamp(9rem,20vw,17rem)] rotate-[24deg]"],
+  ],
+  [
+    ["hexagon", "-right-14 bottom-[18%] w-[clamp(7rem,14vw,12rem)] -rotate-6"],
+    ["clover", "-left-24 -top-16 w-[clamp(9rem,20vw,16rem)] rotate-12"],
+    ["circle", "bottom-[-4rem] left-[38%] hidden w-32 md:block"],
+  ],
+  [
+    ["square", "-left-20 top-[30%] w-[clamp(8rem,17vw,14rem)] -rotate-[18deg]"],
+    ["circle", "-right-24 -bottom-24 w-[clamp(10rem,24vw,20rem)]"],
+  ],
+];
+
+/** Large brand shapes bleeding off a section's edges, in a shade of the section's own colour. */
+function Shapes({ set = 0 }: { set?: number }) {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden text-(--tone-shape)">
+      {SHAPE_SETS[set % SHAPE_SETS.length].map(([kind, place], i) => (
+        <div key={i} className={`rise-shape absolute ${place}`} style={step(i)}>
+          <Shape kind={kind} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** A stable pick from a section's id, so each section keeps its own arrangement. */
+const pick = (id: string) => [...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+
 /**
- * The page opens straight into this (no hero): H1 and the page's positioning on one side, a photo
- * or any other content on the other. HyperUI › Sections 1.
+ * The page opens straight into this (no hero), one screen tall: a gold panel with the H1 and the
+ * page's positioning beside a photo (or any other content) on a red block, and a red band along
+ * the foot — the Karnataka flag the home page is built on. Phones drop the photo to stay on one screen.
  */
 export function PageIntro({
   kicker,
@@ -63,19 +134,33 @@ export function PageIntro({
   image?: StaticImageData;
   actions?: boolean;
 }) {
+  const media = image || children;
   return (
-    <Arrive className="bg-ivory pb-16 pt-32 md:pb-24 md:pt-40" aria-labelledby="page-title">
-      <div className={`${wrap} grid grid-cols-1 gap-10 md:grid-cols-2 md:items-center md:gap-14`}>
-        <div className="max-w-prose md:max-w-none">
-          <p className="rise text-sm font-semibold uppercase tracking-wider text-red">{kicker}</p>
-          <h1 id="page-title" className="rise mt-3 text-balance font-display text-3xl/tight font-bold text-ink sm:text-5xl/tight" style={step(1)}>
-            {title}
+    <Arrive className={`tone-gold ${screen} bg-gold pb-16 md:pb-20`} aria-labelledby="page-title">
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="rise-shape absolute -right-24 top-16 w-[clamp(9rem,24vw,20rem)] -rotate-12 text-gold-tint" style={step(1)}>
+          <Shape kind="clover" />
+        </div>
+        <div className="rise-shape absolute -bottom-10 -left-24 w-[clamp(8rem,18vw,14rem)] text-red" style={step(2)}>
+          <Shape kind="circle" />
+        </div>
+      </div>
+      {/* The flag's red half, as a band along the foot. */}
+      <div aria-hidden className="absolute inset-x-0 bottom-0 h-5 bg-red md:h-8" />
+
+      <div className={`${wrap} relative my-auto grid grid-cols-1 gap-10 ${media ? "md:grid-cols-2 md:items-center md:gap-14" : ""}`}>
+        <div className={media ? "" : "max-w-3xl"}>
+          <div className="rise">
+            <Eyebrow>{kicker}</Eyebrow>
+          </div>
+          <h1 id="page-title" className={`rise mt-5 text-balance font-display font-extrabold uppercase text-ink ${h1Size}`} style={step(1)}>
+            <Accented title={title} className="text-red" />
           </h1>
-          <div className="rise mt-5 space-y-4 text-pretty text-lg text-charcoal-soft" style={step(2)}>
+          <div className="rise mt-5 space-y-3 text-pretty text-base font-medium text-ink md:text-lg" style={step(2)}>
             {lead}
           </div>
           {actions && (
-            <div className="rise mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap" style={step(3)}>
+            <div className="rise mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap" style={step(3)}>
               <Button href="/contact">
                 Start a Conversation <ArrowRight aria-hidden className="size-4" />
               </Button>
@@ -85,37 +170,53 @@ export function PageIntro({
             </div>
           )}
         </div>
-        <div className="rise" style={step(2)}>
-          {image ? (
-            <Image src={image} alt="" placeholder="blur" sizes="(min-width: 768px) 50vw, 100vw" className="aspect-[4/3] w-full rounded-lg object-cover shadow-2" />
-          ) : (
-            children
-          )}
-        </div>
+        {media && (
+          <div className={`rise relative ${image ? "hidden md:block" : ""}`} style={step(3)}>
+            {/* Set on a red block, offset like a stacked card. */}
+            <div aria-hidden className="absolute inset-0 translate-x-3 translate-y-3 rounded-[26px] bg-red md:translate-x-4 md:translate-y-4" />
+            <div className="relative">
+              {image ? (
+                <Image
+                  src={image}
+                  alt=""
+                  placeholder="blur"
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className="aspect-[4/3] max-h-[58svh] w-full rounded-[26px] object-cover shadow-2"
+                />
+              ) : (
+                children
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </Arrive>
   );
 }
 
-/** Section title and lead. HyperUI › Feature grids heading. */
+/** Section title and lead, like the home headlines: uppercase, the last word in the accent colour. */
 export function SectionHeading({
   id,
   title,
+  accent,
   lead,
   center,
 }: {
   id: string;
   title: string;
+  /** Words to carry the accent colour, after `title`; defaults to the title's last word. */
+  accent?: string;
   lead?: string;
   center?: boolean;
 }) {
   return (
-    <div className={center ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
-      <h2 id={id} className="rise font-display text-3xl/tight font-bold text-ink sm:text-4xl/tight">
-        {title}
+    <div className={center ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
+      <h2 id={id} className={`rise text-balance font-display font-extrabold uppercase text-(--tone-head) ${h2Size}`}>
+        <Accented title={title} accent={accent} />
       </h2>
+      <span aria-hidden className={`rise-line mt-4 block h-1.5 w-20 rounded-full bg-(--tone-accent) ${center ? "mx-auto" : ""}`} />
       {lead && (
-        <p className="rise mt-4 text-pretty text-lg text-charcoal-soft" style={step(1)}>
+        <p className={`rise mt-4 max-w-2xl text-pretty font-medium text-(--tone-lead) md:text-lg ${center ? "mx-auto" : ""}`} style={step(1)}>
           {lead}
         </p>
       )}
@@ -123,43 +224,45 @@ export function SectionHeading({
   );
 }
 
-export function Section({
-  id,
-  children,
-  tone = "ivory",
-}: {
-  id: string;
-  children: React.ReactNode;
-  tone?: "ivory" | "warm" | "white";
-}) {
-  const bg = { ivory: "bg-ivory", warm: "bg-gold-light/60", white: "bg-white" }[tone];
+/**
+ * A solid gold or red section, one screen tall, with brand shapes behind; its cards take the
+ * other colour. `fit` holds it to exactly one screen, for content that scrolls inside itself.
+ */
+export function Section({ id, children, tone = "gold", fit }: { id: string; children: React.ReactNode; tone?: Tone; fit?: boolean }) {
   return (
-    <Arrive className={`${bg} py-16 md:py-24`} aria-labelledby={id}>
-      <div className={wrap}>{children}</div>
+    <Arrive className={`tone-${tone} ${screen} ${fit ? "h-svh" : ""} ${tone === "red" ? "bg-red" : "bg-gold"}`} aria-labelledby={id}>
+      <Shapes set={pick(id)} />
+      <div className={`${wrap} relative flex min-h-0 flex-1 flex-col justify-center`}>{children}</div>
     </Arrive>
   );
 }
 
 export function IconTile({ Icon }: { Icon: LucideIcon }) {
   return (
-    <span className="inline-flex shrink-0 self-start rounded-lg bg-red/10 p-3 text-red">
-      <Icon aria-hidden className="size-6" strokeWidth={1.75} />
+    <span className="inline-flex shrink-0 self-start rounded-2xl bg-(--card-accent) p-3 text-(--card)">
+      <Icon aria-hidden className="size-6" strokeWidth={2} />
     </span>
   );
 }
 
-/** HyperUI › Feature grids 1: bordered card with an icon tile. */
-export function FeatureCard({ Icon, title, children, i = 0 }: { Icon: LucideIcon; title: string; children: React.ReactNode; i?: number }) {
+/** A disc of the accent colour peeking in at a card's corner. */
+function CornerDisc() {
+  return <span aria-hidden className="pointer-events-none absolute -right-10 -top-10 size-24 rounded-full bg-(--card-accent) opacity-25" />;
+}
+
+/** Contents of a feature card (icon tile, title, body), for a CardWheel. */
+export function FeatureCard({ Icon, title, children }: { Icon: LucideIcon; title: string; children: React.ReactNode }) {
   return (
-    <Reveal i={i} className="rounded-lg border border-ink/10 bg-white p-6 transition-shadow hover:shadow-2">
+    <>
+      <CornerDisc />
       <IconTile Icon={Icon} />
-      <h3 className="mt-4 text-lg font-semibold text-ink">{title}</h3>
-      <p className="mt-2 text-pretty text-charcoal-soft">{children}</p>
-    </Reveal>
+      <h3 className="mt-4 font-display text-xl font-extrabold uppercase leading-tight tracking-tight">{title}</h3>
+      <p className="mt-2 text-pretty text-(--card-soft)">{children}</p>
+    </>
   );
 }
 
-/** HyperUI › Feature grids 2: heading on the left, icon list on the right. */
+/** Heading on one side, the items as a self-dealing deck of cards on the other. */
 export function FeatureList({
   id,
   title,
@@ -172,72 +275,143 @@ export function FeatureList({
   items: { Icon: LucideIcon; title: string; body: string }[];
 }) {
   return (
-    <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
+    <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
       <SectionHeading id={id} title={title} lead={lead} />
-      <ul className="space-y-6">
-        {items.map((it, i) => (
-          <Reveal as="li" key={it.title} i={1 + i} className="flex items-start gap-4">
-            <IconTile Icon={it.Icon} />
-            <div>
-              <h3 className="text-lg font-semibold text-ink">{it.title}</h3>
-              <p className="mt-1 text-charcoal-soft">{it.body}</p>
-            </div>
-          </Reveal>
+      <CardDeck label={title}>
+        {items.map((it) => (
+          <FeatureCard key={it.title} Icon={it.Icon} title={it.title}>
+            {it.body}
+          </FeatureCard>
         ))}
-      </ul>
+      </CardDeck>
     </div>
   );
 }
 
-/** Numbered process steps in a row of cards. */
+/** A set of feature cards on the turning wheel. */
+export function FeatureWheel({
+  label,
+  items,
+  className = "mt-6",
+}: {
+  label: string;
+  items: { Icon: LucideIcon; title: string; body: React.ReactNode }[];
+  className?: string;
+}) {
+  return (
+    <CardWheel label={label} className={className}>
+      {items.map((it) => (
+        <FeatureCard key={it.title} Icon={it.Icon} title={it.title}>
+          {it.body}
+        </FeatureCard>
+      ))}
+    </CardWheel>
+  );
+}
+
+/** A small set of feature cards held as a fanned hand. */
+export function FeatureFan({
+  label,
+  items,
+  className = "mt-8",
+}: {
+  label: string;
+  items: { Icon: LucideIcon; title: string; body: React.ReactNode }[];
+  className?: string;
+}) {
+  return (
+    <CardFan label={label} className={className}>
+      {items.map((it) => (
+        <FeatureCard key={it.title} Icon={it.Icon} title={it.title}>
+          {it.body}
+        </FeatureCard>
+      ))}
+    </CardFan>
+  );
+}
+
+/**
+ * Numbered process steps as a zig-zag timeline: a rule draws across, then the cards are dealt
+ * onto it one by one, alternately above and below the line (stacked down a spine on phones).
+ */
+/** Large-screen column per step (static classes, so Tailwind sees them). */
+const COL = ["lg:col-start-1", "lg:col-start-2", "lg:col-start-3", "lg:col-start-4", "lg:col-start-5"];
+
 export function Steps({ items }: { items: { title: string; body: string }[] }) {
   return (
-    <ol className={`mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 ${items.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}>
-      {items.map((s, i) => (
-        <Reveal as="li" key={s.title} i={i} className="rounded-lg border border-ink/10 bg-white p-6">
-          <span className="inline-flex size-9 items-center justify-center rounded-full bg-red text-sm font-bold text-white">{i + 1}</span>
-          <h3 className="mt-4 text-lg font-semibold text-ink">{s.title}</h3>
-          <p className="mt-1 text-pretty text-charcoal-soft">{s.body}</p>
-        </Reveal>
-      ))}
+    <ol
+      className={`relative mt-8 grid grid-cols-1 gap-3 pl-10 lg:grid-flow-dense lg:grid-rows-2 lg:gap-x-4 lg:gap-y-12 lg:pl-0 ${
+        items.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4"
+      }`}
+    >
+      {/* The line the steps hang from: down the side on phones, across the middle on large screens. */}
+      <span aria-hidden className="rise-line-y absolute bottom-0 left-4 top-0 w-1 rounded-full bg-(--card) lg:hidden" />
+      <span aria-hidden className="rise-line absolute inset-x-0 top-1/2 hidden h-1 -translate-y-1/2 rounded-full bg-(--card) lg:block" />
+      {items.map((s, i) => {
+        const low = i % 2 === 1;
+        return (
+          <Reveal
+            as="li"
+            key={s.title}
+            i={i}
+            className={`deal relative ${COL[i]} ${low ? "lg:row-start-2" : "lg:row-start-1"}`}
+            style={{ "--tilt": `${low ? 6 : -6}deg` } as React.CSSProperties}
+          >
+            {/* Knot where the card meets the line. */}
+            <span
+              aria-hidden
+              className={`absolute -left-[1.85rem] top-5 z-10 size-4 rounded-full border-4 border-(--card) bg-(--card-accent) lg:left-1/2 lg:-translate-x-1/2 ${
+                low ? "lg:-top-[2.1rem]" : "lg:-bottom-[2.1rem] lg:top-auto"
+              }`}
+            />
+            <div className="relative h-full overflow-hidden rounded-[22px] bg-(--card) p-5 text-(--card-ink) shadow-2">
+              <CornerDisc />
+              <div className="flex items-baseline gap-3 lg:block">
+                <span aria-hidden className="font-display text-3xl font-extrabold leading-none tracking-tighter text-(--card-accent) lg:text-5xl">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="font-display text-lg font-extrabold uppercase leading-tight tracking-tight lg:mt-3 lg:text-xl">
+                  <span className="sr-only">Step {i + 1}: </span>
+                  {s.title}
+                </h3>
+              </div>
+              <p className="mt-2 text-pretty text-sm text-(--card-soft) lg:text-base">{s.body}</p>
+            </div>
+          </Reveal>
+        );
+      })}
     </ol>
   );
 }
 
 /**
- * One service as a full card: what it is, what's included, who it's for and how it runs.
- * HyperUI › Cards, extended with the service detail.
+ * Contents of one service card: what it is, what's included, who it's for and how it runs. On the
+ * wheel it is as tall as the screen allows and scrolls within itself.
  */
-export function ServiceCard({ service, Icon, i = 0 }: { service: ServiceDetail; Icon: LucideIcon; i?: number }) {
-  const titleId = `${service.slug}-title`;
+export function ServiceCard({ service, Icon }: { service: ServiceDetail; Icon: LucideIcon }) {
   return (
-    <Reveal
-      as="article"
-      id={service.slug}
-      aria-labelledby={titleId}
-      i={i}
-      className="flex scroll-mt-28 flex-col rounded-lg border border-ink/10 bg-white p-6 sm:p-8"
-    >
-      <div className="flex items-start gap-4">
+    <article aria-label={service.name} className="flex min-h-full flex-col">
+      <CornerDisc />
+      <div className="relative flex items-start gap-4">
         <IconTile Icon={Icon} />
         <div>
-          <h3 id={titleId} className="font-display text-xl font-bold text-ink sm:text-2xl">
-            {service.name}
-          </h3>
-          <p className="mt-1 font-medium text-red">{service.hook}</p>
+          <h3 className="font-display text-xl font-extrabold uppercase leading-tight tracking-tight sm:text-2xl">{service.name}</h3>
+          <p className="mt-1 font-bold text-(--card-accent)">{service.hook}</p>
         </div>
       </div>
 
-      <p className="mt-5 text-pretty text-charcoal-soft">{service.overview}</p>
+      <p className="mt-4 text-pretty text-(--card-soft)">{service.overview}</p>
 
-      <div className={`mt-6 grid gap-6 ${service.included.length > 1 ? "sm:grid-cols-3" : ""}`}>
+      <div className={`mt-5 grid gap-5 ${service.included.length > 1 ? "md:grid-cols-3" : ""}`}>
         {service.included.map((group, g) => (
           <div key={group.title ?? g}>
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-ink">{group.title ?? "What's included"}</h4>
-            <ul className={`mt-3 grid gap-2 ${service.included.length === 1 ? "sm:grid-cols-2" : ""}`}>
+            <h4 className="t-eyebrow text-(--card-accent)">{group.title ?? "What's included"}</h4>
+            <ul className={`mt-2.5 grid gap-2 ${service.included.length === 1 ? "md:grid-cols-2" : ""}`}>
               {group.items.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-charcoal-soft">
-                  <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-red" strokeWidth={2.5} />
+                <li key={item} className="flex items-start gap-2 text-sm text-(--card-soft)">
+                  <span aria-hidden className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-(--card-accent) text-(--card)">
+                    <Check className="size-3" strokeWidth={3} />
+                  </span>
                   {item}
                 </li>
               ))}
@@ -246,83 +420,90 @@ export function ServiceCard({ service, Icon, i = 0 }: { service: ServiceDetail; 
         ))}
       </div>
 
-      <dl className="mt-6 space-y-3 border-t border-ink/10 pt-5 text-sm">
+      <dl className="mt-5 space-y-2.5 rounded-[18px] border-2 border-(--card-accent) p-4 text-sm">
         {service.audience && (
           <div>
-            <dt className="font-semibold text-ink">Who it&apos;s for</dt>
-            <dd className="mt-0.5 text-charcoal-soft">{service.audience}</dd>
+            <dt className="t-eyebrow text-(--card-accent)">Who it&apos;s for</dt>
+            <dd className="mt-1 text-(--card-soft)">{service.audience}</dd>
           </div>
         )}
         <div>
-          <dt className="font-semibold text-ink">How it works</dt>
-          <dd className="mt-0.5 text-charcoal-soft">{service.steps.join(" → ")}</dd>
+          <dt className="t-eyebrow text-(--card-accent)">How it works</dt>
+          <dd className="mt-1 text-(--card-soft)">{service.steps.join(" → ")}</dd>
         </div>
-        {service.note && <dd className="text-charcoal-soft italic">{service.note}</dd>}
+        {service.note && <dd className="text-(--card-soft) italic">{service.note}</dd>}
       </dl>
 
-      <div className="mt-auto pt-6">
-        <Link href="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-red hover:text-red-deep">
+      <div className="mt-auto pt-5">
+        <Link
+          href="/contact"
+          className="group inline-flex items-center gap-2 rounded-full bg-(--card-accent) px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-(--card) transition-transform active:scale-95"
+        >
           {service.cta}
-          <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" />
+          <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
-    </Reveal>
+    </article>
   );
 }
 
-/** HyperUI › FAQs 1: native disclosure rows. */
+/** Native disclosure rows as cards. */
 export function Faq({ items }: { items: { q: string; a: string }[] }) {
   return (
-    <div className="mt-10 space-y-4">
+    <div className="mt-8 space-y-3">
       {items.map((f, i) => (
-        <Reveal
-          as="details"
-          key={f.q}
-          className="group rounded-lg border border-ink/10 bg-white p-5 [&_summary::-webkit-details-marker]:hidden"
-          open={i === 0}
-        >
-          <summary className="flex cursor-pointer items-center justify-between gap-4 text-ink">
-            <h3 className="text-lg font-semibold">{f.q}</h3>
-            <span aria-hidden className="shrink-0 text-xl text-red transition-transform duration-300 group-open:rotate-45">
+        <Reveal as="details" key={f.q} className={`group relative overflow-hidden rounded-[24px] bg-(--card) px-5 py-4 text-(--card-ink) shadow-2 [&_summary::-webkit-details-marker]:hidden`} open={i === 0}>
+          <summary className="flex cursor-pointer items-center justify-between gap-4">
+            <h3 className="font-display text-base font-extrabold uppercase leading-tight tracking-tight md:text-lg">{f.q}</h3>
+            <span
+              aria-hidden
+              className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-(--card-accent) text-xl leading-none text-(--card) transition-[rotate] duration-300 group-open:rotate-45"
+            >
               +
             </span>
           </summary>
-          <p className="mt-3 text-pretty text-charcoal-soft">{f.a}</p>
+          <p className="mt-3 text-pretty text-(--card-soft)">{f.a}</p>
         </Reveal>
       ))}
     </div>
   );
 }
 
-/** HyperUI › CTAs 1: copy and button beside a photo. */
+/** Closing call as a flag: copy on red, the photo set beside it, on a gold section. */
 export function CtaSplit({ heading, body, label, image }: { heading: string; body: string; label: string; image: StaticImageData }) {
   return (
-    <Arrive className="bg-ivory py-16 md:py-24" aria-labelledby="cta-title">
-      <div className={wrap}>
-        <div className="overflow-hidden rounded-lg bg-ink sm:grid sm:grid-cols-2">
-          <div className="p-8 md:p-12 lg:px-16 lg:py-20">
-            <h2 id="cta-title" className="rise font-display text-2xl font-bold text-white md:text-4xl/tight">
-              {heading}
+    <Arrive className={`tone-gold ${screen} justify-center bg-gold`} aria-labelledby="cta-title">
+      <Shapes set={3} />
+      <div className={`${wrap} relative`}>
+        <div className="relative overflow-hidden rounded-[28px] bg-red shadow-2 sm:grid sm:grid-cols-2">
+          <div aria-hidden className="rise-shape pointer-events-none absolute -bottom-20 left-[34%] hidden w-44 rotate-12 text-red-deep sm:block">
+            <Shape kind="clover" />
+          </div>
+          <div className="relative p-7 md:p-10 lg:px-14 lg:py-16">
+            <h2 id="cta-title" className={`rise text-balance font-display font-extrabold uppercase text-ivory ${h2Size}`}>
+              <Accented title={heading} className="text-gold" />
             </h2>
-            <p className="rise mt-4 text-pretty text-white/75" style={step(1)}>
+            <p className="rise mt-5 text-pretty text-ivory/85 md:text-lg" style={step(1)}>
               {body}
             </p>
-            <div className="rise mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap" style={step(2)}>
-              <Link href="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full sm:w-auto bg-gold px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-gold-tint">
+            <div className="rise mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap" style={step(2)}>
+              <Button href="/contact" variant="gold">
                 {label} <ArrowRight aria-hidden className="size-4" />
-              </Link>
+              </Button>
               <a
                 href={whatsappHref()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center rounded-full sm:w-auto border border-white/30 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                className="inline-flex w-full items-center justify-center rounded-full border-2 border-gold px-6 py-3.5 text-sm font-bold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-ink sm:w-auto"
               >
                 Chat on WhatsApp
               </a>
             </div>
           </div>
-          <div className="relative h-56 sm:h-full">
-            <Image src={image} alt="" fill placeholder="blur" sizes="(min-width: 640px) 50vw, 100vw" className="object-cover" />
+          <div className="relative p-3 sm:p-4 sm:pl-0">
+            <div className="relative h-44 overflow-hidden rounded-[22px] sm:h-full sm:min-h-72">
+              <Image src={image} alt="" fill placeholder="blur" sizes="(min-width: 640px) 50vw, 100vw" className="object-cover" />
+            </div>
           </div>
         </div>
       </div>

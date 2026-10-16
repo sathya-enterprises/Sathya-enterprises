@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { businesses, type Business, type DivisionId } from "@/content/site";
 import { toCards } from "./businessCards";
 import { ease } from "@/lib/motion";
-import { Accent, SectionHeader } from "./primitives";
+import { SectionHeader } from "./primitives";
 import { ShapeField } from "./ShapeField";
 
 /**
@@ -138,7 +138,9 @@ export function EcosystemCards({
   eyebrow = "The Ecosystem",
   title = (
     <>
-      Explore our <Accent>ecosystem.</Accent>
+      Explore our{" "}
+      {/* The red → gold accent would fade into the yellow half of the desktop flag, so it goes plain red there. */}
+      <span className="bg-gradient-to-r from-red to-gold bg-clip-text text-transparent lg:bg-none lg:text-red">ecosystem.</span>
     </>
   ),
   lead = "Four divisions, one connected ecosystem.",
@@ -193,8 +195,9 @@ export function EcosystemCards({
   const half = Math.floor(RING.length / 2);
 
   return (
-    <section ref={sectionRef} id={id} className="section-y relative flex flex-col justify-center overflow-hidden bg-ivory lg:min-h-svh lg:pb-3 lg:pt-[calc(var(--header-h)+1rem)]">
-      <ShapeField progress={scrollYProgress} play={inView} />
+    <section ref={sectionRef} id={id} className="section-y relative flex flex-col justify-center overflow-hidden bg-ivory lg:min-h-svh lg:bg-[linear-gradient(to_bottom,var(--color-gold)_50%,var(--color-red)_50%)] lg:pb-3 lg:pt-[calc(var(--header-h)+1rem)]">
+      {/* Desktop shows the Karnataka flag behind the cards instead of the floating shapes. */}
+      <ShapeField progress={scrollYProgress} play={inView} className="inset-0 lg:hidden" />
 
       <div ref={headingRef} className="container-x relative">
         <SectionHeader

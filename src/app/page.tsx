@@ -7,6 +7,7 @@ import { FounderSection } from "@/components/home/FounderSection";
 import { EcosystemCards } from "@/components/home/EcosystemCards";
 import { MoneySystemSequence } from "@/components/home/MoneySystemSequence";
 import { GlobalReach } from "@/components/home/GlobalReach";
+import { BlogTeaser } from "@/components/home/BlogTeaser";
 import { InvitationParallax } from "@/components/home/InvitationParallax";
 import { CtaSection } from "@/components/home/CtaSection";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
@@ -27,6 +28,7 @@ export default function Home() {
       <EcosystemCards />
       <MoneySystemSequence />
       <GlobalReach />
+      <BlogTeaser />
       <InvitationParallax />
       <CtaSection />
       <WhatsAppButton />

@@ -3,7 +3,7 @@ import { ChartLine, Compass, Network, Eye, Hammer, Handshake, Link2, MapPin, Plu
 import { breadcrumbLd, pageMeta } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { aboutPage, ctaBody, meta, onePartner } from "@/content/pages";
-import { CtaSplit, FeatureCard, FeatureList, PageIntro, Section, SectionHeading, Steps } from "@/components/inner/Sections";
+import { CtaSplit, FeatureFan, FeatureList, FeatureWheel, PageIntro, Section, SectionHeading, Steps } from "@/components/inner/Sections";
 import whoWeArePhoto from "@/assets/story/who-we-are.webp";
 import oneTeamPhoto from "@/assets/story/one-team.webp";
 
@@ -16,7 +16,7 @@ export default function AboutPage() {
   const { whoWeAre, vision, mission, approach, valuesLead, values, process, cta } = aboutPage;
 
   return (
-    <div className="min-h-screen bg-ivory">
+    <div className="min-h-screen bg-gold">
       <JsonLd data={[breadcrumbLd([{ name: "About", path: "/about" }])]} />
 
       <PageIntro
@@ -28,19 +28,16 @@ export default function AboutPage() {
         image={whoWeArePhoto}
       />
 
-      <Section id="purpose-title" tone="warm">
+      <Section id="purpose-title" tone="red">
         <SectionHeading id="purpose-title" title="Why we exist" center />
-        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-          <FeatureCard Icon={Compass} title="Our vision" i={1}>
-            {vision}
-          </FeatureCard>
-          <FeatureCard Icon={Target} title="Our mission" i={2}>
-            {mission}
-          </FeatureCard>
-          <FeatureCard Icon={Network} title="Our approach" i={3}>
-            {approach}
-          </FeatureCard>
-        </div>
+        <FeatureFan
+          label="Why we exist"
+          items={[
+            { Icon: Compass, title: "Our vision", body: vision },
+            { Icon: Target, title: "Our mission", body: mission },
+            { Icon: Network, title: "Our approach", body: approach },
+          ]}
+        />
       </Section>
 
       <Section id="partner-title">
@@ -52,15 +49,9 @@ export default function AboutPage() {
         />
       </Section>
 
-      <Section id="values-title" tone="warm">
+      <Section id="values-title" tone="red">
         <SectionHeading id="values-title" title="Our values" lead={valuesLead} center />
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {values.map((v, i) => (
-            <FeatureCard key={v.title} Icon={VALUE_ICONS[i]} title={v.title} i={1 + (i % 3)}>
-              {v.body}
-            </FeatureCard>
-          ))}
-        </div>
+        <FeatureWheel label="Our values" items={values.map((v, i) => ({ Icon: VALUE_ICONS[i], title: v.title, body: v.body }))} />
       </Section>
 
       <Section id="process-title">

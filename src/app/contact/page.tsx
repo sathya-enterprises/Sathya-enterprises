@@ -34,20 +34,20 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-ivory">
+    <div className="min-h-screen bg-gold">
       <JsonLd data={[breadcrumbLd([{ name: "Contact", path: "/contact" }]), faqLd]} />
 
       <PageIntro kicker="Contact" title="Let's talk growth" lead={<p>{contactPage.intro}</p>} actions={false}>
-        <ul className="divide-y divide-ink/10 rounded-lg border border-ink/10 bg-white">
+        <ul className="divide-y divide-ivory/15 overflow-hidden rounded-[28px] bg-red shadow-2">
           {details.map(({ Icon, label, value, href, external }) => {
             const body = (
               <>
-                <span className="inline-flex shrink-0 rounded-lg bg-red/10 p-3 text-red">
+                <span className="inline-flex shrink-0 rounded-2xl bg-gold p-3 text-red">
                   <Icon aria-hidden className="size-5" />
                 </span>
                 <span>
-                  <span className="block text-sm font-medium text-charcoal-soft">{label}</span>
-                  <span className="block break-words font-semibold text-ink">{value}</span>
+                  <span className="t-eyebrow block text-gold">{label}</span>
+                  <span className="mt-1 block break-words text-lg font-bold text-ivory">{value}</span>
                 </span>
               </>
             );
@@ -58,7 +58,7 @@ export default function ContactPage() {
                   <a
                     href={href}
                     {...(external && { target: "_blank", rel: "noopener noreferrer" })}
-                    className={`${row} transition-colors hover:bg-gold-light/60`}
+                    className={`${row} transition-colors hover:bg-red-deep`}
                   >
                     {body}
                   </a>

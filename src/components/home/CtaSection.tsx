@@ -133,16 +133,13 @@ export function CtaSection({
               const size = Math.min(70, Math.round(430 / (label.length * 0.74)));
               return (
                 <g key={i}>
-                  {/* Medallion standing on the rim, with brand shapes either side. */}
+                  {/* Brand shapes either side of the medallion. */}
                   <g aria-hidden transform={`rotate(${i * turn})`}>
                     <circle cx="-150" cy="-560" r="44" fill="var(--color-gold)" />
                     <rect x="112" y="-612" width="78" height="78" rx="18" fill="var(--color-red)" transform="rotate(14 151 -573)" />
-                    <circle cy="-660" r="128" fill="var(--color-ivory)" stroke="var(--color-red-deep)" strokeWidth="12" />
-                    <circle cy="-660" r="100" fill={OUTER[i].fill} />
-                    <Icon x={-58} y={-718} width={116} height={116} color={OUTER[i].text} strokeWidth={1.75} />
                   </g>
 
-                  {/* Outer band: the action itself. */}
+                  {/* The action: medallion on the rim plus its outer band, one link. */}
                   <a
                     href={href}
                     aria-label={label}
@@ -150,6 +147,11 @@ export function CtaSection({
                     className="cta-seg"
                     {...(external && { target: "_blank", rel: "noopener noreferrer" })}
                   >
+                    <g aria-hidden transform={`rotate(${i * turn})`}>
+                      <circle cy="-660" r="128" fill="var(--color-ivory)" stroke="var(--color-red-deep)" strokeWidth="12" />
+                      <circle cy="-660" r="100" fill={OUTER[i].fill} />
+                      <Icon x={-58} y={-718} width={116} height={116} color={OUTER[i].text} strokeWidth={1.75} />
+                    </g>
                     <path d={wedge(R_RING, R_RIM, a0, a1)} fill={OUTER[i].fill} />
                     <text
                       className="font-display font-extrabold uppercase"

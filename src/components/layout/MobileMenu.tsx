@@ -142,6 +142,16 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
                   </m.li>
                 );
               })}
+              <m.li
+                variants={{ hidden: { opacity: 0, y: 16 }, shown: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.5, ease: ease.out }}
+                className="border-b border-ink/10"
+              >
+                <Link href="/blogs" onClick={onClose} className="flex items-baseline gap-3 py-4">
+                  <span className="font-mono text-[0.7rem] font-bold text-red">{String(divisions.length + 1).padStart(2, "0")}</span>
+                  <span className="font-display text-[2rem] font-extrabold leading-none tracking-[-0.03em]">BLOGS</span>
+                </Link>
+              </m.li>
             </ul>
           </m.nav>
 

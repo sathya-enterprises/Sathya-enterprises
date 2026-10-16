@@ -127,7 +127,7 @@ export const founder = {
   name: "Satyabhushan",
   role: "Founder",
   /** Big word set across the foot of the photo. */
-  title: "Our Visionary",
+  title: "Founder and CEO",
   /** Lines inside a paragraph break onto their own line, as on the reference layout. */
   paragraphs: [
     [

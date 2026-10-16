@@ -14,6 +14,7 @@ const LINKS = [
   { label: "Technology", href: "/technology" },
   { label: "Products", href: "/products" },
   { label: "Services", href: "/services" },
+  { label: "Blogs", href: "/blogs" },
 ];
 
 const step = (i: number) => ({ "--i": i }) as React.CSSProperties;

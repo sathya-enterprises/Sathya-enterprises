@@ -15,6 +15,7 @@ const step = (i: number) => ({ "--i": i }) as React.CSSProperties;
 const PAGES = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
+  { label: "Blogs", href: "/blogs" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -29,9 +30,9 @@ const link = "transition-colors hover:text-red";
 // platform's home page; WhatsApp opens a chat with the business number.
 const FOOTER_SOCIALS = ["instagram", "facebook", "linkedin", "whatsapp"];
 const FALLBACK: Record<string, string> = {
-  instagram: "https://www.instagram.com/",
+  instagram: "https://www.instagram.com/sathyaenterprisesdigital/",
   facebook: "https://www.facebook.com/",
-  linkedin: "https://www.linkedin.com/",
+  linkedin: "https://www.linkedin.com/company/sathya-enterprises-india/home/",
 };
 const SOCIAL_LINKS = socials
   .filter((s) => s.url || FOOTER_SOCIALS.includes(s.id))
@@ -51,8 +52,8 @@ export function Footer() {
   return (
     <footer ref={ref} data-arrived={arrived} className="relative overflow-hidden bg-gold-light py-16 text-ink md:py-24">
       <div aria-hidden className="rise-line absolute inset-x-0 top-0 h-2 bg-red" />
-      <div aria-hidden className="pointer-events-none absolute -right-48 -top-48 h-[48rem] w-[48rem] bg-[radial-gradient(closest-side,rgb(200_16_46/0.1),transparent)]" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-48 h-[48rem] w-[48rem] bg-[radial-gradient(closest-side,rgb(244_197_66/0.3),transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute -right-48 -top-48 h-192 w-3xl bg-[radial-gradient(closest-side,rgb(200_16_46/0.1),transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-48 h-192 w-3xl bg-[radial-gradient(closest-side,rgb(244_197_66/0.3),transparent)]" />
 
       <div className="container-x relative z-10">
         {/* Brand · pages · contact */}
@@ -122,7 +123,7 @@ export function Footer() {
                       title={s.label}
                       className="grid h-10 w-10 place-items-center rounded-full border border-ink/15 bg-white/60 text-ink transition-[background-color,color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-red hover:bg-red hover:text-ivory"
                     >
-                      <SocialIcon id={s.id} className="h-[18px] w-[18px]" />
+                      <SocialIcon id={s.id} className="h-4.5 w-4.5" />
                     </a>
                   </li>
                 ))}
