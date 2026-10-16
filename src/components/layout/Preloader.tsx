@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { brand } from "@/content/site";
-import logo from "../../../public/logo-512.png";
+import logo from "@/assets/brand/logo.webp";
 
 /** Splash thrown up as the badge breaks the surface: outward reach, peak height (px), delay (s). */
 const DROPS = [

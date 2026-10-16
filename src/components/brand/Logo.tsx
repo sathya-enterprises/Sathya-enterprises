@@ -1,5 +1,5 @@
 import Image from "next/image";
-import logo from "../../../public/logo-512.png";
+import logo from "@/assets/brand/logo.webp";
 
 /** The original Sathya Enterprises whale emblem (round, transparent corners). */
 export function Logo({ size = 44, eager, className }: { size?: number; eager?: boolean; className?: string }) {

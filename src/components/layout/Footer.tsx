@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { useArrival } from "@/lib/useArrival";
-import { brand, businessesIn, contact, divisions } from "@/content/site";
+import { brand, businessesIn, contact, divisions, socials, whatsappHref } from "@/content/site";
 import { CookieSettingsButton } from "@/components/layout/CookieConsent";
-import logo from "../../../public/logo-512.png";
+import { SocialIcon } from "@/components/layout/SocialIcon";
+import logo from "@/assets/brand/logo.webp";
 
 const step = (i: number) => ({ "--i": i }) as React.CSSProperties;
 
@@ -23,6 +24,19 @@ const LEGAL = [
 ];
 
 const link = "transition-colors hover:text-red";
+
+// Always shown in the footer. Until a profile URL is set in site.ts, an icon falls back to the
+// platform's home page; WhatsApp opens a chat with the business number.
+const FOOTER_SOCIALS = ["instagram", "facebook", "linkedin", "whatsapp"];
+const FALLBACK: Record<string, string> = {
+  instagram: "https://www.instagram.com/",
+  facebook: "https://www.facebook.com/",
+  linkedin: "https://www.linkedin.com/",
+};
+const SOCIAL_LINKS = socials
+  .filter((s) => s.url || FOOTER_SOCIALS.includes(s.id))
+  .map((s) => ({ ...s, href: s.url || (s.id === "whatsapp" ? whatsappHref() : FALLBACK[s.id]) }))
+  .filter((s) => s.href);
 
 /**
  * Site map in the footer: the brand and a way to get in touch, the company pages, then every
@@ -96,6 +110,24 @@ export function Footer() {
                 </p>
               )}
             </address>
+            {SOCIAL_LINKS.length > 0 && (
+              <ul aria-label="Follow us" className="mt-6 flex flex-wrap gap-3">
+                {SOCIAL_LINKS.map((s) => (
+                  <li key={s.id}>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={s.label}
+                      title={s.label}
+                      className="grid h-10 w-10 place-items-center rounded-full border border-ink/15 bg-white/60 text-ink transition-[background-color,color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-red hover:bg-red hover:text-ivory"
+                    >
+                      <SocialIcon id={s.id} className="h-[18px] w-[18px]" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
 

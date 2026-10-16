@@ -69,6 +69,7 @@ export const about = {
 
 export const contact = {
   phone: { value: "+91 00000 00000", placeholder: true },
+  whatsapp: { value: "+91 7624 811 356", message: "Hi Sathya Enterprises, I'd like to know more about your services." },
   email: { value: "hello@sathyaenterprises.com", placeholder: false },
   location: "Bengaluru, Karnataka, India",
   intro: "Tell us what you're building and which part of the ecosystem you need — we'll take it from there.",
@@ -95,6 +96,27 @@ export const contact = {
     "Other",
   ],
 };
+
+/** Founder section on the home page. Role and copy are still demo text — replace with the real ones. */
+export const founder = {
+  name: "Satyabhushan",
+  role: "Founder",
+  /** Big word set across the foot of the photo. */
+  title: "Our Visionary",
+  /** Lines inside a paragraph break onto their own line, as on the reference layout. */
+  paragraphs: [
+    [
+      "Meet Satyabhushan, the founder and visionary behind Sathya Enterprises! The idea from day one: a business shouldn't have to stitch together ten different vendors to grow — so Sathya Enterprises was built as one connected ecosystem across digital growth, technology, products and services.",
+      "The secret? Every division feeds the next. Marketing creates attention, technology turns that attention into systems, and real-world services deliver what customers came for. From startups chasing big dreams to established brands that need a push, it's one team taking you from the first idea to steady growth.",
+    ],
+    ["Book a free consultation, and see how simple growing your business can be!"],
+  ],
+};
+
+/** wa.me link to the business WhatsApp, with the opening message filled in. */
+export function whatsappHref(message: string = contact.whatsapp.message) {
+  return `https://wa.me/${contact.whatsapp.value.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
+}
 
 export const divisions: Division[] = [
   {

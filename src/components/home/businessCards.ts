@@ -1,12 +1,12 @@
 import type { StaticImageData } from "next/image";
 import type { Business, DivisionId } from "@/content/site";
 import type { Step } from "./MoneySystemSequence";
-import digitalPhoto from "@/assets/photos/digital.jpg";
-import technologyPhoto from "@/assets/photos/technology.jpg";
-import workshopPhoto from "@/assets/photos/workshop.jpg";
-import productsPhoto from "@/assets/photos/products.jpg";
-import teamPhoto from "@/assets/photos/team.jpg";
-import servicesPhoto from "@/assets/photos/services.jpg";
+import digitalPhoto from "@/assets/photos/digital.webp";
+import technologyPhoto from "@/assets/photos/technology.webp";
+import workshopPhoto from "@/assets/photos/workshop.webp";
+import productsPhoto from "@/assets/photos/products.webp";
+import teamPhoto from "@/assets/photos/team.webp";
+import servicesPhoto from "@/assets/photos/services.webp";
 
 /**
  * Business → card data for the home page's carousel (EcosystemCards) and flying cards

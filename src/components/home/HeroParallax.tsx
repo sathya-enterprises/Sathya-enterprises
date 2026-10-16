@@ -4,11 +4,11 @@ import { useRef } from "react";
 import Image from "next/image";
 import { m, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
 import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
-import bg from "@/assets/hero/bg.jpg";
-import clouds1 from "@/assets/hero/clouds-1.png";
-import clouds2 from "@/assets/hero/clouds-2.png";
-import mountainLeft from "@/assets/hero/mountain-left.png";
-import mountainRight from "@/assets/hero/mountain-right.png";
+import bg from "@/assets/hero/bg.webp";
+import clouds1 from "@/assets/hero/clouds-1.webp";
+import clouds2 from "@/assets/hero/clouds-2.webp";
+import mountainLeft from "@/assets/hero/mountain-left.webp";
+import mountainRight from "@/assets/hero/mountain-right.webp";
 
 /**
  * Layered mountain hero. Every layer is a full-frame cut-out stacked in this order (back → front):

@@ -411,6 +411,73 @@ body {
   }
 }
 
+/* ── CTA wheel (home › CtaSection.tsx) ─────────────────────────────────────
+ * --r: the wheel's rim radius; --cy: how far down the screen its centre sits (near the foot, so its
+ * top half rises from the bottom like the reference). The wheel and the sunburst turn a stop at a
+ * time (their rotate is set per stop; the transition does the rest). On arrival the wheel rolls up. */
+.cta-stage {
+  --r: min(64vw, 40svh);
+  --cy: 94svh;
+}
+@media (min-width: 768px) {
+  .cta-stage {
+    --r: min(31vw, 48svh);
+    --cy: 92svh;
+  }
+}
+.cta-turn {
+  transition: rotate 2.4s cubic-bezier(0.65, 0, 0.25, 1);
+}
+.cta-wheel-in {
+  transition:
+    transform 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.8s ease;
+}
+[data-arrived="false"] .cta-wheel-in {
+  transform: translate3d(0, 45%, 0) rotate(-40deg);
+  opacity: 0;
+  transition-duration: 0s;
+}
+.cta-seg {
+  cursor: pointer;
+  outline: none;
+}
+.cta-seg path {
+  transition: filter 0.3s ease;
+}
+.cta-seg:hover path,
+.cta-seg:focus-visible path {
+  filter: brightness(1.12);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-turn,
+  .cta-wheel-in {
+    transition: none;
+  }
+  [data-arrived="false"] .cta-wheel-in {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ── WhatsApp button (layout › WhatsAppButton.tsx) ────────────────────────
+ * Pops up from the corner once the preloader and header have arrived. */
+.wa-in {
+  animation: wa-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(var(--enter-base) + 600ms);
+}
+@keyframes wa-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40%, 0) scale(0.6);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wa-in {
+    animation: none;
+  }
+}
+
 /* ── Section arrivals (useArrival + data-arrived) ─────────────────────────
  * Held back until the section arrives, then played; reset when it leaves, so they replay.
  * .rise: a block lifts in, delayed by --i steps. .rise-letter: one letter of a headline, rising and
@@ -447,6 +514,45 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .rise-line {
+    transform: none;
+  }
+}
+/* .reveal: a card that lifts in on its own arrival (inner/Reveal.tsx), staggered by --i. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 2.5rem, 0);
+  transition-property: transform, opacity;
+  transition-duration: 0.9s, 0.7s;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1), ease;
+  transition-delay: calc(var(--i, 0) * 0.1s);
+}
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+.reveal[data-shown="false"] {
+  transition-duration: 0s;
+  transition-delay: 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transform: none;
+  }
+}
+/* .rise-line-y: the same, drawn downwards (a vertical rule, e.g. a timeline spine). */
+.rise-line-y {
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+[data-arrived="true"] .rise-line-y {
+  transform: none;
+}
+[data-arrived="false"] .rise-line-y {
+  transition-duration: 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise-line-y {
     transform: none;
   }
 }

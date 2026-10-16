@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Image, { type StaticImageData } from "next/image";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { brand } from "@/content/site";
-import businessPhoto from "@/assets/story/business.jpg";
-import ecosystemPhoto from "@/assets/story/ecosystem.jpg";
-import oneTeamPhoto from "@/assets/story/one-team.jpg";
-import growthPhoto from "@/assets/story/growth.jpg";
+import businessPhoto from "@/assets/story/business.webp";
+import ecosystemPhoto from "@/assets/story/ecosystem.webp";
+import oneTeamPhoto from "@/assets/story/one-team.webp";
+import growthPhoto from "@/assets/story/growth.webp";
 
 export type Chapter = {
   lead: string;

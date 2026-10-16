@@ -3,10 +3,12 @@ import { brand } from "@/content/site";
 import { pageMeta } from "@/lib/seo";
 import { HeroParallax } from "@/components/home/HeroParallax";
 import { StoryTelling } from "@/components/home/StoryTelling";
+import { FounderSection } from "@/components/home/FounderSection";
 import { EcosystemCards } from "@/components/home/EcosystemCards";
 import { MoneySystemSequence } from "@/components/home/MoneySystemSequence";
 import { InvitationParallax } from "@/components/home/InvitationParallax";
 import { CtaSection } from "@/components/home/CtaSection";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 
 export const metadata: Metadata = pageMeta({
   title: "Sathya Enterprises — Build. Market. Lead. Grow.",
@@ -20,10 +22,12 @@ export default function Home() {
     <div className="min-h-screen bg-ivory">
       <HeroParallax />
       <StoryTelling />
+      <FounderSection />
       <EcosystemCards />
       <MoneySystemSequence />
       <InvitationParallax />
       <CtaSection />
+      <WhatsAppButton />
     </div>
   );
 }

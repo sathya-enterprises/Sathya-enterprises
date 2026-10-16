@@ -5,12 +5,12 @@ import Image, { type StaticImageData } from "next/image";
 import { m, useMotionValue, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useArrival } from "@/lib/useArrival";
 import { Eyebrow, RiseLetters } from "./primitives";
-import digitalPhoto from "@/assets/photos/digital.jpg";
-import meetingPhoto from "@/assets/photos/meeting.jpg";
-import teamPhoto from "@/assets/photos/team.jpg";
-import technologyPhoto from "@/assets/photos/technology.jpg";
-import productsPhoto from "@/assets/photos/products.jpg";
-import workshopPhoto from "@/assets/photos/workshop.jpg";
+import digitalPhoto from "@/assets/photos/digital.webp";
+import meetingPhoto from "@/assets/photos/meeting.webp";
+import teamPhoto from "@/assets/photos/team.webp";
+import technologyPhoto from "@/assets/photos/technology.webp";
+import productsPhoto from "@/assets/photos/products.webp";
+import workshopPhoto from "@/assets/photos/workshop.webp";
 
 export type Step = {
   num: string;

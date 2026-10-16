@@ -56,7 +56,7 @@ export function Header() {
       <nav className="container-x flex justify-between items-center text-ink">
         {/* Stacked lockup: short and wide enough to sit beside the logo on the narrowest phones. */}
         <Link href="/" aria-label="Sathya Enterprises — home" className="nav-in flex min-w-0 items-center gap-2.5">
-          <img src="/icon.png" alt="" className="h-9 w-9 shrink-0 rounded-full object-contain md:h-10 md:w-10" />
+          <img src="/brand-mark.webp" alt="" className="h-9 w-9 shrink-0 rounded-full object-contain md:h-10 md:w-10" />
           <span aria-hidden className="flex flex-col font-display uppercase leading-none">
             <span className="text-[1.3rem] font-extrabold tracking-[-0.02em] md:text-[1.5rem]">Sathya</span>
             <span className="mt-[3px] -mr-[0.3em] text-[0.5rem] font-bold tracking-[0.3em] text-red md:text-[0.58rem]">Enterprises</span>
