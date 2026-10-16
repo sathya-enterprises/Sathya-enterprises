@@ -16,8 +16,7 @@ import servicesPhoto from "@/assets/photos/services.webp";
 const PHOTOS: Record<DivisionId, StaticImageData[]> = {
   digital: [digitalPhoto, teamPhoto],
   technology: [technologyPhoto, workshopPhoto],
-  products: [productsPhoto, teamPhoto],
-  services: [servicesPhoto, workshopPhoto],
+  solutions: [productsPhoto, servicesPhoto, workshopPhoto],
 };
 
 /** Card data for a list of businesses; photos cycle within each division. */

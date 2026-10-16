@@ -388,38 +388,41 @@ export function Steps({ items }: { items: { title: string; body: string }[] }) {
  * Contents of one service card: what it is, what's included, who it's for and how it runs. On the
  * wheel it is as tall as the screen allows and scrolls within itself.
  */
-export function ServiceCard({ service, Icon }: { service: ServiceDetail; Icon: LucideIcon }) {
+/**
+ * A service as a fixed-height card that lifts in when it scrolls into view; `i` staggers a row's
+ * cards. Contents are trimmed to fit (overview to three lines, one short list); the full detail
+ * stays in the page's structured data.
+ */
+export function ServiceCard({ service, Icon, i = 0 }: { service: ServiceDetail; Icon: LucideIcon; i?: number }) {
+  // One list per card: a single group's first four items, or the lead item for each audience.
+  const items =
+    service.included.length === 1 ? service.included[0].items.slice(0, 4) : service.included.map((g) => g.items[0]).slice(0, 4);
   return (
-    <article aria-label={service.name} className="flex min-h-full flex-col">
+    <Reveal
+      as="article"
+      i={i}
+      aria-label={service.name}
+      className="relative flex h-[27rem] flex-col overflow-hidden rounded-[26px] bg-(--card) p-6 text-(--card-ink) shadow-2 transition-[translate] duration-300 hover:-translate-y-1.5"
+    >
       <CornerDisc />
-      <div className="relative flex items-start gap-4">
+      <div className="relative flex items-center gap-4">
         <IconTile Icon={Icon} />
-        <div>
-          <h3 className="font-display text-xl font-extrabold uppercase leading-tight tracking-tight sm:text-2xl">{service.name}</h3>
-          <p className="mt-1 font-bold text-(--card-accent)">{service.hook}</p>
-        </div>
+        <h3 className="line-clamp-2 font-display text-xl font-extrabold uppercase leading-tight tracking-tight">{service.name}</h3>
       </div>
 
-      <p className="mt-4 text-pretty text-(--card-soft)">{service.overview}</p>
+      <p className="mt-4 line-clamp-3 text-pretty text-(--card-soft)">{service.overview}</p>
 
-      {/* The card shows a short list; the full detail stays in the page's structured data. */}
-      <div className={`mt-5 grid gap-5 ${service.included.length > 1 ? "md:grid-cols-3" : ""}`}>
-        {service.included.map((group, g) => (
-          <div key={group.title ?? g}>
-            <h4 className="t-eyebrow text-(--card-accent)">{group.title ?? "What's included"}</h4>
-            <ul className={`mt-2.5 grid gap-2 ${service.included.length === 1 ? "md:grid-cols-2" : ""}`}>
-              {group.items.slice(0, service.included.length === 1 ? 4 : 3).map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-(--card-soft)">
-                  <span aria-hidden className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-(--card-accent) text-(--card)">
-                    <Check className="size-3" strokeWidth={3} />
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+      <h4 className="t-eyebrow mt-5 text-(--card-accent)">What&apos;s included</h4>
+      <ul className="mt-2.5 grid gap-2">
+        {items.map((item) => (
+          <li key={item} className="flex items-center gap-2 text-sm text-(--card-soft)">
+            <span aria-hidden className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-(--card-accent) text-(--card)">
+              <Check className="size-3" strokeWidth={3} />
+            </span>
+            <span className="truncate">{item}</span>
+          </li>
         ))}
-      </div>
+      </ul>
 
       <div className="mt-auto pt-5">
         <Link
@@ -430,7 +433,7 @@ export function ServiceCard({ service, Icon }: { service: ServiceDetail; Icon: L
           <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
-    </article>
+    </Reveal>
   );
 }
 

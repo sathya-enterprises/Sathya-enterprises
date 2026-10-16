@@ -24,8 +24,7 @@ const tones: Record<DivisionId | "default", { bg: string; ink: string; accent: s
   default: { bg: "#fffdf8", ink: "#1a1a1a", accent: "#c8102e", soft: "#4a4642" },
   digital: { bg: "#fffdf8", ink: "#1a1a1a", accent: "#c8102e", soft: "#4a4642" },
   technology: { bg: "#1a1a1a", ink: "#fffdf8", accent: "#f4c542", soft: "#bdb8b0" },
-  products: { bg: "#fff5d6", ink: "#1a1a1a", accent: "#9e1026", soft: "#4a4642" },
-  services: { bg: "#9e1026", ink: "#fffdf8", accent: "#f4c542", soft: "#f3d6da" },
+  solutions: { bg: "#9e1026", ink: "#fffdf8", accent: "#f4c542", soft: "#f3d6da" },
 };
 
 /** Social card in the site's own language: the core mark, an index line, and a big headline. */

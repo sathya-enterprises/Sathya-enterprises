@@ -12,8 +12,7 @@ const LINKS = [
   { label: "About", href: "/about" },
   { label: "Digital", href: "/digital" },
   { label: "Technology", href: "/technology" },
-  { label: "Products", href: "/products" },
-  { label: "Services", href: "/services" },
+  { label: "Solutions", href: "/solutions" },
   { label: "Blogs", href: "/blogs" },
 ];
 

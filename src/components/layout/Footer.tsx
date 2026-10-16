@@ -133,7 +133,7 @@ export function Footer() {
         </div>
 
         {/* Every division and its businesses */}
-        <nav aria-label="Divisions" className="mt-14 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-ink/15 pt-12 lg:grid-cols-4">
+        <nav aria-label="Divisions" className="mt-14 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-ink/15 pt-12 lg:grid-cols-3">
           {divisions.map((d, i) => (
             <div key={d.id} className="rise" style={step(3 + i)}>
               <h2 className="mb-5 text-sm font-bold uppercase tracking-widest">

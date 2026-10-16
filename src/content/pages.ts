@@ -1,5 +1,5 @@
 /**
- * Copy for the inner pages (About, the four divisions, Contact), taken from the client's website
+ * Copy for the inner pages (About, the three divisions, Contact), taken from the client's website
  * content doc (sathya.pdf, "Version A", Oct 2026). The home page keeps its own copy in site.ts.
  */
 import type { DivisionId } from "@/content/site";
@@ -16,22 +16,17 @@ export const meta = {
   digital: {
     title: "Digital Marketing, Web & SEO in Bengaluru — Sathya",
     description:
-      "Digital marketing, logo design, websites, SEO, Google Ads, social media and lead generation in Bengaluru — run as one growth system.",
+      "Digital marketing, brand building, websites, SEO, Google Ads, social media and lead generation in Bengaluru — run as one growth system.",
   },
   technology: {
     title: "SaaS, AI Automation & WhatsApp API — Sathya Enterprises",
     description:
       "Modular SaaS, AI automation, WhatsApp Business API and data dashboards that turn leads into customers. Based in Bengaluru.",
   },
-  products: {
-    title: "Business Data Products & Marketplace — Sathya",
+  solutions: {
+    title: "Data, Marketplace & On-Ground Services — Sathya",
     description:
-      "Lawfully sourced business datasets, market research and a three-sided marketplace connecting customers, businesses and providers.",
-  },
-  services: {
-    title: "Borewell, Pumps, CCTV, Interiors in Bengaluru — Sathya",
-    description:
-      "Water pumps, borewell drilling, CCTV installation, travels, interiors, architecture and startup consulting across Bengaluru.",
+      "Business data, a three-sided marketplace, water pumps, borewells, CCTV, travels, interiors and startup consulting across Bengaluru.",
   },
   contact: {
     title: "Contact Sathya Enterprises — Bengaluru",
@@ -132,20 +127,20 @@ export const divisionPages: Record<DivisionId, DivisionContent> = {
         cta: "Build My Growth System",
       },
       {
-        slug: "logo-design",
-        name: "Logo Design",
-        hook: "The smallest unit of a brand system built to last.",
+        slug: "brand-building",
+        name: "Brand Building",
+        hook: "A brand people recognise, remember and trust.",
         overview:
-          "A logo has to work on a signboard, an Instagram avatar, a vehicle wrap and an invoice. We design identity systems that hold up everywhere — not just a mark that looks good once.",
+          "We define what your business stands for, how it speaks and how it looks — then make it consistent everywhere, from a signboard and an Instagram feed to a vehicle wrap and an invoice.",
         included: included(
-          "Logo concepts and refinement",
-          "Colour palette and typography",
-          "Logo variations (horizontal, stacked, icon)",
-          "Brand guidelines sheet",
+          "Brand strategy and positioning",
+          "Messaging and tone of voice",
+          "Logo and visual identity",
+          "Brand guidelines",
           "Business card, letterhead and social kit",
         ),
         audience: "New businesses, and established ones whose brand has outgrown its look.",
-        steps: ["Brand discovery", "Concepts", "Refinement", "Final files and guidelines"],
+        steps: ["Brand discovery", "Strategy and positioning", "Identity design", "Guidelines and rollout"],
         cta: "Start My Brand Identity",
       },
       {
@@ -262,7 +257,7 @@ export const divisionPages: Record<DivisionId, DivisionContent> = {
     tagline: "Builds the systems",
     heading: ["Systems that turn", "attention into revenue."],
     intro:
-      "SaaS, AI automation, WhatsApp Business and data solutions — the technology layer that captures every lead, follows up without fail and shows you the numbers that matter.",
+      "SaaS, AI automation, WhatsApp Business, mobile apps and data solutions — the technology layer that captures every lead, follows up without fail and shows you the numbers that matter.",
     services: [
       {
         slug: "saas-products",
@@ -336,16 +331,34 @@ export const divisionPages: Record<DivisionId, DivisionContent> = {
         steps: ["Data audit", "Clean and connect", "Dashboard build", "Ongoing reporting"],
         cta: "Understand My Data",
       },
+      {
+        slug: "mobile-apps",
+        name: "Mobile Apps",
+        hook: "Your business on your customers' home screen.",
+        overview:
+          "Fast, reliable Android and iOS apps for bookings, orders, loyalty and service requests — connected to your CRM, payments and WhatsApp, and maintained after launch.",
+        included: included(
+          "Android and iOS apps",
+          "Cross-platform development",
+          "Booking, ordering and payments",
+          "Push notifications",
+          "Admin panel and analytics",
+          "Play Store and App Store launch",
+        ),
+        audience: "Businesses whose customers order, book or come back often enough to want an app.",
+        steps: ["Discovery", "Design and prototype", "Build and test", "Launch and maintenance"],
+        cta: "Build My App",
+      },
     ],
     cta: { heading: "Stop doing it by hand.", label: "Request a Demo" },
   },
 
-  products: {
-    h1: "Business data products & a three-sided marketplace",
-    tagline: "Packaged value",
-    heading: ["Products built from", "what we know."],
+  solutions: {
+    h1: "Data products, marketplace & on-ground services in Bengaluru",
+    tagline: "Delivers real-world value",
+    heading: ["Solutions that deliver", "real-world value."],
     intro:
-      "Years of work across industries, packaged into products businesses can use straight away — research-backed data and a marketplace that connects customers, businesses and service providers.",
+      "Research-backed data, a marketplace that connects customers with providers, and the on-the-ground services businesses and homes depend on — water, security, travel, spaces and startups — delivered by teams that answer the phone and turn up on time.",
     services: [
       {
         slug: "digital-data-products",
@@ -388,17 +401,6 @@ export const divisionPages: Record<DivisionId, DivisionContent> = {
         steps: ["Post a need", "Get matched", "Connect and complete", "Rate and review"],
         cta: "Explore the Marketplace",
       },
-    ],
-    cta: { heading: "Need data or demand? Start here.", label: "Start a Conversation" },
-  },
-
-  services: {
-    h1: "Water, security, travel, interiors & startup services in Bengaluru",
-    tagline: "Real-world value",
-    heading: ["Services that deliver", "real-world value."],
-    intro:
-      "Water, security, travel, spaces and startups — the on-the-ground services businesses and homes depend on, delivered by teams that answer the phone and turn up on time.",
-    services: [
       {
         slug: "water-pumps",
         name: "Water Pumps",
@@ -507,7 +509,7 @@ export const divisionPages: Record<DivisionId, DivisionContent> = {
         cta: "Start My Startup Journey",
       },
     ],
-    cta: { heading: "Need it done properly? We'll be there.", label: "Request a Site Visit" },
+    cta: { heading: "Need it done properly? We'll be there.", label: "Start a Conversation" },
   },
 };
 
@@ -532,12 +534,11 @@ export const contactPage = {
 
 /* ── Positioning ───────────────────────────────────────────────────────── */
 
-/** The four divisions as one chain (doc › Division strip): each page shows where it sits in it. */
+/** The three divisions as one chain (doc › Division strip): each page shows where it sits in it. */
 export const systemChain: { id: DivisionId; role: string; line: string }[] = [
   { id: "digital", role: "Creates attention", line: "Marketing, brand, websites, SEO, SEM, social and lead generation." },
   { id: "technology", role: "Builds the systems", line: "SaaS, AI automation, WhatsApp Business and data solutions." },
-  { id: "products", role: "Packages the value", line: "Digital data products and a three-sided business marketplace." },
-  { id: "services", role: "Delivers on the ground", line: "Water pumps, borewells, CCTV, travel, interiors and startup consulting." },
+  { id: "solutions", role: "Delivers real-world value", line: "Data products, a business marketplace, and on-ground services from borewells to startup consulting." },
 ];
 
 /** About: why one partner beats five vendors (doc › Why Sathya). */

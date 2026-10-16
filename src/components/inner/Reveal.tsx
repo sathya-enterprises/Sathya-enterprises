@@ -27,6 +27,7 @@ export function Reveal({
   id?: string;
   open?: boolean;
   "aria-labelledby"?: string;
+  "aria-label"?: string;
 }) {
   const ref = useRef<HTMLElement>(null);
   const shown = useArrival(ref, "0px 0px -8% 0px");

@@ -20,20 +20,19 @@ import {
   Rocket,
   Search,
   Share2,
+  Smartphone,
   Store,
   Boxes,
   type LucideIcon,
 } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { CtaSplit, IconTile, PageIntro, Section, SectionHeading, ServiceCard } from "@/components/inner/Sections";
-import { CardWheel } from "@/components/inner/CardWheel";
 import { CardFan } from "@/components/inner/CardFan";
 import { divisionById, type DivisionId } from "@/content/site";
 import { ctaBody, divisionPages, systemChain } from "@/content/pages";
 import { breadcrumbLd, servicesLd } from "@/lib/seo";
 import digitalPhoto from "@/assets/photos/digital.webp";
 import technologyPhoto from "@/assets/photos/technology.webp";
-import productsPhoto from "@/assets/photos/products.webp";
 import servicesPhoto from "@/assets/photos/services.webp";
 import meetingPhoto from "@/assets/photos/meeting.webp";
 import teamPhoto from "@/assets/photos/team.webp";
@@ -41,7 +40,7 @@ import workshopPhoto from "@/assets/photos/workshop.webp";
 
 const ICONS: Record<string, LucideIcon> = {
   "digital-marketing": Megaphone,
-  "logo-design": PenTool,
+  "brand-building": PenTool,
   "web-development": Code,
   seo: Search,
   sem: MousePointerClick,
@@ -52,6 +51,7 @@ const ICONS: Record<string, LucideIcon> = {
   "ai-automation": Bot,
   "whatsapp-business-solutions": MessageCircle,
   "data-solutions": Database,
+  "mobile-apps": Smartphone,
   "digital-data-products": FileSpreadsheet,
   "business-marketplace": Store,
   "water-pumps": Droplets,
@@ -66,20 +66,18 @@ const ICONS: Record<string, LucideIcon> = {
 const PHOTOS: Record<DivisionId, [StaticImageData, StaticImageData]> = {
   digital: [digitalPhoto, meetingPhoto],
   technology: [technologyPhoto, teamPhoto],
-  products: [productsPhoto, meetingPhoto],
-  services: [servicesPhoto, workshopPhoto],
+  solutions: [servicesPhoto, workshopPhoto],
 };
 
 const DIVISION_ICONS: Record<DivisionId, LucideIcon> = {
   digital: Megaphone,
   technology: Bot,
-  products: Boxes,
-  services: Drill,
+  solutions: Drill,
 };
 
 /**
  * A division page, straight into content: what the division does and where (H1 + positioning),
- * every service once as a full card, where it sits among the four divisions, then a closing call.
+ * every service once as a full card, where it sits among the three divisions, then a closing call.
  */
 export function DivisionPage({ id }: { id: DivisionId }) {
   const division = divisionById[id];
@@ -106,12 +104,11 @@ export function DivisionPage({ id }: { id: DivisionId }) {
       <Section id="services-title" tone="red">
         <SectionHeading id="services-title" title={page.heading[0]} accent={page.heading[1]} lead={`${count} services, one team, one standard. Pick one or combine them.`}
           center />
-        {/* Every card is as tall as the longest one, so nothing scrolls inside a card. */}
-        <CardWheel label={`${name} services`} size="service" className="mt-5">
-          {page.services.map((s) => (
-            <ServiceCard key={s.slug} service={s} Icon={ICONS[s.slug]} />
+        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {page.services.map((s, i) => (
+            <ServiceCard key={s.slug} service={s} Icon={ICONS[s.slug]} i={i % 3} />
           ))}
-        </CardWheel>
+        </div>
       </Section>
 
       <Section id="ecosystem-title">

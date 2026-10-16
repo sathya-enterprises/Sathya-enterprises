@@ -5,7 +5,7 @@
  * testimonials that are not on that site. Placeholders are flagged with `placeholder: true`.
  */
 
-export type DivisionId = "digital" | "technology" | "products" | "services";
+export type DivisionId = "digital" | "technology" | "solutions";
 
 export type Division = {
   id: DivisionId;
@@ -75,7 +75,7 @@ export const contact = {
   intro: "Tell us what you're building and which part of the ecosystem you need — we'll take it from there.",
   requirements: [
     "Digital Marketing",
-    "Logo Design",
+    "Brand Building",
     "Web Development",
     "SEO",
     "SEM",
@@ -86,6 +86,7 @@ export const contact = {
     "AI Automation",
     "WhatsApp Solutions",
     "Data Solutions",
+    "Mobile Apps",
     "Water Pumps",
     "Borewell",
     "CCTV",
@@ -161,20 +162,12 @@ export const divisions: Division[] = [
     href: "/technology",
   },
   {
-    id: "products",
+    id: "solutions",
     index: "03",
-    name: "PRODUCTS",
-    summary: "SaaS products, digital data products, marketplace and physical products.",
-    role: "Data creates intelligence.",
-    href: "/products",
-  },
-  {
-    id: "services",
-    index: "04",
-    name: "SERVICES",
-    summary: "Water pumps, borewell, CCTV, travel, interiors, architecture and startup support.",
-    role: "Services deliver real-world value.",
-    href: "/services",
+    name: "SOLUTIONS",
+    summary: "Data products, marketplace, water pumps, borewell, CCTV, travel, interiors, architecture and startup support.",
+    role: "Solutions deliver real-world value.",
+    href: "/solutions",
   },
 ];
 
@@ -208,18 +201,18 @@ export const businesses: Business[] = [
     related: ["seo", "sem", "social-media-management", "instagram-marketing", "lead-generation"],
   },
   {
-    slug: "logo-design",
-    name: "Logo Design",
-    short: "Logo",
+    slug: "brand-building",
+    name: "Brand Building",
+    short: "Brand",
     division: "digital",
     index: "05",
     headline: "MAKE YOUR BRAND RECOGNIZABLE.",
-    intro: "A logo is the smallest unit of a brand system built to last across every surface it touches.",
+    intro: "A brand people recognise, remember and trust — built to stay consistent across every surface it touches.",
     cta: "Start My Brand Identity",
     groups: [
       {
         title: "What we do",
-        items: ["Logo design", "Brand identity", "Visual identity", "Brand assets", "Scalable logo systems"].map(
+        items: ["Brand strategy", "Positioning and messaging", "Logo and visual identity", "Brand guidelines", "Brand assets"].map(
           (label) => ({ label }),
         ),
       },
@@ -249,7 +242,7 @@ export const businesses: Business[] = [
         ].map((label) => ({ label })),
       },
     ],
-    related: ["logo-design", "seo", "saas-products"],
+    related: ["brand-building", "seo", "saas-products"],
   },
   {
     slug: "seo",
@@ -322,7 +315,7 @@ export const businesses: Business[] = [
         ].map((label) => ({ label })),
       },
     ],
-    related: ["instagram-marketing", "digital-marketing", "logo-design"],
+    related: ["instagram-marketing", "digital-marketing", "brand-building"],
   },
   {
     slug: "instagram-marketing",
@@ -381,7 +374,7 @@ export const businesses: Business[] = [
     name: "SaaS Products",
     short: "SaaS",
     division: "technology",
-    also: ["products"],
+    also: ["solutions"],
     index: "13",
     headline: "SOFTWARE BUILT FOR BUSINESS.",
     intro: "A modular SaaS ecosystem — start with one module, add more as the business grows.",
@@ -477,14 +470,38 @@ export const businesses: Business[] = [
     ],
     related: ["ai-automation", "saas-products", "digital-data-products"],
   },
+  {
+    slug: "mobile-apps",
+    name: "Mobile Apps",
+    short: "Apps",
+    division: "technology",
+    index: "17",
+    headline: "YOUR BUSINESS IN EVERY POCKET.",
+    intro: "Android and iOS apps that put your business on your customers' home screen — and keep them coming back.",
+    cta: "Build My App",
+    groups: [
+      {
+        title: "What we do",
+        items: [
+          "Android apps",
+          "iOS apps",
+          "Cross-platform apps",
+          "Booking and ordering apps",
+          "Admin panels",
+          "App maintenance",
+        ].map((label) => ({ label })),
+      },
+    ],
+    related: ["saas-products", "web-development", "whatsapp-business-solutions"],
+  },
 
   // ── PRODUCTS ──────────────────────────────────────────────
   {
     slug: "digital-data-products",
     name: "Digital Data Products",
     short: "Data Products",
-    division: "products",
-    index: "17",
+    division: "solutions",
+    index: "18",
     headline: "BUSINESS DATA. DELIVERED AS PRODUCTS.",
     intro:
       "Datasets and research packaged as products — sourced and delivered with lawful, privacy-conscious practice at the core.",
@@ -511,8 +528,8 @@ export const businesses: Business[] = [
     slug: "business-marketplace",
     name: "Business Marketplace",
     short: "Marketplace",
-    division: "products",
-    index: "18",
+    division: "solutions",
+    index: "19",
     headline: "BUSINESSES. CUSTOMERS. SERVICE PROVIDERS.",
     intro:
       "One platform, three sides — customers who need something, businesses who provide it, and the service providers who deliver it.",
@@ -531,9 +548,8 @@ export const businesses: Business[] = [
     slug: "water-pumps",
     name: "Water Pumps",
     short: "Water Pumps",
-    division: "services",
-    also: ["products"],
-    index: "19",
+    division: "solutions",
+    index: "20",
     headline: "RELIABLE WATER SOLUTIONS.",
     intro: "Dependable water infrastructure — supplied, installed and maintained by one team.",
     cta: "Enquire About Water Pumps",
@@ -551,8 +567,8 @@ export const businesses: Business[] = [
     slug: "borewell-services",
     name: "Borewell Services",
     short: "Borewell",
-    division: "services",
-    index: "20",
+    division: "solutions",
+    index: "21",
     headline: "COMPLETE BOREWELL SOLUTIONS.",
     intro: "From site assessment to long-term maintenance — borewell services handled end to end.",
     cta: "Enquire About Borewells",
@@ -571,8 +587,8 @@ export const businesses: Business[] = [
     slug: "cctv-security",
     name: "CCTV & Security",
     short: "CCTV",
-    division: "services",
-    index: "21",
+    division: "solutions",
+    index: "22",
     headline: "SECURITY YOU CAN SEE.",
     intro: "Surveillance systems specified, installed and maintained around how a space is actually used.",
     cta: "Secure My Property",
@@ -595,8 +611,8 @@ export const businesses: Business[] = [
     slug: "travels",
     name: "Travels",
     short: "Travels",
-    division: "services",
-    index: "22",
+    division: "solutions",
+    index: "23",
     headline: "TRAVEL & TRANSPORTATION SOLUTIONS.",
     intro: "Straightforward travel and transportation support — enquire, book, go.",
     cta: "Enquire About Travel",
@@ -614,8 +630,8 @@ export const businesses: Business[] = [
     slug: "interiors-architecture",
     name: "Interiors & Architecture",
     short: "Interiors",
-    division: "services",
-    index: "23",
+    division: "solutions",
+    index: "24",
     headline: "DESIGN. PLAN. BUILD.",
     intro: "Two disciplines, one project team — interiors and architecture planned and executed together.",
     cta: "Start My Project",
@@ -635,8 +651,8 @@ export const businesses: Business[] = [
     slug: "startup-consulting",
     name: "Startup Management Consulting",
     short: "Startup Consulting",
-    division: "services",
-    index: "24",
+    division: "solutions",
+    index: "25",
     headline: "FROM IDEA TO SCALE.",
     intro:
       "End-to-End Startup Support — helping founders set up, comply and scale confidently, from incorporation to funding.",

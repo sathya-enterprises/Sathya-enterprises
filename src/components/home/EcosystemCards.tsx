@@ -16,12 +16,11 @@ import { ShapeField } from "./ShapeField";
  * or in a background tab, or while a card link has keyboard focus.
  */
 
-/** Division label on each card: red and gold alternate across the four divisions. */
+/** Division label on each card: red and gold alternate across the divisions. */
 const DIVISION_PILL: Record<DivisionId, string> = {
   digital: "bg-red text-ivory",
   technology: "bg-gold text-ink",
-  products: "bg-red text-ivory",
-  services: "bg-gold text-ink",
+  solutions: "bg-red text-ivory",
 };
 
 /** Time each card spends in the centre. */
@@ -143,7 +142,7 @@ export function EcosystemCards({
       <span className="bg-gradient-to-r from-red to-gold bg-clip-text text-transparent lg:bg-none lg:text-red">ecosystem.</span>
     </>
   ),
-  lead = "Four divisions, one connected ecosystem.",
+  lead = "Three divisions, one connected ecosystem.",
 }: {
   items?: Business[];
   id?: string;
