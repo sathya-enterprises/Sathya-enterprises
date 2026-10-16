@@ -106,8 +106,8 @@ export function DivisionPage({ id }: { id: DivisionId }) {
       <Section id="services-title" tone="red">
         <SectionHeading id="services-title" title={page.heading[0]} accent={page.heading[1]} lead={`${count} services, one team, one standard. Pick one or combine them.`}
           center />
-        {/* Each card is as tall as the screen allows and scrolls within itself, so the section stays one screen. */}
-        <CardWheel label={`${name} services`} size="service" reserve={360} className="mt-5">
+        {/* Every card is as tall as the longest one, so nothing scrolls inside a card. */}
+        <CardWheel label={`${name} services`} size="service" className="mt-5">
           {page.services.map((s) => (
             <ServiceCard key={s.slug} service={s} Icon={ICONS[s.slug]} />
           ))}

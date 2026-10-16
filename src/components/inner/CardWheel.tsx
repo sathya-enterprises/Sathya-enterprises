@@ -1,6 +1,6 @@
 "use client";
 
-import { Children, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Children, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { m, useInView } from "motion/react";
 import { ease } from "@/lib/motion";
 
@@ -17,11 +17,11 @@ import { ease } from "@/lib/motion";
 
 type Size = "feature" | "post" | "service";
 
-/** Card width and height (px) per size and breakpoint; `fill` sizes take their height from the screen. */
-const SIZES: Record<Size, { sm: [number, number | "fill"]; md: [number, number | "fill"]; pivot: number }> = {
+/** Card width and height (px) per size and breakpoint; `fit` sizes are as tall as their tallest card's content. */
+const SIZES: Record<Size, { sm: [number, number | "fit"]; md: [number, number | "fit"]; pivot: number }> = {
   feature: { sm: [264, 300], md: [300, 320], pivot: 2800 },
   post: { sm: [272, 410], md: [310, 430], pivot: 2800 },
-  service: { sm: [300, "fill"], md: [460, "fill"], pivot: 4200 },
+  service: { sm: [300, "fit"], md: [460, "fit"], pivot: 4200 },
 };
 const GAP = 20;
 /** At most this many cards either side of the centre. */
@@ -41,7 +41,7 @@ export const LIT = {
   "--card-accent": "var(--color-gold)",
 } as React.CSSProperties;
 
-type Geometry = { w: number; h: number; pivot: number; below: number };
+type Geometry = { w: number; h: number; pivot: number; below: number; vw: number };
 
 /** Room under the centre card so no on-screen side card is clipped (see EcosystemCards). */
 function belowFor(w: number, h: number, pivot: number, viewportW: number, side: number) {
@@ -56,32 +56,30 @@ function belowFor(w: number, h: number, pivot: number, viewportW: number, side: 
   return Math.ceil(drop) + SHADOW_ROOM;
 }
 
-function geometryFor(size: Size, reserve: number, side: number): Geometry {
+function geometryFor(size: Size, side: number, fitH: number): Geometry {
   const md = window.matchMedia("(min-width: 768px)").matches;
   const vw = document.documentElement.clientWidth;
   const { pivot } = SIZES[size];
   const [w, wanted] = md ? SIZES[size].md : SIZES[size].sm;
-  if (wanted !== "fill") return { w, h: wanted, pivot, below: belowFor(w, wanted, pivot, vw, side) };
-  // Fill: the tallest card (10px steps) that keeps the section on one screen, within limits.
-  const room = window.innerHeight - reserve;
-  for (let h = 620; ; h -= 10) {
-    const below = belowFor(w, h, pivot, vw, side);
-    if (h <= 340 || h + below <= room) return { w, h, pivot, below };
-  }
+  const h = wanted === "fit" ? fitH : wanted;
+  return { w, h, pivot, below: belowFor(w, h, pivot, vw, side), vw };
 }
 
-function useGeometry(size: Size, reserve: number, side: number) {
+/** `fitH`: for `fit` sizes, the tallest card's content height (0 until measured). */
+function useGeometry(size: Size, side: number, fitH: number) {
   const [g, setG] = useState<Geometry>(() => {
     const [w, h] = SIZES[size].sm;
-    return { w, h: h === "fill" ? 420 : h, pivot: SIZES[size].pivot, below: 40 };
+    return { w, h: h === "fit" ? 420 : h, pivot: SIZES[size].pivot, below: 40, vw: 0 };
   });
   useEffect(() => {
     let frame = 0;
     const update = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        const next = geometryFor(size, reserve, side);
-        setG((prev) => (prev.w === next.w && prev.h === next.h && prev.below === next.below ? prev : next));
+        const next = geometryFor(size, side, fitH || 420);
+        setG((prev) =>
+          prev.w === next.w && prev.h === next.h && prev.below === next.below && prev.vw === next.vw ? prev : next,
+        );
       });
     };
     update();
@@ -90,8 +88,24 @@ function useGeometry(size: Size, reserve: number, side: number) {
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", update);
     };
-  }, [size, reserve, side]);
+  }, [size, side, fitH]);
   return g;
+}
+
+/** Height (px) of the tallest child of `ref`, kept current as they reflow. */
+function useTallest(ref: React.RefObject<HTMLDivElement | null>, enabled: boolean) {
+  const [tallest, setTallest] = useState(0);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!enabled || !el) return;
+    const measure = () =>
+      setTallest(Math.ceil(Math.max(0, ...Array.from(el.children, (c) => (c as HTMLElement).offsetHeight))));
+    measure();
+    const ro = new ResizeObserver(measure);
+    Array.from(el.children).forEach((c) => ro.observe(c));
+    return () => ro.disconnect();
+  }, [ref, enabled]);
+  return tallest;
 }
 
 export const mod = (n: number, k: number) => ((n % k) + k) % k;
@@ -129,7 +143,6 @@ export function CardWheel({
   label,
   size = "feature",
   padded = true,
-  reserve = 340,
   start = 0,
   className = "",
 }: {
@@ -139,8 +152,6 @@ export function CardWheel({
   size?: Size;
   /** Pad the card's content (off when the content brings its own layout, e.g. a photo card). */
   padded?: boolean;
-  /** For `fill` sizes: screen height (px) the rest of the section needs besides the cards. */
-  reserve?: number;
   /** Index of the card that starts in the centre. */
   start?: number;
   className?: string;
@@ -153,7 +164,10 @@ export function CardWheel({
 
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { amount: 0.3 });
-  const g = useGeometry(size, reserve, side);
+  const fit = SIZES[size].sm[1] === "fit";
+  const measurer = useRef<HTMLDivElement>(null);
+  const tallest = useTallest(measurer, fit);
+  const g = useGeometry(size, side, tallest);
   const tabVisible = useTabVisible();
   const entrance = useEntrance(inView);
   const [pos, setPos] = useState(start);
@@ -175,6 +189,8 @@ export function CardWheel({
   }, [playing, pos, count]);
 
   const stepDeg = ((g.w + GAP) / (g.pivot - g.h)) * (180 / Math.PI);
+  // Two cards that fit side by side stay put as a centred pair; only the light moves between them.
+  const pair = count === 2 && 2 * g.w + GAP <= g.vw - 32;
 
   return (
     <div
@@ -209,12 +225,23 @@ export function CardWheel({
       className={`relative w-full touch-pan-y ${className}`}
       style={{ height: g.h + g.below }}
     >
+      {/* Off-screen copies at the card width, so `fit` cards can be as tall as the longest one. */}
+      {fit && (
+        <div ref={measurer} aria-hidden inert className="pointer-events-none invisible absolute left-0 top-0" style={{ width: g.w }}>
+          {items.map((item, i) => (
+            <div key={i} className={padded ? "p-6" : ""}>
+              {item}
+            </div>
+          ))}
+        </div>
+      )}
       {items.map((item, i) => {
         const offset = offsetOf(i, pos);
         // The card that wrapped round jumps to its new place and fades in there.
-        const wrapped = Math.abs(offset - (placed.before[i] ?? offset)) > 1;
+        const wrapped = !pair && Math.abs(offset - (placed.before[i] ?? offset)) > 1;
         const centered = offset === 0;
         const hidden = Math.abs(offset) > side;
+        const slot = pair ? i - 0.5 : offset;
         return (
           <m.div
             key={i}
@@ -223,7 +250,7 @@ export function CardWheel({
             animate={
               entrance === "out"
                 ? { opacity: 0, rotate: 0, y: 140 }
-                : { opacity: hidden ? 0 : wrapped ? [0, 1] : 1, rotate: offset * stepDeg, y: 0 }
+                : { opacity: hidden ? 0 : wrapped ? [0, 1] : 1, rotate: slot * stepDeg, y: 0 }
             }
             transition={
               entrance === "out"
@@ -249,7 +276,7 @@ export function CardWheel({
             {/* Side cards can be clicked to bring them round, but their contents can't be reached. */}
             <div
               inert={!centered}
-              className={`relative h-full overscroll-contain [scrollbar-width:thin] ${size === "service" ? "overflow-y-auto" : "overflow-hidden"} ${padded ? "p-6" : ""}`}
+              className={`relative h-full overflow-hidden ${padded ? "p-6" : ""}`}
             >
               {item}
             </div>

@@ -19,8 +19,11 @@ import { useArrival } from "@/lib/useArrival";
 
 const GLASS =
   "border border-white/80 bg-white/45 shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_30px_70px_-30px_rgb(158_16_38/0.28)] backdrop-blur-xl";
+/** On a gold page the glass is tinted gold rather than white. */
+const GLASS_GOLD =
+  "border border-gold-light/70 bg-gold-light/35 shadow-[inset_0_1px_0_rgb(255_245_214/0.8),0_30px_70px_-30px_rgb(158_16_38/0.35)] backdrop-blur-xl";
 const FIELD =
-  "peer w-full rounded-2xl border border-ink/12 bg-white/70 py-3.5 pl-4 pr-11 text-[0.95rem] text-ink outline-none transition-[border-color,background-color,box-shadow] duration-200 placeholder:text-ink-soft/75 hover:border-ink/25 focus:border-red focus:bg-white focus:shadow-[0_0_0_3px_rgb(200_16_46/0.14)]";
+  "peer w-full rounded-2xl border border-ink/12 bg-(--field) py-3.5 pl-4 pr-11 text-[0.95rem] text-ink outline-none transition-[border-color,background-color,box-shadow] duration-200 placeholder:text-ink-soft/75 hover:border-ink/25 focus:border-red focus:bg-(--field-focus) focus:shadow-[0_0_0_3px_rgb(200_16_46/0.14)]";
 
 const FIELDS = [
   { name: "name", label: "Full Name", type: "text", auto: "name", required: true, icon: User },
@@ -30,23 +33,23 @@ const FIELDS = [
 ] as const;
 
 /** Soft pools of brand colour drifting slowly under a faint caustic texture, on ivory. */
-function LiquidBackdrop({ progress }: { progress: MotionValue<number> }) {
+function LiquidBackdrop({ progress, gold }: { progress: MotionValue<number>; gold: boolean }) {
   const filterId = useId().replace(/:/g, "");
   // progress 0 → 1 across the section's pass through the screen; 0.5 = section fills the screen.
   const y1 = useTransform(progress, (v) => `${(v - 0.5) * -28}%`);
   const y2 = useTransform(progress, (v) => `${(v - 0.5) * 18}%`);
   const y3 = useTransform(progress, (v) => `${(v - 0.5) * -12}%`);
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden bg-ivory">
+    <div aria-hidden className={`pointer-events-none absolute inset-0 overflow-hidden ${gold ? "bg-gold" : "bg-ivory"}`}>
       {/* Each pool sits on its own depth: they slide past each other as the section scrolls. */}
       <m.div style={{ y: y1 }} className="absolute inset-0">
-        <div className="liquid-pool left-[-12%] top-[-18%] h-[65%] w-[55%] bg-gold/40 [--dx:8%] [--dy:10%]" />
+        <div className={`liquid-pool left-[-12%] top-[-18%] h-[65%] w-[55%] [--dx:8%] [--dy:10%] ${gold ? "bg-gold-tint/60" : "bg-gold/40"}`} />
       </m.div>
       <m.div style={{ y: y2 }} className="absolute inset-0">
         <div className="liquid-pool right-[-14%] top-[12%] h-[75%] w-[50%] bg-red/[0.16] [--dx:-10%] [--dy:6%] [animation-delay:-6s]" />
       </m.div>
       <m.div style={{ y: y3 }} className="absolute inset-0">
-        <div className="liquid-pool bottom-[-30%] left-[22%] h-[65%] w-[55%] bg-gold-tint/80 [--dx:6%] [--dy:-8%] [animation-delay:-12s]" />
+        <div className={`liquid-pool bottom-[-30%] left-[22%] h-[65%] w-[55%] [--dx:6%] [--dy:-8%] [animation-delay:-12s] ${gold ? "bg-red/[0.12]" : "bg-gold-tint/80"}`} />
       </m.div>
       {/* Caustic cells, like light through water. Static texture, moved slowly as one layer. */}
       <svg className="liquid-cells absolute -inset-[10%] h-[120%] w-[120%] opacity-30 mix-blend-multiply">
@@ -61,7 +64,7 @@ function LiquidBackdrop({ progress }: { progress: MotionValue<number> }) {
 }
 
 /** The glass card: tilts towards the pointer and floats gently. */
-function GrowthCard({ holder, plan }: { holder: string; plan: string }) {
+function GrowthCard({ holder, plan, glass }: { holder: string; plan: string; glass: string }) {
   const reduced = useReducedMotionSafe();
   const px = useMotionValue(0);
   const py = useMotionValue(0);
@@ -87,7 +90,7 @@ function GrowthCard({ holder, plan }: { holder: string; plan: string }) {
       <div className="card-float">
         <m.div
           style={{ rotateX, rotateY }}
-          className={`relative aspect-[1.586] w-full overflow-hidden rounded-[28px] p-[7%] text-ink ${GLASS}`}
+          className={`relative aspect-[1.586] w-full overflow-hidden rounded-[28px] p-[7%] text-ink ${glass}`}
         >
           <m.div aria-hidden style={{ background: shineBg }} className="pointer-events-none absolute inset-0" />
 
@@ -131,7 +134,10 @@ function GrowthCard({ holder, plan }: { holder: string; plan: string }) {
   );
 }
 
-export function StartGrowing() {
+/** `tone="gold"` sets the section on the gold of the inner pages instead of the home page's ivory. */
+export function StartGrowing({ tone = "ivory" }: { tone?: "ivory" | "gold" }) {
+  const gold = tone === "gold";
+  const glass = gold ? GLASS_GOLD : GLASS;
   const [holder, setHolder] = useState("");
   const [plan, setPlan] = useState("");
   const [sent, setSent] = useState(false);
@@ -184,13 +190,18 @@ export function StartGrowing() {
       ref={sectionRef}
       data-arrived={arrived}
       className="relative isolate flex items-center overflow-hidden py-[var(--section-y)] lg:min-h-svh lg:py-[calc(var(--header-h)+2rem)]"
+      style={
+        (gold
+          ? { "--field": "rgb(255 245 214 / 0.55)", "--field-focus": "var(--color-gold-light)" }
+          : { "--field": "rgb(255 255 255 / 0.7)", "--field-focus": "#fff" }) as React.CSSProperties
+      }
     >
-      <LiquidBackdrop progress={p} />
+      <LiquidBackdrop progress={p} gold={gold} />
 
       <div className="container-x relative grid w-full items-center gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
         {/* Enquiry panel */}
         <m.div style={formStyle}>
-          <form onSubmit={send} className={`rounded-[32px] p-6 text-ink sm:p-9 ${GLASS}`}>
+          <form onSubmit={send} className={`rounded-[32px] p-6 text-ink sm:p-9 ${glass}`}>
             <div className="rise flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h2 id={titleId} className="font-display text-[clamp(1.75rem,3.4vw,2.5rem)] font-extrabold leading-none tracking-[-0.03em]">
@@ -201,7 +212,7 @@ export function StartGrowing() {
                   Takes under a minute
                 </p>
               </div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/70 px-3.5 py-2 text-[0.8rem] font-semibold" aria-live="polite">
+              <span className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-(--field) px-3.5 py-2 text-[0.8rem] font-semibold" aria-live="polite">
                 <span aria-hidden className="h-2 w-2 rounded-full bg-gold" />
                 {plan ? `${plan} selected` : "No service chosen yet"}
               </span>
@@ -284,7 +295,7 @@ export function StartGrowing() {
 
         {/* Live card */}
         <m.div style={cardStyle} className="mx-auto w-full max-w-[460px] lg:mx-0 lg:justify-self-end">
-          <GrowthCard holder={holder} plan={plan} />
+          <GrowthCard holder={holder} plan={plan} glass={glass} />
         </m.div>
       </div>
     </section>

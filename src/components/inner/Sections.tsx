@@ -402,12 +402,13 @@ export function ServiceCard({ service, Icon }: { service: ServiceDetail; Icon: L
 
       <p className="mt-4 text-pretty text-(--card-soft)">{service.overview}</p>
 
+      {/* The card shows a short list; the full detail stays in the page's structured data. */}
       <div className={`mt-5 grid gap-5 ${service.included.length > 1 ? "md:grid-cols-3" : ""}`}>
         {service.included.map((group, g) => (
           <div key={group.title ?? g}>
             <h4 className="t-eyebrow text-(--card-accent)">{group.title ?? "What's included"}</h4>
             <ul className={`mt-2.5 grid gap-2 ${service.included.length === 1 ? "md:grid-cols-2" : ""}`}>
-              {group.items.map((item) => (
+              {group.items.slice(0, service.included.length === 1 ? 4 : 3).map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm text-(--card-soft)">
                   <span aria-hidden className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-(--card-accent) text-(--card)">
                     <Check className="size-3" strokeWidth={3} />
@@ -419,20 +420,6 @@ export function ServiceCard({ service, Icon }: { service: ServiceDetail; Icon: L
           </div>
         ))}
       </div>
-
-      <dl className="mt-5 space-y-2.5 rounded-[18px] border-2 border-(--card-accent) p-4 text-sm">
-        {service.audience && (
-          <div>
-            <dt className="t-eyebrow text-(--card-accent)">Who it&apos;s for</dt>
-            <dd className="mt-1 text-(--card-soft)">{service.audience}</dd>
-          </div>
-        )}
-        <div>
-          <dt className="t-eyebrow text-(--card-accent)">How it works</dt>
-          <dd className="mt-1 text-(--card-soft)">{service.steps.join(" → ")}</dd>
-        </div>
-        {service.note && <dd className="text-(--card-soft) italic">{service.note}</dd>}
-      </dl>
 
       <div className="mt-auto pt-5">
         <Link

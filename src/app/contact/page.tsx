@@ -71,7 +71,7 @@ export default function ContactPage() {
         </ul>
       </PageIntro>
 
-      <StartGrowing />
+      <StartGrowing tone="gold" />
 
       <Section id="faq-title">
         <div className="mx-auto max-w-3xl">
