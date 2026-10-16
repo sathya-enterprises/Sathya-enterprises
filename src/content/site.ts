@@ -97,6 +97,31 @@ export const contact = {
   ],
 };
 
+/**
+ * "Worldwide" globe on the home page (GlobalReach.tsx): routes run from the hub to every place,
+ * plus the extra `links` between places. The places are demo picks — replace with real client and
+ * partner locations. Coordinates are degrees, longitude east and latitude north positive.
+ */
+export const reach = {
+  hub: { city: "Bengaluru", country: "India", lon: 77.59, lat: 12.97 },
+  places: [
+    { city: "Dubai", country: "UAE", lon: 55.27, lat: 25.2 },
+    { city: "London", country: "UK", lon: -0.13, lat: 51.51 },
+    { city: "New York", country: "USA", lon: -74.01, lat: 40.71 },
+    { city: "Toronto", country: "Canada", lon: -79.38, lat: 43.65 },
+    { city: "Singapore", country: "Singapore", lon: 103.82, lat: 1.35 },
+    { city: "Sydney", country: "Australia", lon: 151.21, lat: -33.87 },
+    { city: "Tokyo", country: "Japan", lon: 139.69, lat: 35.69 },
+    { city: "Nairobi", country: "Kenya", lon: 36.82, lat: -1.29 },
+  ],
+  links: [
+    ["Dubai", "London"],
+    ["London", "New York"],
+    ["Singapore", "Sydney"],
+    ["Singapore", "Tokyo"],
+  ] as [string, string][],
+};
+
 /** Founder section on the home page. Role and copy are still demo text — replace with the real ones. */
 export const founder = {
   name: "Satyabhushan",
